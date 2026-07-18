@@ -1,0 +1,233 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, MoreHorizontal, Image as ImageIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { UploadCloud } from "lucide-react";
+import Image from "next/image";
+
+const banners = [
+  {
+    id: "BN-001",
+    title: "Sale Mùa Hè 2026",
+    link: "/collections/summer-sale",
+    status: "Hiển thị",
+  },
+  {
+    id: "BN-002",
+    title: "Bộ Sưu Tập Áo Dài",
+    link: "/collections/ao-dai",
+    status: "Hiển thị",
+  },
+  {
+    id: "BN-003",
+    title: "Black Friday Nháp",
+    link: "/collections/black-friday",
+    status: "Đang ẩn",
+  },
+];
+
+export default function BannersPage() {
+  return (
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Banner</h2>
+          <p className="text-zinc-500 hidden sm:block">Quản lý banner quảng cáo trên trang chủ.</p>
+        </div>
+        <Dialog>
+          <DialogTrigger render={
+            <Button className="bg-zinc-900 hover:bg-zinc-800">
+              <Plus className="mr-2 h-4 w-4" /> Thêm banner
+            </Button>
+          } />
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Thêm banner mới</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-zinc-50 transition-colors cursor-pointer">
+                <UploadCloud className="h-6 w-6 text-zinc-400 mb-2" />
+                <p className="text-sm font-medium">Tải ảnh lên</p>
+                <p className="text-xs text-zinc-500 mt-1">Kích thước chuẩn: 1920x600px</p>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Tiêu đề (Tùy chọn)</Label>
+                <Input id="title" placeholder="VD: Sale Mùa Hè" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="link">Đường dẫn liên kết (Link)</Label>
+                <Input id="link" placeholder="VD: /collections/summer-sale" />
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <Label htmlFor="active" className="cursor-pointer text-zinc-600">Hiển thị trên trang chủ</Label>
+                <Switch id="active" defaultChecked />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu banner</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="rounded-md border bg-white overflow-hidden">
+        <div className="flex items-center gap-4 p-4 border-b">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Input
+              type="search"
+              placeholder="Tìm kiếm banner..."
+              className="pl-8"
+            />
+          </div>
+        </div>
+        
+        {/* Desktop Table View */}
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[120px]">Hình ảnh</TableHead>
+                <TableHead>Tiêu đề</TableHead>
+                <TableHead>Đường dẫn liên kết</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {banners.map((banner) => (
+                <TableRow key={banner.id}>
+                  <TableCell>
+                    <div className="relative h-12 w-24 rounded-md bg-zinc-100 flex items-center justify-center overflow-hidden">
+                      <ImageIcon className="h-4 w-4 text-zinc-400" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{banner.title}</TableCell>
+                  <TableCell className="text-zinc-500">{banner.link}</TableCell>
+                  <TableCell>
+                    <Badge variant={banner.status === "Hiển thị" ? "default" : "secondary"} className={banner.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : ""}>
+                      {banner.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                                        <DropdownMenu>
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <Dialog>
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Chỉnh sửa Banner</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid gap-2">
+                                <Label htmlFor={`edit-title-${banner.id}`}>Tiêu đề</Label>
+                                <Input id={`edit-title-${banner.id}`} defaultValue={banner.title} />
+                              </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor={`edit-link-${banner.id}`}>Đường dẫn (Link)</Label>
+                                <Input id={`edit-link-${banner.id}`} defaultValue={banner.link} />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button variant="outline">Hủy</Button>
+                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile List View */}
+        <div className="md:hidden flex flex-col">
+          {banners.map((banner) => (
+            <div key={banner.id} className="flex flex-col gap-3 p-4 border-b last:border-0 relative">
+              <div className="flex gap-3 pr-8">
+                <div className="relative h-16 w-24 shrink-0 rounded-md bg-zinc-100 flex items-center justify-center overflow-hidden">
+                   <ImageIcon className="h-5 w-5 text-zinc-400" />
+                </div>
+                <div className="flex flex-col flex-1">
+                  <span className="font-bold text-zinc-900 text-sm leading-tight">{banner.title}</span>
+                  <span className="text-xs text-zinc-500 truncate mt-1">Link: {banner.link}</span>
+                  <div className="mt-2">
+                    <Badge variant={banner.status === "Hiển thị" ? "default" : "secondary"} className={banner.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "text-[10px] px-2 py-0"}>
+                      {banner.status}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute top-3 right-2">
+                                    <DropdownMenu>
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <Dialog>
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Chỉnh sửa Banner</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid gap-2">
+                                <Label htmlFor={`m-edit-title-${banner.id}`}>Tiêu đề</Label>
+                                <Input id={`m-edit-title-${banner.id}`} defaultValue={banner.title} />
+                              </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor={`m-edit-link-${banner.id}`}>Đường dẫn (Link)</Label>
+                                <Input id={`m-edit-link-${banner.id}`} defaultValue={banner.link} />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button variant="outline">Hủy</Button>
+                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
