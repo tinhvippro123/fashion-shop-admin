@@ -100,7 +100,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-500">Giảm giá:</span>
-                  <span className="font-medium text-emerald-600">-0đ</span>
+                  <span className="font-medium text-zinc-900">-0đ</span>
                 </div>
                 <Separator className="my-1" />
                 <div className="flex justify-between">

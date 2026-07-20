@@ -106,10 +106,6 @@ export default function SizesPage() {
                                 <Label htmlFor={`edit-name-${size.id}`}>Kích thước</Label>
                                 <Input id={`edit-name-${size.id}`} defaultValue={size.name} />
                               </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-description-${size.id}`}>Mô tả</Label>
-                                <Input id={`edit-description-${size.id}`} defaultValue={size.description} />
-                              </div>
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
@@ -154,10 +150,6 @@ export default function SizesPage() {
                               <div className="grid gap-2">
                                 <Label htmlFor={`m-edit-name-${size.id}`}>Kích thước</Label>
                                 <Input id={`m-edit-name-${size.id}`} defaultValue={size.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-description-${size.id}`}>Mô tả</Label>
-                                <Input id={`m-edit-description-${size.id}`} defaultValue={size.description} />
                               </div>
                             </div>
                             <DialogFooter>

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2 xl:min-h-[100vh]">
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       {/* Nửa bên trái: Hình ảnh Branding */}
       <div className="hidden bg-zinc-900 lg:block relative">
         <Image
@@ -36,7 +36,7 @@ export default function LoginPage() {
       </div>
 
       {/* Nửa bên phải: Form Đăng Nhập */}
-      <div className="flex items-center justify-center py-12 bg-zinc-50 dark:bg-zinc-950">
+      <div className="flex items-center justify-center py-12 bg-background">
         <div className="mx-auto grid w-[380px] gap-8">
           
           <div className="grid gap-2 text-center">

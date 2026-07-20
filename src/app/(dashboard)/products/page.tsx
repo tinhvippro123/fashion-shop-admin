@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, MoreHorizontal, Filter } from "lucide-react";
+import { Plus, MoreHorizontal, PlusCircle, Search, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,7 +128,9 @@ export default function ProductsPage() {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href="/products/1/edit" className="w-full h-full cursor-pointer">Chỉnh sửa</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">Xóa sản phẩm</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -160,7 +162,9 @@ export default function ProductsPage() {
                     <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href="/products/1/edit" className="w-full h-full cursor-pointer">Chỉnh sửa</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">Xóa sản phẩm</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

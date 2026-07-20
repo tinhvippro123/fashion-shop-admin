@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,24 +14,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, UploadCloud, Plus, Trash2 } from "lucide-react";
+import { UploadCloud, Plus, Trash2, Save } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function CreateProductPage() {
+  const [discountType, setDiscountType] = useState("percent");
+  const [promoTarget, setPromoTarget] = useState("all");
+
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex items-center gap-4">
-        <Link 
-          href="/products" 
-          className={cn(buttonVariants({ variant: "outline", size: "icon" }), "rounded-full")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Thêm sản phẩm mới</h2>
-          <p className="text-zinc-500">Tạo mới một sản phẩm để đăng bán.</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <BackButton />
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Thêm sản phẩm mới</h2>
+            <p className="text-zinc-500">Tạo mới một sản phẩm để đăng bán.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline">Hủy bỏ</Button>
+          <Button className="gap-2 bg-zinc-900 hover:bg-zinc-800">
+            <Save className="h-4 w-4" /> Lưu sản phẩm
+          </Button>
         </div>
       </div>
 
@@ -68,13 +86,10 @@ export default function CreateProductPage() {
               <CardTitle>Giá và Kho</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label htmlFor="price">Giá bán (VNĐ)</Label>
-                <Input id="price" type="number" placeholder="1,000,000" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="original-price">Giá gốc (VNĐ)</Label>
-                <Input id="original-price" type="number" placeholder="1,500,000" />
+              <div className="grid gap-2 sm:col-span-2">
+                <Label htmlFor="price">Giá niêm yết (VNĐ)</Label>
+                <Input id="price" type="number" placeholder="VD: 1,500,000" />
+                <p className="text-xs text-muted-foreground">Lưu ý: Để thiết lập giảm giá (giá gạch ngang), vui lòng tạo chiến dịch trong mục Chương trình khuyến mãi.</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="sku">Mã SKU</Label>
@@ -143,18 +158,79 @@ export default function CreateProductPage() {
                 </CardHeader>
                 <CardContent className="grid gap-8">
                   <div className="grid gap-4">
-                    <Label className="text-base font-semibold">Màu sắc (Colors)</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Màu sắc (Colors)</Label>
+                      <Dialog>
+                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100")}>
+                          <Plus className="h-4 w-4 mr-1" /> Thêm màu mới
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Thêm màu sắc mới</DialogTitle>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                              <Label htmlFor="color-name">Tên màu</Label>
+                              <Input id="color-name" placeholder="VD: Hồng cánh sen" />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="color-hex">Mã màu (Hex Code)</Label>
+                              <div className="flex gap-2">
+                                <Input id="color-hex" type="color" className="w-12 p-1 h-9 cursor-pointer" defaultValue="#ff00ff" />
+                                <Input placeholder="#FF00FF" className="flex-1" defaultValue="#ff00ff" />
+                              </div>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Thêm màu</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                     <div className="flex flex-wrap gap-4">
-                      {["Đỏ đậm", "Xanh navy", "Đen tuyền", "Trắng"].map((color, i) => (
+                      {[
+                        { name: "Đỏ đậm", hex: "#8B0000" },
+                        { name: "Xanh navy", hex: "#000080" },
+                        { name: "Đen tuyền", hex: "#000000" },
+                        { name: "Trắng", hex: "#FFFFFF" }
+                      ].map((color, i) => (
                         <div key={i} className="flex items-center space-x-2">
                           <Checkbox id={`color-${i}`} defaultChecked={i === 0 || i === 2} />
-                          <Label htmlFor={`color-${i}`} className="font-normal cursor-pointer">{color}</Label>
+                          <Label htmlFor={`color-${i}`} className="flex items-center gap-1.5 font-normal cursor-pointer">
+                            <div className="w-3.5 h-3.5 rounded-full border border-zinc-200 shadow-sm" style={{ backgroundColor: color.hex }}></div>
+                            {color.name}
+                          </Label>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div className="grid gap-4">
-                    <Label className="text-base font-semibold">Kích thước (Sizes)</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Kích thước (Sizes)</Label>
+                      <Dialog>
+                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100")}>
+                          <Plus className="h-4 w-4 mr-1" /> Thêm size mới
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Thêm kích thước mới</DialogTitle>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                              <Label htmlFor="size-name">Tên Size</Label>
+                              <Input id="size-name" placeholder="VD: XXL" />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="size-desc">Mô tả chi tiết</Label>
+                              <Input id="size-desc" placeholder="VD: Dành cho người trên 80kg" />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Thêm kích thước</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                     <div className="flex flex-wrap gap-4">
                       {["S", "M", "L", "XL", "Freesize"].map((size, i) => (
                         <div key={i} className="flex items-center space-x-2">
@@ -202,6 +278,107 @@ export default function CreateProductPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Khuyến mãi & Giảm giá</CardTitle>
+                    <CardDescription>Thiết lập chương trình khuyến mãi ra mắt cho sản phẩm này.</CardDescription>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-zinc-900 border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900")}>
+                      <Plus className="h-4 w-4 mr-2" /> Tạo khuyến mãi nhanh
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Tạo Khuyến mãi nhanh</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label>Tên chương trình (Tự động)</Label>
+                          <Input disabled defaultValue="Flash Sale: Váy hoa cúc mùa hè" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Áp dụng cho</Label>
+                          <Select value={promoTarget} onValueChange={(val) => setPromoTarget(val as string)}>
+                            <SelectTrigger>
+                              <SelectValue>
+                                {promoTarget === "all" ? "Toàn bộ biến thể của sản phẩm này" : "Chỉ một số biến thể cụ thể (Màu/Size)"}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent align="start" alignItemWithTrigger={false}>
+                              <SelectItem value="all" label="Toàn bộ biến thể của sản phẩm này">Toàn bộ biến thể của sản phẩm này</SelectItem>
+                              <SelectItem value="specific" label="Chỉ một số biến thể cụ thể (Màu/Size)">Chỉ một số biến thể cụ thể (Màu/Size)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {promoTarget === "specific" && (
+                          <div className="grid gap-2 bg-zinc-50 p-3 rounded-md border">
+                            <Label className="text-xs text-zinc-500 mb-1">Chọn các biến thể muốn giảm giá:</Label>
+                            <div className="max-h-[120px] overflow-y-auto space-y-2 pr-2">
+                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="create-var-1" />
+                                  <Label htmlFor="create-var-1" className="text-sm font-medium">Đỏ đậm / Size S</Label>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="create-var-2" />
+                                  <Label htmlFor="create-var-2" className="text-sm font-medium">Đỏ đậm / Size M</Label>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="create-var-3" />
+                                  <Label htmlFor="create-var-3" className="text-sm font-medium">Đen tuyền / Size S</Label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label>Loại giảm</Label>
+                            <Select value={discountType} onValueChange={(val) => setDiscountType(val as string)}>
+                              <SelectTrigger>
+                                <SelectValue>
+                                  {discountType === "percent" ? "Phần trăm (%)" : "Số tiền (VND)"}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent align="start" alignItemWithTrigger={false}>
+                                <SelectItem value="percent" label="Phần trăm (%)">Phần trăm (%)</SelectItem>
+                                <SelectItem value="vnd" label="Số tiền (VND)">Số tiền (VND)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid gap-2">
+                            <Label>Mức giảm</Label>
+                            <Input type="number" placeholder="VD: 20" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label>Bắt đầu</Label>
+                            <Input type="datetime-local" />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label>Kết thúc</Label>
+                            <Input type="datetime-local" />
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" className="bg-zinc-900 hover:bg-zinc-800 text-white">Lưu thiết lập</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-zinc-500 italic">Chưa có khuyến mãi nào được thiết lập. Nhấn vào nút tạo nhanh để lên lịch khuyến mãi.</p>
+                </CardContent>
+              </Card>
             </div>
 
             <div className="flex flex-col gap-6">
@@ -228,14 +405,7 @@ export default function CreateProductPage() {
                 </CardContent>
               </Card>
 
-              <div className="flex gap-4 mt-auto">
-                <Link href="/products" className={cn(buttonVariants({ variant: "outline" }), "flex-1")}>
-                  Hủy bỏ
-                </Link>
-                <Button className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white">
-                  Lưu sản phẩm
-                </Button>
-              </div>
+
             </div>
           </div>
         </TabsContent>

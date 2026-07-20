@@ -19,7 +19,13 @@ import {
   Gift,
   Star,
   Shield,
-  Megaphone
+  Megaphone,
+  BarChart3,
+  Zap,
+  Newspaper,
+  Award,
+  RefreshCcw,
+  PackageOpen
 } from "lucide-react";
 import Image from "next/image";
 
@@ -28,12 +34,20 @@ const navGroups = [
     title: "Quản lý chung",
     items: [
       { name: "Tổng quan", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Báo cáo", href: "/reports", icon: BarChart3 },
       { name: "Đơn hàng", href: "/orders", icon: ShoppingCart },
+      { name: "Đổi trả hàng", href: "/orders/returns", icon: RefreshCcw },
       { name: "Sản phẩm", href: "/products", icon: Package },
-      { name: "Mã giảm giá", href: "/vouchers", icon: Gift },
       { name: "Khách hàng", href: "/customers", icon: Users },
-      { name: "Khuyến mãi", href: "/promotions", icon: Megaphone },
       { name: "Đánh giá", href: "/reviews", icon: Star },
+    ]
+  },
+  {
+    title: "Khuyến mãi & Marketing",
+    items: [
+      { name: "Mã giảm giá", href: "/vouchers", icon: Gift },
+      { name: "Khuyến mãi", href: "/promotions", icon: Megaphone },
+      { name: "Flash Sale", href: "/flash-sales", icon: Zap },
     ]
   },
   {
@@ -47,6 +61,7 @@ const navGroups = [
   {
     title: "Nội dung",
     items: [
+      { name: "Bài viết", href: "/blogs", icon: Newspaper },
       { name: "Banner", href: "/banners", icon: ImageIcon },
       { name: "Liên hệ", href: "/contacts", icon: MessageSquare },
       { name: "FAQ", href: "/faqs", icon: HelpCircle },
@@ -56,6 +71,7 @@ const navGroups = [
   {
     title: "Hệ thống",
     items: [
+      { name: "Điểm thưởng", href: "/loyalty", icon: Award },
       { name: "Nhân viên", href: "/staffs", icon: Shield },
       { name: "Cài đặt", href: "/settings", icon: Settings },
     ]
@@ -84,7 +100,7 @@ export function Sidebar() {
               </h4>
               <div className="grid gap-1">
                 {group.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                  const isActive = pathname === item.href || (pathname.startsWith(item.href + '/') && !(item.href === '/orders' && pathname.startsWith('/orders/returns')));
                   return (
                     <Link
                       key={item.name}

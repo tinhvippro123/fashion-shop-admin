@@ -39,6 +39,7 @@ const vouchers = [
     minOrderValue: "500,000đ",
     quantity: "100 / 1000",
     status: "Hoạt động",
+    expiry: "30/08/2026",
   },
   {
     id: "VOU-002",
@@ -47,6 +48,7 @@ const vouchers = [
     minOrderValue: "1,000,000đ",
     quantity: "450 / 500",
     status: "Hoạt động",
+    expiry: "15/09/2026",
   },
   {
     id: "VOU-003",
@@ -55,6 +57,7 @@ const vouchers = [
     minOrderValue: "2,000,000đ",
     quantity: "50 / 50",
     status: "Hết lượt",
+    expiry: "31/12/2026",
   },
 ];
 
@@ -85,9 +88,11 @@ export default function VouchersPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Loại giảm giá</Label>
-                <Select value={discountType} onValueChange={setDiscountType}>
+                <Select value={discountType} onValueChange={(val) => setDiscountType(val as string)}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn loại giảm giá" />
+                    <SelectValue placeholder="Chọn loại giảm giá">
+                      {discountType === "vnd" ? "Giảm theo số tiền (VND)" : "Giảm theo phần trăm (%)"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent align="start" alignItemWithTrigger={false}>
                     <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>

@@ -11,26 +11,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, MoreHorizontal, Filter, Megaphone, Calendar } from "lucide-react";
+import { Plus, Search, MoreHorizontal, Filter, Megaphone, Calendar, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 
 const campaigns = [
   {
@@ -65,6 +58,7 @@ const campaigns = [
 export default function PromotionsPage() {
   const [discountType, setDiscountType] = useState("percent");
   const [audienceType, setAudienceType] = useState("all");
+  const [targetType, setTargetType] = useState("all");
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -73,123 +67,11 @@ export default function PromotionsPage() {
           <h2 className="text-2xl font-bold tracking-tight">Chương trình Khuyến mãi</h2>
           <p className="text-zinc-500 text-sm hidden sm:block">Quản lý các chiến dịch giảm giá hàng loạt (Promotion Campaigns).</p>
         </div>
-        <Dialog>
-          <DialogTrigger render={
-            <Button className="bg-zinc-900 hover:bg-zinc-800">
-              <Plus className="mr-2 h-4 w-4" /> Tạo chiến dịch mới
-            </Button>
-          } />
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Tạo Chương trình Khuyến mãi</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Tên chiến dịch</Label>
-                <Input id="name" placeholder="VD: Siêu Sale Hè 2026" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Loại giảm giá</Label>
-                  <Select value={discountType} onValueChange={setDiscountType}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Chọn loại">
-                        {discountType === "percent" ? "Giảm theo phần trăm (%)" : "Giảm theo số tiền (VND)"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent align="start" alignItemWithTrigger={false}>
-                      <SelectItem value="percent" label="Giảm theo phần trăm (%)">Giảm theo phần trăm (%)</SelectItem>
-                      <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="discount_val">Mức giảm</Label>
-                  <Input id="discount_val" type="number" placeholder={discountType === "percent" ? "VD: 30" : "VD: 50000"} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="start_date">Ngày bắt đầu</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                    <Input id="start_date" type="datetime-local" className="pl-9" />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="end_date">Ngày kết thúc</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                    <Input id="end_date" type="datetime-local" className="pl-9" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Sản phẩm áp dụng</Label>
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent align="start" alignItemWithTrigger={false}>
-                    <SelectItem value="all" label="Toàn bộ cửa hàng (All Items)">Toàn bộ cửa hàng (All Items)</SelectItem>
-                    <SelectItem value="category" label="Theo danh mục (Categories)">Theo danh mục (Categories)</SelectItem>
-                    <SelectItem value="specific" label="Tùy chọn sản phẩm (Specific Items)">Tùy chọn sản phẩm (Specific Items)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-2 p-4 bg-zinc-50 rounded-lg border">
-                <Label className="text-base font-semibold mb-2">Đối tượng khách hàng</Label>
-                <Select value={audienceType} onValueChange={setAudienceType}>
-                  <SelectTrigger className="bg-white w-full">
-                    <SelectValue placeholder="Chọn đối tượng">
-                      {audienceType === "all" ? "Tất cả khách hàng" : "Chỉ áp dụng theo Hạng thành viên (Membership Tier)"}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent align="start" alignItemWithTrigger={false}>
-                    <SelectItem value="all" label="Tất cả khách hàng">Tất cả khách hàng</SelectItem>
-                    <SelectItem value="tier" label="Chỉ áp dụng theo Hạng thành viên (Membership Tier)">Chỉ áp dụng theo Hạng thành viên (Membership Tier)</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                {audienceType === "tier" && (
-                  <div className="mt-4 flex flex-wrap gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tier-dong" />
-                      <Label htmlFor="tier-dong" className="cursor-pointer font-normal text-sm">Đồng (Bronze)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tier-bac" />
-                      <Label htmlFor="tier-bac" className="cursor-pointer font-normal text-sm">Bạc (Silver)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tier-vang" />
-                      <Label htmlFor="tier-vang" className="cursor-pointer font-normal text-sm text-yellow-600 font-medium">Vàng (Gold)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tier-kimcuong" />
-                      <Label htmlFor="tier-kimcuong" className="cursor-pointer font-normal text-sm text-blue-600 font-medium">Kim Cương (Diamond)</Label>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between mt-2">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="active" className="cursor-pointer text-zinc-800">Trạng thái kích hoạt</Label>
-                  <span className="text-xs text-zinc-500">Chương trình sẽ tự động chạy khi đến ngày giờ bắt đầu</span>
-                </div>
-                <Switch id="active" defaultChecked />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu chiến dịch</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Link href="/promotions/create">
+          <Button className="bg-zinc-900 hover:bg-zinc-800">
+            <Plus className="mr-2 h-4 w-4" /> Tạo chiến dịch mới
+          </Button>
+        </Link>
       </div>
 
       <div className="rounded-md border bg-white overflow-hidden">

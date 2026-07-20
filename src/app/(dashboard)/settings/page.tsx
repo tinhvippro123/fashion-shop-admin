@@ -6,17 +6,18 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Store, User } from "lucide-react";
+import { Mail, Store, User, Truck, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("store");
   const [emailTemplate, setEmailTemplate] = useState("Kính chào [CUSTOMER_NAME],<br><br>Cảm ơn bạn đã tin tưởng và đăng ký tài khoản tại LUXE Fashion. Chúng tôi rất hân hạnh được đồng hành cùng bạn trên con đường định hình phong cách cá nhân.<br><br>Dưới đây là mã giảm giá 10% cho đơn hàng đầu tiên của bạn: <strong>WELCOME10</strong><br><br>Trân trọng,<br>Đội ngũ [STORE_NAME]");
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-4xl">
+    <div className="flex flex-col gap-6 w-full pb-10">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Cài đặt</h2>
         <p className="text-zinc-500">Quản lý cấu hình cửa hàng và tài khoản quản trị.</p>
@@ -24,7 +25,7 @@ export default function SettingsPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="md:hidden mb-6">
-          <Select value={activeTab} onValueChange={setActiveTab}>
+          <Select value={activeTab} onValueChange={(val) => setActiveTab(val || "store")}>
             <SelectTrigger className="w-full bg-white h-11">
               <div className="flex items-center">
                 {activeTab === "store" && <><Store className="w-4 h-4 mr-2" /> Cửa hàng</>}
@@ -42,13 +43,21 @@ export default function SettingsPage() {
               <SelectItem value="account">
                 <div className="flex items-center"><User className="w-4 h-4 mr-2" />Tài khoản</div>
               </SelectItem>
+              <SelectItem value="shipping">
+                <div className="flex items-center"><Truck className="w-4 h-4 mr-2" />Vận chuyển</div>
+              </SelectItem>
+              <SelectItem value="payment">
+                <div className="flex items-center"><CreditCard className="w-4 h-4 mr-2" />Thanh toán</div>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <TabsList className="hidden md:grid w-full grid-cols-3 mb-6 bg-zinc-100/50 p-1">
+        <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 bg-zinc-100/50 p-1">
           <TabsTrigger value="store" className="w-full"><Store className="w-4 h-4 mr-2" />Cửa hàng</TabsTrigger>
-          <TabsTrigger value="email" className="w-full"><Mail className="w-4 h-4 mr-2" />Mẫu Email (Templates)</TabsTrigger>
+          <TabsTrigger value="email" className="w-full"><Mail className="w-4 h-4 mr-2" />Mẫu Email</TabsTrigger>
+          <TabsTrigger value="shipping" className="w-full"><Truck className="w-4 h-4 mr-2" />Vận chuyển</TabsTrigger>
+          <TabsTrigger value="payment" className="w-full"><CreditCard className="w-4 h-4 mr-2" />Thanh toán</TabsTrigger>
           <TabsTrigger value="account" className="w-full"><User className="w-4 h-4 mr-2" />Tài khoản</TabsTrigger>
         </TabsList>
 
@@ -113,6 +122,86 @@ export default function SettingsPage() {
             <CardFooter className="border-t pt-4 flex justify-between">
               <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">Gửi Email Test</Button>
               <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu Mẫu Email</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="shipping" className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cấu hình Vận chuyển</CardTitle>
+              <CardDescription>Cài đặt phí vận chuyển và tích hợp đối tác giao hàng.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <h4 className="font-medium">Phí vận chuyển mặc định</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Đơn hàng dưới 500k</Label>
+                    <Input defaultValue="30,000" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Đơn hàng trên 500k</Label>
+                    <Input defaultValue="0" />
+                  </div>
+                </div>
+              </div>
+              <Separator />
+              <div className="space-y-4">
+                <h4 className="font-medium">Đối tác giao hàng</h4>
+                <div className="flex items-center justify-between border p-4 rounded-md">
+                  <div>
+                    <p className="font-medium">Giao Hàng Tiết Kiệm (GHTK)</p>
+                    <p className="text-sm text-zinc-500">Trạng thái: Đã kết nối</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between border p-4 rounded-md">
+                  <div>
+                    <p className="font-medium">Viettel Post</p>
+                    <p className="text-sm text-zinc-500">Trạng thái: Chưa kết nối</p>
+                  </div>
+                  <Switch />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="border-t pt-4">
+              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Lưu cài đặt</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="payment" className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cấu hình Thanh toán</CardTitle>
+              <CardDescription>Quản lý các phương thức thanh toán hỗ trợ cho khách hàng.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between border p-4 rounded-md">
+                <div>
+                  <p className="font-medium">Thanh toán khi nhận hàng (COD)</p>
+                  <p className="text-sm text-zinc-500">Khách hàng trả tiền mặt khi nhận được hàng.</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <div className="flex items-center justify-between border p-4 rounded-md">
+                <div>
+                  <p className="font-medium">Chuyển khoản / VNPay</p>
+                  <p className="text-sm text-zinc-500">Thanh toán qua thẻ ATM nội địa hoặc quét mã QR.</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <div className="flex items-center justify-between border p-4 rounded-md">
+                <div>
+                  <p className="font-medium">Ví MoMo</p>
+                  <p className="text-sm text-zinc-500">Thanh toán nhanh qua ứng dụng MoMo.</p>
+                </div>
+                <Switch />
+              </div>
+            </CardContent>
+            <CardFooter className="border-t pt-4">
+              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Lưu cài đặt</Button>
             </CardFooter>
           </Card>
         </TabsContent>
