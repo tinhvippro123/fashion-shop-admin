@@ -178,7 +178,7 @@ export default function CustomersPage() {
                 </Avatar>
                 <div className="flex flex-col flex-1">
                   <span className="font-bold text-zinc-900 text-base leading-tight">{cus.name}</span>
-                  <span className="text-sm text-zinc-500 truncate max-w-[180px]">{cus.email}</span>
+                  <span className="text-sm text-zinc-500 truncate max-w-45">{cus.email}</span>
                 </div>
               </div>
               

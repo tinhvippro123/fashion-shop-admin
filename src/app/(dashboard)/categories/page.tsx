@@ -81,7 +81,7 @@ export default function CategoriesPage() {
               <Plus className="mr-2 h-4 w-4" /> Thêm danh mục
             </Button>
           } />
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-106.25">
             <DialogHeader>
               <DialogTitle>Thêm danh mục mới</DialogTitle>
             </DialogHeader>
@@ -171,7 +171,7 @@ export default function CategoriesPage() {
                       <DropdownMenuContent align="end">
                         <Dialog>
                           <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="sm:max-w-106.25">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa danh mục</DialogTitle>
                             </DialogHeader>
@@ -225,7 +225,7 @@ export default function CategoriesPage() {
                       <DropdownMenuContent align="end">
                         <Dialog>
                           <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="sm:max-w-106.25">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa danh mục</DialogTitle>
                             </DialogHeader>

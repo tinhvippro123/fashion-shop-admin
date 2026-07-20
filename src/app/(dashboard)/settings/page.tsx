@@ -185,12 +185,33 @@ export default function SettingsPage() {
                 </div>
                 <Switch defaultChecked />
               </div>
-              <div className="flex items-center justify-between border p-4 rounded-md">
-                <div>
-                  <p className="font-medium">Chuyển khoản / VNPay</p>
-                  <p className="text-sm text-zinc-500">Thanh toán qua thẻ ATM nội địa hoặc quét mã QR.</p>
+              <div className="flex flex-col border p-4 rounded-md gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Chuyển khoản / Quét mã QR</p>
+                    <p className="text-sm text-zinc-500">Thanh toán thủ công qua tài khoản ngân hàng hoặc mã QR.</p>
+                  </div>
+                  <Switch defaultChecked />
                 </div>
-                <Switch defaultChecked />
+                <Separator />
+                <div className="flex items-start gap-6">
+                  <div className="w-32 h-32 bg-zinc-100 rounded-md border-2 border-dashed border-zinc-300 flex items-center justify-center">
+                    <span className="text-xs text-zinc-500 text-center px-2">Chưa có<br/>Mã QR</span>
+                  </div>
+                  <div className="space-y-3 flex-1">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Tên chủ tài khoản</Label>
+                      <Input placeholder="VD: NGUYEN VAN A" className="h-8 text-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Số tài khoản & Ngân hàng</Label>
+                      <Input placeholder="VD: 123456789 - Vietcombank" className="h-8 text-sm" />
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full">
+                      Tải lên ảnh mã QR mới
+                    </Button>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center justify-between border p-4 rounded-md">
                 <div>

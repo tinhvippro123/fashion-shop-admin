@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       {/* Nửa bên phải: Form Đăng Nhập */}
       <div className="flex items-center justify-center py-12 bg-background">
-        <div className="mx-auto grid w-[380px] gap-8">
+        <div className="mx-auto grid w-95 gap-8">
           
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold tracking-tight">Đăng nhập</h1>
