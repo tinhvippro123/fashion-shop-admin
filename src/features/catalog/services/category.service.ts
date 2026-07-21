@@ -1,5 +1,5 @@
-import { Category } from '../types/category';
-import { initialCategories } from '../mocks/category.mock';
+import { Category } from "@/features/catalog/types/category";
+import { initialCategories } from "@/features/catalog/mocks/category.mock";
 
 // Giả lập API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

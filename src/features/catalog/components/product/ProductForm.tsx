@@ -19,7 +19,7 @@ import { BackButton } from "@/shared/ui/back-button";
 import { cn } from "@/shared/utils/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Checkbox } from "@/shared/ui/checkbox";
-import { MOCK_COLORS, MOCK_SIZES, MOCK_VARIANTS } from "../../mocks/product.mock";
+import { MOCK_COLORS, MOCK_SIZES, MOCK_VARIANTS } from "@/features/catalog/mocks/product.mock";
 import {
   Dialog,
   DialogContent,

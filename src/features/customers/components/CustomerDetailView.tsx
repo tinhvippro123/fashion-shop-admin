@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { cn } from "@/shared/utils/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 
-import { useCustomerDetail } from "../hooks/useCustomerDetail";
+import { useCustomerDetail } from "@/features/customers/hooks/useCustomerDetail";
 
 export function CustomerDetailView({ customerId }: { customerId: string }) {
   const { customer, isLoading } = useCustomerDetail(customerId);

@@ -1,4 +1,4 @@
-import { Product } from '../types/product.admin';
+import { Product } from "@/features/catalog/types/product.admin";
 
 export const initialProducts: Product[] = [
   {

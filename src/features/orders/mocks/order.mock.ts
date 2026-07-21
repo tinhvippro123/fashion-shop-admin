@@ -1,4 +1,4 @@
-import { Order } from '../types/order.admin';
+import { Order } from "@/features/orders/types/order.admin";
 
 export const initialOrders: Order[] = [
   {

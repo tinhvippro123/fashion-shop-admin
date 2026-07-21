@@ -9,7 +9,7 @@ import { cn } from "@/shared/utils/utils";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 
-import { useOrderDetail } from "../hooks/useOrderDetail";
+import { useOrderDetail } from "@/features/orders/hooks/useOrderDetail";
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
   const { order, isLoading } = useOrderDetail(orderId);

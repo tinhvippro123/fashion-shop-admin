@@ -1,5 +1,5 @@
-import { Product } from '../types/product.admin';
-import { initialProducts } from '../mocks/product.mock';
+import { Product } from "@/features/catalog/types/product.admin";
+import { initialProducts } from "@/features/catalog/mocks/product.mock";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

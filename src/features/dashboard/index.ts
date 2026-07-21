@@ -1,1 +1,1 @@
-export * from './components/OverviewChart';
+export * from "@/features/dashboard/components/OverviewChart";

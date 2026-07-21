@@ -1,4 +1,4 @@
-import { Category } from '../types/category';
+import { Category } from "@/features/catalog/types/category";
 
 export const initialCategories: Category[] = [
   { id: 'CAT-001', name: 'Váy đầm', slug: 'vay-dam', productCount: 145, status: 'Hoạt động' },

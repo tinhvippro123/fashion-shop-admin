@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import { cn } from "@/shared/utils/utils";
-import { Product } from "../../types/product.admin";
+import { Product } from "@/features/catalog/types/product.admin";
 
 interface ProductTableProps {
   products: Product[];

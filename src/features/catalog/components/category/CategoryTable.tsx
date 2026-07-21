@@ -27,7 +27,7 @@ import {
   DialogFooter,
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
-import { Category } from "../../types/category";
+import { Category } from "@/features/catalog/types/category";
 
 interface CategoryTableProps {
   categories: Category[];

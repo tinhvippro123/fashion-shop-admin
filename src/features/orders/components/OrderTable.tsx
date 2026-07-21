@@ -21,7 +21,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Search, MoreHorizontal, Filter, Download } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 
-import { useOrders } from "../hooks/useOrders";
+import { useOrders } from "@/features/orders/hooks/useOrders";
 
 export function OrderTable() {
   const { orders, isLoading } = useOrders();

@@ -1,5 +1,5 @@
-import { Order } from '../types/order.admin';
-import { initialOrders, mockOrderDetails } from '../mocks/order.mock';
+import { Order } from "@/features/orders/types/order.admin";
+import { initialOrders, mockOrderDetails } from "@/features/orders/mocks/order.mock";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

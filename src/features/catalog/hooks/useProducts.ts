@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Product } from '../types/product.admin';
-import { productService } from '../services/product.service';
+import { Product } from "@/features/catalog/types/product.admin";
+import { productService } from "@/features/catalog/services/product.service";
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);

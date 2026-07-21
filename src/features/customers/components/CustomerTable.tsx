@@ -32,7 +32,7 @@ import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
-import { useCustomers } from "../hooks/useCustomers";
+import { useCustomers } from "@/features/customers/hooks/useCustomers";
 
 export function CustomerTable() {
   const { customers, isLoading } = useCustomers();
