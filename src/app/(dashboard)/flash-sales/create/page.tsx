@@ -1,17 +1,17 @@
 "use client";
 
-import { BackButton } from "@/components/ui/back-button";
-import { Button } from "@/components/ui/button";
+import { BackButton } from "@/shared/ui/back-button";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Switch } from "@/shared/ui/switch";
 import { Zap, Clock, Plus, Search, Trash2 } from "lucide-react";
 import {
   Table,
@@ -20,8 +20,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
 
 export default function CreateFlashSalePage() {
   return (

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { cn } from "@/shared/utils/utils";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 
 export default function LoginPage() {
   return (

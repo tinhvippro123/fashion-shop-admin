@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { ArrowLeft, ChevronRight, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
+import { cn } from "@/shared/utils/utils";
+import { Switch } from "@/shared/ui/switch";
 import { useState } from "react";
-import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { RichTextEditor } from "@/shared/ui/rich-text-editor";
 
 export default function CreateStaticPage() {
   const [content, setContent] = useState("");

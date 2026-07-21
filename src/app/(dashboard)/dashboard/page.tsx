@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/shared/ui/card";
 import {
   Table,
   TableBody,
@@ -12,10 +12,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
 import { DollarSign, ShoppingBag, Users, CreditCard } from "lucide-react";
-import { OverviewChart } from "@/components/dashboard/OverviewChart";
+import { OverviewChart } from "@/features/dashboard";
 
 export default function DashboardPage() {
   return (

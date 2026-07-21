@@ -1,8 +1,8 @@
 "use client";
 
 import { Bell, Search, Menu } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Sidebar } from "@/components/layout/Sidebar";
+} from "@/shared/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/shared/ui/sheet";
+import { Sidebar } from "@/shared/layouts/Sidebar";
 import Link from "next/link";
 import { useState } from "react";
 import { ShoppingBag, UserPlus, Info } from "lucide-react";

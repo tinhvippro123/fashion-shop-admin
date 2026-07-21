@@ -26,5 +26,7 @@ npm run dev
 ## 🛡️ Kiến trúc
 Hệ thống Admin sử dụng chung Database và Backend API (Spring Boot) với trang Client. Chỉ những tài khoản có phân quyền (Role) là `ADMIN` hoặc `MANAGER` mới được phép đăng nhập vào hệ thống này.
 
+👉 **Vui lòng xem chi tiết cấu trúc thư mục và quy ước code tại [ARCHITECTURE.md](./ARCHITECTURE.md)**.
+
 ## 📝 Tác giả
 - [tinhvippro123](https://github.com/tinhvippro123)

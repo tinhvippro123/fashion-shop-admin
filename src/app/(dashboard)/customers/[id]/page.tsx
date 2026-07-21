@@ -2,14 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "@/shared/ui/back-button";
 import { ArrowLeft, MapPin, Mail, Phone, Calendar, ShoppingBag, CreditCard } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { cn } from "@/shared/utils/utils";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 
 // Mock data
 const customer = {
