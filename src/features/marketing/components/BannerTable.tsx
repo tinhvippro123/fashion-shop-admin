@@ -70,7 +70,11 @@ export function BannerTable() {
                 <TableRow key={banner.id}>
                   <TableCell>
                     <div className="relative h-12 w-24 rounded-md bg-zinc-100 flex items-center justify-center overflow-hidden">
-                      <ImageIcon className="h-4 w-4 text-zinc-400" />
+                      {banner.imageUrl ? (
+                        <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="h-4 w-4 text-zinc-400" />
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{banner.title}</TableCell>
