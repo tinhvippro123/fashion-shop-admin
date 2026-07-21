@@ -87,7 +87,7 @@ export default function CreateStaticPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="seo-desc">Mô tả (Meta Description)</Label>
-                <Textarea id="seo-desc" placeholder="Đoạn mô tả ngắn hiển thị trên Google..." className="min-h-[100px]" />
+                <Textarea id="seo-desc" placeholder="Đoạn mô tả ngắn hiển thị trên Google..." className="min-h-25" />
               </div>
             </CardContent>
           </Card>
