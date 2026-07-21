@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Star, MessageSquare } from "lucide-react";
+import { Search, MoreHorizontal, Star, MessageSquare, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +37,12 @@ export function ReviewTable() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
             <Input type="search" placeholder="Tìm kiếm đánh giá..." className="pl-8" />
           </div>
+          <Button variant="outline" className="hidden sm:flex ml-auto">
+            <Filter className="mr-2 h-4 w-4" /> Lọc đánh giá
+          </Button>
+          <Button variant="outline" size="icon" className="sm:hidden ml-auto">
+            <Filter className="h-4 w-4" />
+          </Button>
         </div>
         
         {/* Desktop Table View */}
