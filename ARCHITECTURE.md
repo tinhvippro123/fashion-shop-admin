@@ -131,3 +131,32 @@ Thư mục `shared/` chứa những tài nguyên dùng chung cho **TOÀN BỘ �
 
 > [!TIP]
 > Việc đặt file test ngay cạnh source code giúp Developer dễ dàng nhận biết module nào đã được cover test và giúp việc refactor an toàn hơn rất nhiều.
+
+---
+
+## Quy tắc 8: Phân Lớp Kiến Trúc Dữ Liệu (Data Architecture Layers)
+
+Để code dễ bảo trì, dễ mở rộng và tuân thủ chặt chẽ Clean Architecture & Single Responsibility Principle (SRP), mỗi Feature (ví dụ: `features/catalog`) phải được chia thành 5 lớp rạch ròi. Lớp này không được làm nhiệm vụ của lớp khác:
+
+1. **`types/` (Tầng Domain - Lõi)**
+   - Định nghĩa hình hài của dữ liệu (ví dụ: `interface Product`).
+   - Mọi thành phần khác trong Feature đều phải tuân theo "bản hợp đồng" này.
+
+2. **`mocks/` (Tầng Dữ Liệu Tĩnh - Data)**
+   - Nơi chứa toàn bộ dữ liệu giả (`initialData`, `MOCK_OPTIONS`).
+   - Giúp tách biệt dữ liệu cứng ra khỏi UI và Logic. 
+
+3. **`services/` (Tầng Gọi API - Use Case / Data Access)**
+   - Nơi chuyên đảm nhận việc giao tiếp với Database hoặc External API (Backend).
+   - Chỉ trả về dữ liệu (Promise), không liên quan đến React hay State. 
+   - *Lợi ích:* Khi API thật (Backend) hoàn thiện, bạn **chỉ cần sửa mã trong file Service** bằng Axios/Fetch. Toàn bộ Hook và UI bên ngoài không cần sửa 1 dòng nào!
+
+4. **`hooks/` (Tầng Logic - Application)**
+   - Nơi chứa não bộ của Frontend (React State, `useEffect`, React Query).
+   - Hook sẽ gọi `services/` để lấy dữ liệu, sau đó lưu vào State và trả về cho Component.
+   - Không chứa giao diện HTML/JSX, không chứa mảng dữ liệu tĩnh (Mock).
+
+5. **`components/` (Tầng Giao Diện - Presentation)**
+   - Đóng vai trò là "Dumb Components" (Component ngốc nghếch).
+   - Nhiệm vụ duy nhất: Nhận dữ liệu (từ Hook truyền xuống) và vẽ ra UI (HTML/Tailwind).
+   - Không tự gọi API, không tự định nghĩa dữ liệu giả bên trong.
