@@ -23,11 +23,11 @@ export default function SizesPage() {
           <p className="text-zinc-500 hidden sm:block">Quản lý danh sách kích thước (Size) của sản phẩm.</p>
         </div>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <Button className="bg-zinc-900 hover:bg-zinc-800">
               <Plus className="mr-2 h-4 w-4" /> Thêm size
             </Button>
-          </DialogTrigger>
+          } />
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Thêm kích thước mới</DialogTitle>

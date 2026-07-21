@@ -23,11 +23,11 @@ export default function ColorsPage() {
           <p className="text-zinc-500 hidden sm:block">Quản lý danh sách màu sắc của sản phẩm.</p>
         </div>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <Button className="bg-zinc-900 hover:bg-zinc-800">
               <Plus className="mr-2 h-4 w-4" /> Thêm màu
             </Button>
-          </DialogTrigger>
+          } />
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Thêm màu sắc mới</DialogTitle>

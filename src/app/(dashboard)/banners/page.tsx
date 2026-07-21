@@ -25,11 +25,11 @@ export default function BannersPage() {
           <p className="text-zinc-500 hidden sm:block">Quản lý banner quảng cáo trên trang chủ.</p>
         </div>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <Button className="bg-zinc-900 hover:bg-zinc-800">
               <Plus className="mr-2 h-4 w-4" /> Thêm banner
             </Button>
-          </DialogTrigger>
+          } />
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Thêm banner mới</DialogTitle>
