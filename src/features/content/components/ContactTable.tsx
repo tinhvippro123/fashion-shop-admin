@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 
-import { useContacts } from "../hooks/useContacts";
+import { useContacts } from "@/features/content/hooks/useContacts";
 
 export function ContactTable() {
   const { contacts, isLoading } = useContacts();

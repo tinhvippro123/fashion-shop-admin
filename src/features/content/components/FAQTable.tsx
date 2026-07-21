@@ -30,7 +30,7 @@ import {
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
 
-import { useFaqs } from "../hooks/useFaqs";
+import { useFaqs } from "@/features/content/hooks/useFaqs";
 
 export function FAQTable() {
   const { faqs, isLoading } = useFaqs();

@@ -25,7 +25,7 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { Search, PlusCircle, Filter, MoreHorizontal, Clock } from "lucide-react";
 
-import { useFlashSales } from "../hooks/useFlashSales";
+import { useFlashSales } from "@/features/marketing/hooks/useFlashSales";
 
 export function FlashSaleTable() {
   const { flashSales, isLoading } = useFlashSales();
@@ -158,7 +158,7 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { Search, PlusCircle, Filter, MoreHorizontal, Clock } from "lucide-react";
 
-import { useFlashSales } from "../hooks/useFlashSales";
+import { useFlashSales } from "@/features/marketing/hooks/useFlashSales";
 
 export function FlashSaleTable() {
   const { flashSales, isLoading } = useFlashSales();

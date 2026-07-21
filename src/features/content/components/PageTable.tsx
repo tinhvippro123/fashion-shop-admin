@@ -19,7 +19,7 @@ import { Badge } from "@/shared/ui/badge";
 
 import Link from "next/link";
 
-import { usePages } from "../hooks/usePages";
+import { usePages } from "@/features/content/hooks/usePages";
 
 export function PageTable() {
   const { pages, isLoading } = usePages();

@@ -25,7 +25,7 @@ import { useState } from "react";
 import { Checkbox } from "@/shared/ui/checkbox";
 import Link from "next/link";
 
-import { useCampaigns } from "../hooks/useCampaigns";
+import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
 
 export function CampaignTable() {
   const { campaigns, isLoading } = useCampaigns();

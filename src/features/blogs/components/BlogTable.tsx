@@ -26,7 +26,7 @@ import {
 import { PlusCircle, Search, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 
-import { useBlogs } from "../hooks/useBlogs";
+import { useBlogs } from "@/features/blogs/hooks/useBlogs";
 
 export function BlogTable() {
   const { blogs, isLoading } = useBlogs();

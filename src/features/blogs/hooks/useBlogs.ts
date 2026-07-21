@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Blog } from '../types/blog.admin';
-import { blogService } from '../services/blog.service';
+import { Blog } from "@/features/blogs/types/blog.admin";
+import { blogService } from "@/features/blogs/services/blog.service";
 
 export function useBlogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);

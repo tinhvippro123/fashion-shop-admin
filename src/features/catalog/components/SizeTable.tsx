@@ -27,7 +27,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 
-import { useSizes } from "../hooks/useSizes";
+import { useSizes } from "@/features/catalog/hooks/useSizes";
 
 export function SizeTable() {
   const { sizes, isLoading } = useSizes();

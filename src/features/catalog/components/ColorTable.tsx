@@ -27,7 +27,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 
-import { useColors } from "../hooks/useColors";
+import { useColors } from "@/features/catalog/hooks/useColors";
 
 export function ColorTable() {
   const { colors, isLoading } = useColors();

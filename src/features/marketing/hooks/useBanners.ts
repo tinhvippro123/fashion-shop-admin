@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Banner } from '../types/banner.admin';
-import { bannerService } from '../services/banner.service';
+import { Banner } from "@/features/marketing/types/banner.admin";
+import { bannerService } from "@/features/marketing/services/banner.service";
 export function useBanners() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);

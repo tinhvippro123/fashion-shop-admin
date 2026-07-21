@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Review } from '../types/review.admin';
-import { reviewService } from '../services/review.service';
+import { Review } from "@/features/reviews/types/review.admin";
+import { reviewService } from "@/features/reviews/services/review.service";
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);

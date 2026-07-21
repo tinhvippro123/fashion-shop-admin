@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Size } from '../types/size.admin';
-import { sizeService } from '../services/size.service';
+import { Size } from "@/features/catalog/types/size.admin";
+import { sizeService } from "@/features/catalog/services/size.service";
 export function useSizes() {
   const [sizes, setSizes] = useState<Size[]>([]);
   const [isLoading, setIsLoading] = useState(true);

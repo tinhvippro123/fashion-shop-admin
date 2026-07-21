@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Notification } from '../types/notification.admin';
-import { notificationService } from '../services/notification.service';
+import { Notification } from "@/features/marketing/types/notification.admin";
+import { notificationService } from "@/features/marketing/services/notification.service";
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);

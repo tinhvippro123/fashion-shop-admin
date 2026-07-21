@@ -1,4 +1,4 @@
-import { Campaign, Voucher } from '../types/promotion.admin';
+import { Campaign, Voucher } from "@/features/promotions/types/promotion.admin";
 
 export const mockCampaigns: Campaign[] = [
   {

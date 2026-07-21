@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Contact } from '../types/contact.admin';
-import { contactService } from '../services/contact.service';
+import { Contact } from "@/features/content/types/contact.admin";
+import { contactService } from "@/features/content/services/contact.service";
 export function useContacts() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);

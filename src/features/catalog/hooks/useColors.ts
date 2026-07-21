@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Color } from '../types/color.admin';
-import { colorService } from '../services/color.service';
+import { Color } from "@/features/catalog/types/color.admin";
+import { colorService } from "@/features/catalog/services/color.service";
 export function useColors() {
   const [colors, setColors] = useState<Color[]>([]);
   const [isLoading, setIsLoading] = useState(true);

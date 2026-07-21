@@ -30,7 +30,7 @@ import {
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
-import { useStaffs } from "../hooks/useStaffs";
+import { useStaffs } from "@/features/staffs/hooks/useStaffs";
 
 export function StaffTable() {
   const { staffs, isLoading } = useStaffs();

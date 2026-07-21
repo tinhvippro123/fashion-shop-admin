@@ -31,7 +31,7 @@ import { Switch } from "@/shared/ui/switch";
 import { UploadCloud } from "lucide-react";
 import Image from "next/image";
 
-import { useBanners } from "../hooks/useBanners";
+import { useBanners } from "@/features/marketing/hooks/useBanners";
 
 export function BannerTable() {
   const { banners, isLoading } = useBanners();

@@ -31,7 +31,7 @@ import { Switch } from "@/shared/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { useState } from "react";
 
-import { useVouchers } from "../hooks/useVouchers";
+import { useVouchers } from "@/features/promotions/hooks/useVouchers";
 
 export function VoucherTable() {
   const { vouchers, isLoading } = useVouchers();

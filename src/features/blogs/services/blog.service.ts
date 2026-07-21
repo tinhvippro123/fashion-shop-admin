@@ -1,5 +1,5 @@
-import { Blog } from '../types/blog.admin';
-import { mockBlogs } from '../mocks/blog.mock';
+import { Blog } from "@/features/blogs/types/blog.admin";
+import { mockBlogs } from "@/features/blogs/mocks/blog.mock";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

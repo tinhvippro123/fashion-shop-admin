@@ -1,4 +1,4 @@
-import { Staff } from '../types/staff.admin';
+import { Staff } from "@/features/staffs/types/staff.admin";
 
 export const mockStaffs: Staff[] = [
   {

@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { FlashSale } from '../types/flash-sale.admin';
-import { flashSaleService } from '../services/flash-sale.service';
+import { FlashSale } from "@/features/marketing/types/flash-sale.admin";
+import { flashSaleService } from "@/features/marketing/services/flash-sale.service";
 export function useFlashSales() {
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [isLoading, setIsLoading] = useState(true);

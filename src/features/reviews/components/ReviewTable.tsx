@@ -21,7 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 
-import { useReviews } from "../hooks/useReviews";
+import { useReviews } from "@/features/reviews/hooks/useReviews";
 
 export function ReviewTable() {
   const { reviews, isLoading } = useReviews();

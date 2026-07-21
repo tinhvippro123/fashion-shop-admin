@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 
-import { useNotifications } from "../hooks/useNotifications";
+import { useNotifications } from "@/features/marketing/hooks/useNotifications";
 
 export function NotificationList() {
   const { notifications, isLoading } = useNotifications();

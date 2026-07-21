@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import { Page } from '../types/page.admin';
-import { pageService } from '../services/page.service';
+import { Page } from "@/features/content/types/page.admin";
+import { pageService } from "@/features/content/services/page.service";
 export function usePages() {
   const [pages, setPages] = useState<Page[]>([]);
   const [isLoading, setIsLoading] = useState(true);

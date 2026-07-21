@@ -1,5 +1,5 @@
-import { Campaign, Voucher } from '../types/promotion.admin';
-import { mockCampaigns, mockVouchers } from '../mocks/promotion.mock';
+import { Campaign, Voucher } from "@/features/promotions/types/promotion.admin";
+import { mockCampaigns, mockVouchers } from "@/features/promotions/mocks/promotion.mock";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

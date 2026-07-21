@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Campaign } from '../types/promotion.admin';
-import { promotionService } from '../services/promotion.service';
+import { Campaign } from "@/features/promotions/types/promotion.admin";
+import { promotionService } from "@/features/promotions/services/promotion.service";
 
 export function useCampaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);

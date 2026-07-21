@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Voucher } from '../types/promotion.admin';
-import { promotionService } from '../services/promotion.service';
+import { Voucher } from "@/features/promotions/types/promotion.admin";
+import { promotionService } from "@/features/promotions/services/promotion.service";
 
 export function useVouchers() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);

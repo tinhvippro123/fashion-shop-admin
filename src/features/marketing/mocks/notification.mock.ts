@@ -1,4 +1,4 @@
-﻿import { Notification } from '../types/notification.admin';
+﻿import { Notification } from "@/features/marketing/types/notification.admin";
 export const mockNotifications: Notification[] = [
   { id: 1, title: "Đơn hàng mới", message: "Khách hàng Nguyễn Văn A vừa đặt đơn #ORD-123 trị giá 500,000đ", type: "ORDER", isRead: false, time: "5 phút trước" },
   { id: 2, title: "Khách hàng mới", message: "Trần Thị B vừa đăng ký tài khoản", type: "USER", isRead: false, time: "1 giờ trước" },

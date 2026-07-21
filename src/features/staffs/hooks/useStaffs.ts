@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Staff } from '../types/staff.admin';
-import { staffService } from '../services/staff.service';
+import { Staff } from "@/features/staffs/types/staff.admin";
+import { staffService } from "@/features/staffs/services/staff.service";
 
 export function useStaffs() {
   const [staffs, setStaffs] = useState<Staff[]>([]);
