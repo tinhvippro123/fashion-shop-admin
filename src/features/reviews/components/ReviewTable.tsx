@@ -38,7 +38,7 @@ export function ReviewTable() {
             <Input type="search" placeholder="Tìm kiếm đánh giá..." className="pl-8" />
           </div>
           <Button variant="outline" className="hidden sm:flex ml-auto">
-            <Filter className="mr-2 h-4 w-4" /> Lọc đánh giá
+            <Filter className="mr-2 h-4 w-4" /> Lọc
           </Button>
           <Button variant="outline" size="icon" className="sm:hidden ml-auto">
             <Filter className="h-4 w-4" />

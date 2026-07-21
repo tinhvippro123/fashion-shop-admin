@@ -43,7 +43,7 @@ export function OrderTable() {
             />
           </div>
           <Button variant="outline" className="ml-auto hidden sm:flex">
-            <Filter className="mr-2 h-4 w-4" /> Lọc đơn hàng
+            <Filter className="mr-2 h-4 w-4" /> Lọc
           </Button>
           <Button variant="outline" size="icon" className="sm:hidden">
             <Filter className="h-4 w-4" />
