@@ -1,3 +1,5 @@
+"use client";
+
 import { BackButton } from "@/shared/ui/back-button";
 import { Button } from "@/shared/ui/button";
 import { Zap } from "lucide-react";

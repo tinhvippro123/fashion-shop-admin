@@ -1,3 +1,5 @@
+"use client";
+
 import { ReportCharts } from "@/features/analytics";
 
 export default function ReportsPage() {

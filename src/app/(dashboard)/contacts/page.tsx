@@ -1,3 +1,5 @@
+"use client";
+
 import { ContactTable } from "@/features/content";
 
 export default function ContactsPage() {

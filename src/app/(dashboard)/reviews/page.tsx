@@ -1,3 +1,5 @@
+"use client";
+
 import { ReviewTable } from "@/features/reviews";
 
 export default function ReviewsPage() {

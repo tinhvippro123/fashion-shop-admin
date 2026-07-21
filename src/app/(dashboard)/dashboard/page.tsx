@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardOverview } from "@/features/analytics";
 
 export default function DashboardPage() {

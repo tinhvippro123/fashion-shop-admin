@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";

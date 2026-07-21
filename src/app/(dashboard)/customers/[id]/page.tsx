@@ -1,3 +1,5 @@
+"use client";
+
 import { CustomerDetailView } from "@/features/customers";
 
 export default function CustomerDetailsPage({ params }: { params: { id: string } }) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { LoyaltySettings } from "@/features/marketing";
 import { Button } from "@/shared/ui/button";
 import { Save } from "lucide-react";

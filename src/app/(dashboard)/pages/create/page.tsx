@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { buttonVariants } from "@/shared/ui/button";
 import { ArrowLeft } from "lucide-react";

@@ -1,3 +1,5 @@
+"use client";
+
 ﻿import { Button } from "@/shared/ui/button";
 import { Download } from "lucide-react";
 import { CustomerTable } from "@/features/customers";
