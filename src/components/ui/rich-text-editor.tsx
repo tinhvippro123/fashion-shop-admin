@@ -7,7 +7,7 @@ import 'react-quill-new/dist/quill.snow.css';
 // Import react-quill-new dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
   ssr: false,
-  loading: () => <div className="h-[250px] w-full border rounded-md flex items-center justify-center bg-zinc-50 text-zinc-400">Đang tải công cụ soạn thảo...</div>
+  loading: () => <div className="h-62.5 w-full border rounded-md flex items-center justify-center bg-zinc-50 text-zinc-400">Đang tải công cụ soạn thảo...</div>
 });
 
 interface RichTextEditorProps {
@@ -42,7 +42,7 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
         onChange={onChange} 
         modules={modules}
         placeholder={placeholder || 'Nhập nội dung...'}
-        className="h-[250px] mb-12" // mb-12 is needed because toolbar takes space and editor height needs padding
+        className="h-62.5 mb-12" // mb-12 is needed because toolbar takes space and editor height needs padding
       />
       <style jsx global>{`
         .rich-text-container .ql-container {
