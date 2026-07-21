@@ -17,9 +17,10 @@ export default function CreateFlashSalePage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline">Hủy</Button>
+          <Button variant="ghost">Hủy</Button>
+          <Button variant="outline">Lưu nháp</Button>
           <Button className="gap-2 bg-zinc-900 hover:bg-zinc-800">
-            <Zap className="h-4 w-4" /> Kích hoạt chiến dịch
+            <Zap className="h-4 w-4" /> Lên lịch chiến dịch
           </Button>
         </div>
       </div>
