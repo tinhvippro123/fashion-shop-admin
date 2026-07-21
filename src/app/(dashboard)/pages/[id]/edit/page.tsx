@@ -1,106 +1,26 @@
-"use client";
-
 import Link from "next/link";
-import { Button, buttonVariants } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
-import { Textarea } from "@/shared/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
-import { ArrowLeft, ChevronRight, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
+import { buttonVariants } from "@/shared/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
-import { Switch } from "@/shared/ui/switch";
-import { useState } from "react";
-import { RichTextEditor } from "@/shared/ui/rich-text-editor";
+import { PageForm } from "@/features/content";
 
-export default function CreateStaticPage() {
-  const [content, setContent] = useState("");
-
+export default function EditStaticPage() {
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center gap-2 text-sm text-zinc-500">
-          <Link href="/pages" className="hover:text-zinc-900 transition-colors">Trang tĩnh</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-zinc-900 font-medium">Chỉnh sửa</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Chỉnh sửa trang</h2>
-            <p className="text-zinc-500 mt-1">Cập nhật nội dung của trang tĩnh</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Cột trái: Form thông tin & Editor */}
-        <div className="md:col-span-2 flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Nội dung trang</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="title">Tiêu đề trang</Label>
-                <Input id="title" placeholder="VD: Về chúng tôi..." />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label>Nội dung (Rich Text)</Label>
-                <RichTextEditor 
-                  value={content}
-                  onChange={setContent}
-                  placeholder="Bắt đầu soạn thảo nội dung trang..."
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Cột phải: Cài đặt SEO & Trạng thái */}
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cài đặt hiển thị</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="slug">Đường dẫn (Slug)</Label>
-                <Input id="slug" placeholder="ve-chung-toi" />
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <div>
-                  <Label htmlFor="active" className="cursor-pointer">Xuất bản trang</Label>
-                  <p className="text-xs text-zinc-500 mt-1">Trang sẽ hiển thị công khai ngay lập tức.</p>
-                </div>
-                <Switch id="active" defaultChecked />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>SEO (Tìm kiếm)</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="seo-title">Thẻ tiêu đề (Meta Title)</Label>
-                <Input id="seo-title" placeholder="Tiêu đề hiển thị trên Google..." />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="seo-desc">Mô tả (Meta Description)</Label>
-                <Textarea id="seo-desc" placeholder="Đoạn mô tả ngắn hiển thị trên Google..." className="min-h-[100px]" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-4 mt-auto">
-            <Button variant="outline">Hủy bỏ</Button>
-            <Button className="bg-zinc-900 hover:bg-zinc-800 text-white min-w-[120px]">
-              Lưu thay đổi
-            </Button>
-          </div>
+    <div className="flex flex-col gap-6 w-full pb-10">
+      <div className="flex items-center gap-4">
+        <Link 
+          href="/pages" 
+          className={cn(buttonVariants({ variant: "outline", size: "icon" }), "rounded-full")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Link>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Chỉnh sửa trang tĩnh</h2>
+          <p className="text-zinc-500">Cập nhật nội dung trang tĩnh.</p>
         </div>
       </div>
+
+      <PageForm isEdit={true} />
     </div>
   );
 }
