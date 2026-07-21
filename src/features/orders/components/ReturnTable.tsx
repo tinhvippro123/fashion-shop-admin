@@ -54,25 +54,34 @@ const returnRequests = [
 export function ReturnTable() {
   return (
     <div className="flex flex-col gap-6 w-full pb-20">
-      <div className="bg-white border rounded-md overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border-b">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
-              <Input placeholder="Tìm kiếm mã yêu cầu, mã đơn..." className="pl-9" />
-            </div>
-            <Button variant="outline" className="gap-2 hidden sm:flex shrink-0">
-              <Filter className="h-4 w-4" /> Lọc
-            </Button>
-            <Button variant="outline" size="icon" className="sm:hidden shrink-0">
-              <Filter className="h-4 w-4" />
-            </Button>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Yêu cầu đổi/trả</h2>
+          <p className="text-zinc-500 hidden sm:block">Quản lý các yêu cầu đổi trả và hoàn tiền của khách hàng.</p>
+        </div>
+      </div>
+      
+      <div className="rounded-md border bg-white overflow-hidden">
+        <div className="flex flex-col sm:flex-row gap-4 p-4 border-b sm:items-center">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Input
+              type="search"
+              placeholder="Tìm kiếm mã yêu cầu, mã đơn..."
+              className="pl-8"
+            />
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-            <Button variant="secondary" className="whitespace-nowrap">Tất cả</Button>
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 whitespace-nowrap">Chờ xử lý</Button>
-            <Button variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 whitespace-nowrap">Đã hoàn tiền</Button>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="font-medium text-zinc-900 cursor-pointer">Tất cả</span>
+            <span className="text-amber-600 font-medium cursor-pointer">Chờ xử lý</span>
+            <span className="text-emerald-600 font-medium cursor-pointer">Đã hoàn tiền</span>
           </div>
+          <Button variant="outline" className="hidden sm:flex ml-auto">
+            <Filter className="mr-2 h-4 w-4" /> Lọc
+          </Button>
+          <Button variant="outline" size="icon" className="sm:hidden ml-auto">
+            <Filter className="h-4 w-4" />
+          </Button>
         </div>
 
         <Table>
