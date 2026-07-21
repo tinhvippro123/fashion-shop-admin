@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Button } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
@@ -28,11 +28,11 @@ export default function VouchersPage() {
           <p className="text-zinc-500 hidden sm:block">Quản lý các chương trình khuyến mãi bằng mã code.</p>
         </div>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <Button className="bg-zinc-900 hover:bg-zinc-800">
               <Plus className="mr-2 h-4 w-4" /> Tạo mã giảm giá
             </Button>
-          </DialogTrigger>
+          } />
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Tạo Mã giảm giá</DialogTitle>
@@ -44,7 +44,7 @@ export default function VouchersPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Loại giảm giá</Label>
-                <Select value={discountType} onValueChange={(val) => setDiscountType(val)}>
+                <Select value={discountType} onValueChange={(val) => setDiscountType(val as string)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Chọn loại giảm giá">
                       {discountType === "vnd" ? "Giảm theo số tiền (VND)" : "Giảm theo phần trăm (%)"}
