@@ -1,7 +1,8 @@
 "use client";
 
 import { BackButton } from "@/shared/ui/back-button";
-import { Button } from "@/shared/ui/button";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { cn } from "@/shared/utils/utils";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ import {
 import { Switch } from "@/shared/ui/switch";
 import { Save, ImagePlus, X, Calendar as CalendarIcon, Clock, Eye, Upload } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 const categoryOptions = [
@@ -46,11 +48,13 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
             <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Soạn thảo và xuất bản bài viết lên trang Blog." : "Cập nhật nội dung bài viết."}</p>
           </div>
         </div>
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-          <Button variant="ghost" className="flex-1 sm:flex-none">Hủy</Button>
-          {mode === "create" && <Button variant="outline" className="flex-1 sm:flex-none">Lưu nháp</Button>}
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <Link href="/blogs" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
+            Hủy
+          </Link>
+          <Button variant="secondary" className="flex-1 sm:flex-none" onClick={() => toast.success("Đã lưu nháp bài viết!")}>Lưu nháp</Button>
           <Button 
-            className="gap-2 w-full sm:w-auto"
+            className="flex-1 sm:flex-none gap-2"
             onClick={() => toast.success(mode === "create" ? "Đã xuất bản bài viết thành công!" : "Đã lưu thay đổi thành công!")}
           >
             <Save className="h-4 w-4" /> {mode === "create" ? "Xuất bản" : "Lưu thay đổi"}

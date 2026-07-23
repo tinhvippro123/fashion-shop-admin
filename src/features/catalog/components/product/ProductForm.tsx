@@ -53,7 +53,10 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-          <Button variant="outline" className="flex-1 sm:flex-none">Hủy bỏ</Button>
+          <Link href="/products" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:inline-flex")}>
+            Hủy bỏ
+          </Link>
+          <Button variant="secondary" className="flex-1 sm:flex-none" onClick={() => toast.success("Đã lưu nháp sản phẩm!")}>Lưu nháp</Button>
           <Button 
             className="gap-2 flex-1 sm:flex-none"
             onClick={() => toast.success(isEdit ? "Đã cập nhật sản phẩm thành công!" : "Đã tạo sản phẩm mới thành công!")}

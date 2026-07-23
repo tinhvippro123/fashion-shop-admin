@@ -35,23 +35,15 @@ export function BlogTable() {
   return (
     <>
       <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <CardTitle>Danh sách Bài viết</CardTitle>
-              <CardDescription>
-                Hiển thị tất cả bài viết hiện có trên hệ thống.
-              </CardDescription>
-            </div>
-            <div className="relative w-full sm:w-[300px]">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Tìm tiêu đề bài viết..."
-                className="pl-9 bg-muted/50"
-              />
-            </div>
+        <div className="flex items-center gap-4 p-4 border-b">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Tìm tiêu đề bài viết..."
+              className="pl-8 bg-muted/50"
+            />
           </div>
-        </CardHeader>
+        </div>
         <CardContent>
               {/* Desktop View: Table */}
               <div className="hidden md:block border rounded-md overflow-hidden">
@@ -127,7 +119,7 @@ export function BlogTable() {
               <div className="md:hidden flex flex-col gap-3 mt-4">
                 {isLoading ? (
                   Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm h-[180px] animate-pulse">
+                    <div key={i} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm h-45 animate-pulse">
                       <div className="flex items-start gap-4 mb-4">
                         <div className="h-16 w-20 shrink-0 bg-muted rounded-md" />
                         <div className="flex flex-col flex-1 gap-2">

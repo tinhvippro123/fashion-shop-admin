@@ -1,7 +1,10 @@
 "use client";
 
 import { BackButton } from "@/shared/ui/back-button";
-import { Button } from "@/shared/ui/button";
+import { toast } from "sonner";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { cn } from "@/shared/utils/utils";
 import { Zap } from "lucide-react";
 import { FlashSaleForm } from "@/features/marketing";
 
@@ -16,10 +19,12 @@ export default function CreateFlashSalePage() {
             <p className="text-sm sm:text-base text-muted-foreground">Thiết lập khung giờ và chọn sản phẩm chạy giá sốc.</p>
           </div>
         </div>
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-          <Button variant="ghost" className="flex-1 sm:flex-none">Hủy</Button>
-          <Button variant="outline" className="flex-1 sm:flex-none">Lưu nháp</Button>
-          <Button className="gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <Link href="/flash-sales" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
+            Hủy
+          </Link>
+          <Button variant="secondary" className="flex-1 sm:flex-none" onClick={() => toast.success("Đã lưu nháp chương trình Flash Sale!")}>Lưu nháp</Button>
+          <Button className="flex-1 sm:flex-none gap-2" onClick={() => toast.success("Đã tạo chương trình Flash Sale thành công!")}>
             <Zap className="h-4 w-4" /> Lên lịch chiến dịch
           </Button>
         </div>

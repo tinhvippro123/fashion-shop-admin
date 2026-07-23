@@ -33,20 +33,22 @@ export function ProductTable({ products, isLoading }: ProductTableProps) {
   return (
     <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Tìm kiếm tên sản phẩm, mã SKU..."
-              className="pl-8"
-            />
+          <div className="flex items-center gap-2 flex-1 max-w-sm">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Tìm kiếm tên sản phẩm, mã SKU..."
+                className="pl-8"
+              />
+            </div>
+            <Button variant="outline" className="hidden sm:flex shrink-0">
+              <Filter className="mr-2 h-4 w-4" /> Lọc
+            </Button>
+            <Button variant="outline" size="icon" className="sm:hidden shrink-0">
+              <Filter className="h-4 w-4" />
+            </Button>
           </div>
-          <Button variant="outline" className="ml-auto hidden sm:flex">
-            <Filter className="mr-2 h-4 w-4" /> Lọc
-          </Button>
-          <Button variant="outline" size="icon" className="sm:hidden">
-            <Filter className="h-4 w-4" />
-          </Button>
         </div>
         
         {/* Desktop Table View */}

@@ -71,7 +71,7 @@ export function ReturnTable() {
               className="pl-8"
             />
           </div>
-          <div className="flex items-center justify-between w-full sm:w-auto gap-4 sm:ml-auto">
+          <div className="flex items-center justify-between w-full sm:w-auto gap-4">
             <div className="flex items-center gap-4 text-sm overflow-x-auto pb-1 sm:pb-0">
               <span className="font-medium text-foreground cursor-pointer shrink-0">Tất cả</span>
               <span className="text-amber-600 font-medium cursor-pointer shrink-0">Chờ xử lý</span>

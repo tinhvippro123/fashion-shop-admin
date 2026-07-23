@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/utils/utils";
 import { Input } from "@/shared/ui/input";
@@ -37,18 +38,17 @@ export function CampaignForm() {
     <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2 sm:mb-0">
         <div className="flex items-center gap-4">
-          <Link href="/promotions">
-            <Button variant="outline" size="icon" className="h-9 w-9">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+          <Link href="/promotions" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
+            <ArrowLeft className="h-4 w-4" />
           </Link>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chiến dịch khuyến mãi</h2>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-          <Link href="/promotions" className="flex-1 sm:flex-none">
-            <Button variant="outline" className="w-full">Hủy bỏ</Button>
+          <Link href="/promotions" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
+            Hủy bỏ
           </Link>
-          <Button className="flex-1 sm:flex-none gap-2">
+          <Button variant="secondary" className="flex-1 sm:flex-none" onClick={() => toast.success("Đã lưu nháp chiến dịch!")}>Lưu nháp</Button>
+          <Button className="flex-1 sm:flex-none gap-2" onClick={() => toast.success("Đã lưu và kích hoạt chiến dịch!")}>
             <Save className="h-4 w-4" /> Lưu & Kích hoạt
           </Button>
         </div>
@@ -100,17 +100,17 @@ export function CampaignForm() {
                 <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "w-full sm:w-auto")}>
                   <Plus className="mr-2 h-4 w-4" /> Chọn Sản Phẩm
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Thêm sản phẩm vào chiến dịch</DialogTitle>
                   </DialogHeader>
                   <div className="flex flex-col gap-4 py-4">
                     <div className="flex gap-2">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-[180px] justify-between font-normal text-muted-foreground")}>
+                        <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-44 justify-between font-normal text-muted-foreground")}>
                           Danh mục (Đã chọn 3) <span className="ml-2">▼</span>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[180px]">
+                        <DropdownMenuContent className="w-48">
                           <div className="px-2 py-1.5 text-sm font-semibold text-foreground">Lọc theo Danh mục</div>
                           <DropdownMenuSeparator />
                           <DropdownMenuCheckboxItem checked={false}>
@@ -132,11 +132,11 @@ export function CampaignForm() {
                     </div>
 
                     <div className="border rounded-md">
-                      <div className="bg-muted/50 p-2.5 flex items-center gap-3 border-b">
+                      <div className="bg-muted/50 p-2 flex items-center gap-3 border-b">
                         <Checkbox id="select-all" />
                         <Label htmlFor="select-all" className="text-sm font-semibold cursor-pointer">Chọn tất cả (50)</Label>
                       </div>
-                      <div className="max-h-[300px] overflow-y-auto p-2 space-y-2">
+                      <div className="max-h-72 overflow-y-auto p-2 space-y-2">
                         {/* Mock items */}
                         <div className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md border border-transparent hover:border-border">
                           <div className="flex items-center gap-3">
@@ -193,10 +193,10 @@ export function CampaignForm() {
               {/* Thanh công cụ bảng chính */}
               <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 w-full">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-[180px] justify-between font-normal text-muted-foreground")}>
+                  <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-45 justify-between font-normal text-muted-foreground")}>
                     Lọc Danh mục <span className="ml-2">▼</span>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-[180px]">
+                  <DropdownMenuContent className="w-45">
                     <div className="px-2 py-1.5 text-sm font-semibold text-foreground">Lọc theo Danh mục</div>
                     <DropdownMenuSeparator />
                     <DropdownMenuCheckboxItem checked={false}>Tất cả danh mục</DropdownMenuCheckboxItem>
@@ -332,7 +332,7 @@ export function CampaignForm() {
               </Select>
 
               {audienceType === "tier" && (
-                <div className="p-3 bg-muted/50 border rounded-md">
+                <div className="overflow-y-auto max-h-75 border rounded-md p-3">
                   <Label className="text-xs text-muted-foreground mb-2 block">Chọn Hạng thẻ (Tiers)</Label>
                   <div className="grid grid-cols-1 gap-3">
                     {["Thành viên Bạc", "Thành viên Vàng", "Thành viên Kim Cương"].map((tier, i) => (

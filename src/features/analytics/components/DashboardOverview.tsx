@@ -68,7 +68,7 @@ export function DashboardOverview() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Biểu đồ doanh thu */}
-        <Card className="col-span-4">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-4 min-w-0">
           <CardHeader>
             <CardTitle>Biểu đồ doanh thu</CardTitle>
             <CardDescription>
@@ -81,7 +81,7 @@ export function DashboardOverview() {
         </Card>
 
         {/* Recent Orders Table */}
-        <Card className="col-span-4 lg:col-span-3">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle>Đơn hàng gần đây</CardTitle>
             <CardDescription>

@@ -72,27 +72,29 @@ export function FlashSaleTable() {
 
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <CardTitle>Lịch sử Flash Sale</CardTitle>
               <CardDescription>
                 Danh sách tất cả các khung giờ Flash Sale.
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-              <div className="relative flex-1 sm:w-[300px]">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Tìm tên hoặc mã..."
-                  className="pl-9 bg-muted/50"
-                />
-              </div>
-              <Button variant="outline">
-                <Filter className="mr-2 h-4 w-4" /> Lọc
-              </Button>
-            </div>
           </div>
         </CardHeader>
+        <div className="flex items-center gap-4 px-6 pb-4">
+          <div className="flex items-center gap-2 flex-1 max-w-sm">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Tìm tên hoặc mã..."
+                className="pl-8 bg-muted/50"
+              />
+            </div>
+            <Button variant="outline" className="shrink-0">
+              <Filter className="mr-2 h-4 w-4" /> Lọc
+            </Button>
+          </div>
+        </div>
         <CardContent>
         {/* Desktop View: Table */}
         <div className="hidden md:block border rounded-md overflow-hidden">

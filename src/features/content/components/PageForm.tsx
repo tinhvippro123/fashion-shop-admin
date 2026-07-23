@@ -8,6 +8,8 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { ArrowLeft, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
+import { Save, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Switch } from "@/shared/ui/switch";
 import { useState } from "react";
 import { RichTextEditor } from "@/shared/ui/rich-text-editor";
@@ -79,15 +81,16 @@ export function PageForm({ isEdit = false }: { isEdit?: boolean }) {
             </CardContent>
           </Card>
 
-          <div className="flex gap-4 mt-auto">
+          <div className="flex gap-2 sm:gap-4 mt-auto">
             <Link 
               href="/pages" 
-              className={cn(buttonVariants({ variant: "outline" }), "flex-1")}
+              className={cn(buttonVariants({ variant: "outline" }), "flex-1 hidden sm:flex")}
             >
               Hủy
             </Link>
-            <Button className="flex-1 ">
-              Lưu bài viết
+            <Button variant="secondary" className="flex-1 sm:flex-none" onClick={() => toast.success("Đã lưu nháp trang!")}>Lưu nháp</Button>
+            <Button className="flex-1 sm:flex-none gap-2" onClick={() => toast.success("Đã lưu trang thành công!")}>
+              <Save className="h-4 w-4" /> Lưu trang
             </Button>
           </div>
         </div>
