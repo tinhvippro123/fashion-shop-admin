@@ -68,7 +68,7 @@ export function DashboardOverview() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Biểu đồ doanh thu */}
-        <Card className="col-span-4 hidden md:block">
+        <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Biểu đồ doanh thu</CardTitle>
             <CardDescription>
