@@ -35,20 +35,21 @@ export function CampaignForm() {
 
   return (
     <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2 sm:mb-0">
         <div className="flex items-center gap-4">
           <Link href="/promotions">
             <Button variant="outline" size="icon" className="h-9 w-9">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chiến dịch khuyến mãi</h2>
         </div>
-        <div className="flex gap-3">
-          <Link href="/promotions">
-            <Button variant="outline">Hủy bỏ</Button>
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <Link href="/promotions" className="flex-1 sm:flex-none">
+            <Button variant="outline" className="w-full">Hủy bỏ</Button>
           </Link>
-          <Button className="">
-            <Save className="mr-2 h-4 w-4" /> Lưu & Kích hoạt
+          <Button className="flex-1 sm:flex-none gap-2">
+            <Save className="h-4 w-4" /> Lưu & Kích hoạt
           </Button>
         </div>
       </div>

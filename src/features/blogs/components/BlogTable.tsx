@@ -32,10 +32,6 @@ import { TableSkeleton } from "@/shared/ui/table-skeleton";
 export function BlogTable() {
   const { blogs, isLoading } = useBlogs();
 
-  if (isLoading) {
-    // We handle skeleton inside the table
-  }
-
   return (
     <>
       <Card>
