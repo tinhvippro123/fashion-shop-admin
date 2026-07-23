@@ -20,11 +20,13 @@ export function SettingsTabs() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="md:hidden mb-6">
           <Select value={activeTab} onValueChange={(val) => setActiveTab(val || "store")}>
-            <SelectTrigger className="w-full bg-white h-11">
+            <SelectTrigger className="w-full bg-card h-11">
               <div className="flex items-center">
                 {activeTab === "store" && <><Store className="w-4 h-4 mr-2" /> Cửa hàng</>}
                 {activeTab === "email" && <><Mail className="w-4 h-4 mr-2" /> Mẫu Email (Templates)</>}
                 {activeTab === "account" && <><User className="w-4 h-4 mr-2" /> Tài khoản</>}
+                {activeTab === "shipping" && <><Truck className="w-4 h-4 mr-2" /> Vận chuyển</>}
+                {activeTab === "payment" && <><CreditCard className="w-4 h-4 mr-2" /> Thanh toán</>}
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -47,7 +49,7 @@ export function SettingsTabs() {
           </Select>
         </div>
 
-        <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 bg-zinc-100/50 p-1">
+        <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 bg-muted/50 p-1">
           <TabsTrigger value="store" className="w-full"><Store className="w-4 h-4 mr-2" />Cửa hàng</TabsTrigger>
           <TabsTrigger value="email" className="w-full"><Mail className="w-4 h-4 mr-2" />Mẫu Email</TabsTrigger>
           <TabsTrigger value="shipping" className="w-full"><Truck className="w-4 h-4 mr-2" />Vận chuyển</TabsTrigger>
@@ -78,7 +80,7 @@ export function SettingsTabs() {
               </div>
             </CardContent>
             <CardFooter className="border-t pt-4">
-              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Lưu thay đổi</Button>
+              <Button className=" ml-auto">Lưu thay đổi</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -102,7 +104,7 @@ export function SettingsTabs() {
               <div className="space-y-2">
                 <Label>Tiêu đề Email</Label>
                 <Input defaultValue="Chào mừng [CUSTOMER_NAME] đến với LUXE Fashion!" />
-                <p className="text-[11px] text-zinc-500">Biến hỗ trợ: [CUSTOMER_NAME], [STORE_NAME]</p>
+                <p className="text-[11px] text-muted-foreground">Biến hỗ trợ: [CUSTOMER_NAME], [STORE_NAME]</p>
               </div>
 
               <div className="space-y-2">
@@ -113,9 +115,9 @@ export function SettingsTabs() {
                 />
               </div>
             </CardContent>
-            <CardFooter className="border-t pt-4 flex justify-between">
-              <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">Gửi Email Test</Button>
-              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu Mẫu Email</Button>
+            <CardFooter className="border-t pt-4 flex flex-col sm:flex-row gap-3 justify-between">
+              <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50 w-full sm:w-auto">Gửi Email Test</Button>
+              <Button className="w-full sm:w-auto">Lưu Mẫu Email</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -146,21 +148,21 @@ export function SettingsTabs() {
                 <div className="flex items-center justify-between border p-4 rounded-md">
                   <div>
                     <p className="font-medium">Giao Hàng Tiết Kiệm (GHTK)</p>
-                    <p className="text-sm text-zinc-500">Trạng thái: Đã kết nối</p>
+                    <p className="text-sm text-muted-foreground">Trạng thái: Đã kết nối</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
                 <div className="flex items-center justify-between border p-4 rounded-md">
                   <div>
                     <p className="font-medium">Viettel Post</p>
-                    <p className="text-sm text-zinc-500">Trạng thái: Chưa kết nối</p>
+                    <p className="text-sm text-muted-foreground">Trạng thái: Chưa kết nối</p>
                   </div>
                   <Switch />
                 </div>
               </div>
             </CardContent>
             <CardFooter className="border-t pt-4">
-              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Lưu cài đặt</Button>
+              <Button className=" ml-auto">Lưu cài đặt</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -175,7 +177,7 @@ export function SettingsTabs() {
               <div className="flex items-center justify-between border p-4 rounded-md">
                 <div>
                   <p className="font-medium">Thanh toán khi nhận hàng (COD)</p>
-                  <p className="text-sm text-zinc-500">Khách hàng trả tiền mặt khi nhận được hàng.</p>
+                  <p className="text-sm text-muted-foreground">Khách hàng trả tiền mặt khi nhận được hàng.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
@@ -183,14 +185,14 @@ export function SettingsTabs() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Chuyển khoản / Quét mã QR</p>
-                    <p className="text-sm text-zinc-500">Thanh toán thủ công qua tài khoản ngân hàng hoặc mã QR.</p>
+                    <p className="text-sm text-muted-foreground">Thanh toán thủ công qua tài khoản ngân hàng hoặc mã QR.</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
                 <Separator />
                 <div className="flex items-start gap-6">
-                  <div className="w-32 h-32 bg-zinc-100 rounded-md border-2 border-dashed border-zinc-300 flex items-center justify-center">
-                    <span className="text-xs text-zinc-500 text-center px-2">Chưa có<br/>Mã QR</span>
+                  <div className="w-32 h-32 bg-muted rounded-md border-2 border-dashed border-zinc-300 flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground text-center px-2">Chưa có<br/>Mã QR</span>
                   </div>
                   <div className="space-y-3 flex-1">
                     <div className="space-y-1">
@@ -210,13 +212,13 @@ export function SettingsTabs() {
               <div className="flex items-center justify-between border p-4 rounded-md">
                 <div>
                   <p className="font-medium">Ví MoMo</p>
-                  <p className="text-sm text-zinc-500">Thanh toán nhanh qua ứng dụng MoMo.</p>
+                  <p className="text-sm text-muted-foreground">Thanh toán nhanh qua ứng dụng MoMo.</p>
                 </div>
                 <Switch />
               </div>
             </CardContent>
             <CardFooter className="border-t pt-4">
-              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Lưu cài đặt</Button>
+              <Button className=" ml-auto">Lưu cài đặt</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -229,7 +231,7 @@ export function SettingsTabs() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-16 w-16 rounded-full bg-zinc-100 flex items-center justify-center text-xl font-bold text-zinc-400">
+                <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground">
                   AD
                 </div>
                 <Button variant="outline" size="sm">Đổi ảnh đại diện</Button>
@@ -251,7 +253,7 @@ export function SettingsTabs() {
               </div>
             </CardContent>
             <CardFooter className="border-t pt-4">
-              <Button className="bg-zinc-900 hover:bg-zinc-800 ml-auto">Cập nhật tài khoản</Button>
+              <Button className=" ml-auto">Cập nhật tài khoản</Button>
             </CardFooter>
           </Card>
         </TabsContent>

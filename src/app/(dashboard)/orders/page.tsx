@@ -10,7 +10,7 @@ export default function OrdersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Đơn hàng</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý và theo dõi trạng thái đơn hàng của khách.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý và theo dõi trạng thái đơn hàng của khách.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="hidden sm:flex">

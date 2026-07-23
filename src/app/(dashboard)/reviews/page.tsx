@@ -8,7 +8,7 @@ export default function ReviewsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Đánh giá sản phẩm</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý phản hồi và đánh giá từ khách hàng.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý phản hồi và đánh giá từ khách hàng.</p>
         </div>
       </div>
 

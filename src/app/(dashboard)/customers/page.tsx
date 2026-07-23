@@ -10,7 +10,7 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Khách hàng</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý thông tin và lịch sử mua hàng của khách hàng.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý thông tin và lịch sử mua hàng của khách hàng.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="hidden sm:flex">

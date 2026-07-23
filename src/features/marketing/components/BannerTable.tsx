@@ -32,19 +32,20 @@ import { UploadCloud } from "lucide-react";
 import Image from "next/image";
 
 import { useBanners } from "@/features/marketing/hooks/useBanners";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function BannerTable() {
   const { banners, isLoading } = useBanners();
 
-  if (isLoading) return <div className="p-8 text-center text-zinc-500">Đang tải dữ liệu...</div>;
+  
 
   return (
     <>
 
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Tìm kiếm banner..."
@@ -66,19 +67,20 @@ export function BannerTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {banners.map((banner) => (
+              {isLoading ? <TableSkeleton columns={6} /> : (
+banners.map((banner) => (
                 <TableRow key={banner.id}>
                   <TableCell>
-                    <div className="relative h-12 w-24 rounded-md bg-zinc-100 flex items-center justify-center overflow-hidden">
+                    <div className="relative h-12 w-24 rounded-md bg-muted flex items-center justify-center overflow-hidden">
                       {banner.imageUrl ? (
                         <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
                       ) : (
-                        <ImageIcon className="h-4 w-4 text-zinc-400" />
+                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{banner.title}</TableCell>
-                  <TableCell className="text-zinc-500">{banner.link}</TableCell>
+                  <TableCell className="text-muted-foreground">{banner.link}</TableCell>
                   <TableCell>
                     <Badge variant={banner.status === "Hiển thị" ? "default" : "secondary"} className={banner.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : ""}>
                       {banner.status}
@@ -86,7 +88,7 @@ export function BannerTable() {
                   </TableCell>
                   <TableCell className="text-right">
                                         <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -98,6 +100,24 @@ export function BannerTable() {
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                               <div className="grid gap-2">
+                                <Label>Hình ảnh Banner</Label>
+                                <div className="border-2 border-dashed rounded-md p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 relative group">
+                                  {banner.imageUrl ? (
+                                    <div className="relative w-full h-24 overflow-hidden rounded-sm">
+                                      <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                        <UploadCloud className="h-6 w-6 text-white" />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                                      <span className="text-sm text-muted-foreground font-medium">Nhấn để tải ảnh lên</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="grid gap-2">
                                 <Label htmlFor={`edit-title-${banner.id}`}>Tiêu đề</Label>
                                 <Input id={`edit-title-${banner.id}`} defaultValue={banner.title} />
                               </div>
@@ -108,7 +128,7 @@ export function BannerTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -117,7 +137,8 @@ export function BannerTable() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+)}
             </TableBody>
           </Table>
         </div>
@@ -127,12 +148,16 @@ export function BannerTable() {
           {banners.map((banner) => (
             <div key={banner.id} className="flex flex-col gap-3 p-4 border-b last:border-0 relative">
               <div className="flex gap-3 pr-8">
-                <div className="relative h-16 w-24 shrink-0 rounded-md bg-zinc-100 flex items-center justify-center overflow-hidden">
-                   <ImageIcon className="h-5 w-5 text-zinc-400" />
+                <div className="relative h-16 w-24 shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
+                   {banner.imageUrl ? (
+                     <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                   ) : (
+                     <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                   )}
                 </div>
                 <div className="flex flex-col flex-1">
-                  <span className="font-bold text-zinc-900 text-sm leading-tight">{banner.title}</span>
-                  <span className="text-xs text-zinc-500 truncate mt-1">Link: {banner.link}</span>
+                  <span className="font-bold text-foreground text-sm leading-tight">{banner.title}</span>
+                  <span className="text-xs text-muted-foreground truncate mt-1">Link: {banner.link}</span>
                   <div className="mt-2">
                     <Badge variant={banner.status === "Hiển thị" ? "default" : "secondary"} className={banner.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "text-[10px] px-2 py-0"}>
                       {banner.status}
@@ -143,7 +168,7 @@ export function BannerTable() {
 
               <div className="absolute top-3 right-2">
                                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -165,7 +190,7 @@ export function BannerTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>

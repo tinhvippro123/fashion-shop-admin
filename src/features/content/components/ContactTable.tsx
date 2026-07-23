@@ -1,4 +1,6 @@
 import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -7,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Search, MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { Search, MoreHorizontal, Eye, Trash2, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,20 +18,26 @@ import {
 } from "@/shared/ui/dropdown-menu";
 
 import { useContacts } from "@/features/content/hooks/useContacts";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function ContactTable() {
   const { contacts, isLoading } = useContacts();
 
-  if (isLoading) return <div className="p-8 text-center text-zinc-500">Đang tải dữ liệu...</div>;
+  
 
   return (
     <>
 
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
-            <Input type="search" placeholder="Tìm kiếm liên hệ..." className="pl-8" />
+          <div className="flex items-center gap-2 flex-1 max-w-sm">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input type="search" placeholder="Tìm kiếm liên hệ..." className="pl-8" />
+            </div>
+            <Button variant="outline">
+              <Filter className="mr-2 h-4 w-4" /> Lọc
+            </Button>
           </div>
         </div>
         
@@ -46,36 +54,40 @@ export function ContactTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contacts.map((contact) => (
-                <TableRow key={contact.id} className={contact.status === "Chưa đọc" ? "bg-zinc-50 font-medium" : ""}>
+              {isLoading ? <TableSkeleton columns={6} /> : (
+contacts.map((contact) => (
+                <TableRow key={contact.id} className={contact.status === "Chưa đọc" ? "bg-muted/50 font-medium" : ""}>
                   <TableCell>
                     <div className="flex flex-col">
                       <span>{contact.name}</span>
-                      <span className="text-sm text-zinc-500 font-normal">{contact.email}</span>
+                      <span className="text-sm text-muted-foreground font-normal">{contact.email}</span>
                     </div>
                   </TableCell>
                   <TableCell>{contact.subject}</TableCell>
-                  <TableCell className="text-zinc-500">{contact.date}</TableCell>
+                  <TableCell className="text-muted-foreground">{contact.date}</TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                      contact.status === "Chưa đọc" ? "bg-blue-100 text-blue-800" : "bg-zinc-100 text-zinc-800"
+                      contact.status === "Chưa đọc" ? "bg-blue-100 text-blue-800" : "bg-muted text-foreground"
                     }`}>
                       {contact.status}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem><Eye className="mr-2 h-4 w-4" /> Xem chi tiết</DropdownMenuItem>
+                        <DropdownMenuItem render={<Link href={`/contacts/${contact.id}`} className="w-full cursor-pointer" />}>
+                          <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+)}
             </TableBody>
           </Table>
         </div>
@@ -83,19 +95,19 @@ export function ContactTable() {
         {/* Mobile List View */}
         <div className="md:hidden flex flex-col">
           {contacts.map((contact) => (
-            <div key={contact.id} className={`flex flex-col gap-2 p-4 border-b last:border-0 relative ${contact.status === "Chưa đọc" ? "bg-zinc-50" : ""}`}>
+            <div key={contact.id} className={`flex flex-col gap-2 p-4 border-b last:border-0 relative ${contact.status === "Chưa đọc" ? "bg-muted/50" : ""}`}>
               <div className="flex flex-col pr-8">
-                <span className={`text-sm ${contact.status === "Chưa đọc" ? "font-bold text-zinc-900" : "font-medium text-zinc-700"}`}>
+                <span className={`text-sm ${contact.status === "Chưa đọc" ? "font-bold text-foreground" : "font-medium text-foreground"}`}>
                   {contact.name}
                 </span>
-                <span className="text-xs text-zinc-500 mb-1">{contact.email}</span>
-                <span className={`text-sm leading-tight ${contact.status === "Chưa đọc" ? "font-bold text-zinc-900" : "text-zinc-600"}`}>
+                <span className="text-xs text-muted-foreground mb-1">{contact.email}</span>
+                <span className={`text-sm leading-tight ${contact.status === "Chưa đọc" ? "font-bold text-foreground" : "text-muted-foreground"}`}>
                   {contact.subject}
                 </span>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-zinc-400">{contact.date}</span>
+                  <span className="text-xs text-muted-foreground">{contact.date}</span>
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                      contact.status === "Chưa đọc" ? "bg-blue-100 text-blue-800" : "bg-zinc-100 text-zinc-800"
+                      contact.status === "Chưa đọc" ? "bg-blue-100 text-blue-800" : "bg-muted text-foreground"
                     }`}>
                       {contact.status}
                   </span>
@@ -104,11 +116,13 @@ export function ContactTable() {
 
               <div className="absolute top-3 right-2">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                     <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem><Eye className="mr-2 h-4 w-4" /> Xem chi tiết</DropdownMenuItem>
+                    <DropdownMenuItem render={<Link href={`/contacts/${contact.id}`} className="w-full cursor-pointer" />}>
+                      <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Xóa</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

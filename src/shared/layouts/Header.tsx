@@ -18,6 +18,7 @@ import { Sidebar } from "@/shared/layouts/Sidebar";
 import Link from "next/link";
 import { useState } from "react";
 import { ShoppingBag, UserPlus, Info } from "lucide-react";
+import { ThemeToggle } from "@/shared/ui/theme-toggle";
 
 export function Header() {
   const [unreadCount, setUnreadCount] = useState(3);
@@ -32,15 +33,15 @@ export function Header() {
     switch(type) {
       case 'ORDER': return <ShoppingBag className="h-4 w-4 text-blue-600" />;
       case 'USER': return <UserPlus className="h-4 w-4 text-green-600" />;
-      default: return <Info className="h-4 w-4 text-zinc-600" />;
+      default: return <Info className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white px-6">
+    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-4 border-b bg-card px-6">
       <div className="flex items-center lg:hidden">
         <Sheet>
-          <SheetTrigger className="flex h-10 w-10 -ml-2.5 items-center justify-center rounded-md hover:bg-zinc-100 outline-none">
+          <SheetTrigger className="flex h-10 w-10 -ml-2.5 items-center justify-center rounded-md hover:bg-muted outline-none">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </SheetTrigger>
@@ -55,23 +56,26 @@ export function Header() {
         {/* Search Bar */}
         <form className="hidden lg:block">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Tìm kiếm mã đơn hàng, khách hàng..."
-              className="w-full appearance-none bg-zinc-50 pl-8 shadow-none md:w-[300px] lg:w-[400px]"
+              className="w-full appearance-none bg-muted/50 pl-8 shadow-none md:w-[300px] lg:w-[400px]"
             />
           </div>
         </form>
       </div>
 
       <div className="flex items-center gap-4">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+
         {/* Notification Bell */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative flex h-8 w-8 items-center justify-center rounded-md hover:bg-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-zinc-900">
-            <Bell className="h-5 w-5 text-zinc-600" />
+          <DropdownMenuTrigger className="relative flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-zinc-900">
+            <Bell className="h-5 w-5 text-muted-foreground" />
             {unreadCount > 0 && (
-              <span className="absolute top-0 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600 text-[8px] font-bold text-white border-2 border-white">
+              <span className="absolute top-0 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600 text-[8px] font-bold text-white border-2 border-card">
                 {unreadCount}
               </span>
             )}
@@ -84,14 +88,14 @@ export function Header() {
             </div>
             <div className="max-h-[400px] overflow-y-auto">
               {notifications.map((notif) => (
-                <div key={notif.id} className={`flex items-start gap-3 p-4 border-b last:border-0 hover:bg-zinc-50 cursor-pointer transition-colors ${!notif.isRead ? 'bg-blue-50/50' : ''}`}>
-                  <div className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${!notif.isRead ? 'bg-white shadow-sm' : 'bg-zinc-100'}`}>
+                <div key={notif.id} className={`flex items-start gap-3 p-4 border-b last:border-0 hover:bg-muted/50 cursor-pointer transition-colors ${!notif.isRead ? 'bg-blue-50/50' : ''}`}>
+                  <div className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${!notif.isRead ? 'bg-card shadow-sm' : 'bg-muted'}`}>
                     {getIcon(notif.type)}
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className={`text-sm ${!notif.isRead ? 'font-semibold text-zinc-900' : 'text-zinc-700'}`}>{notif.title}</p>
-                    <p className="text-xs text-zinc-500 line-clamp-2">{notif.message}</p>
-                    <p className="text-[10px] text-zinc-400 mt-1">{notif.time}</p>
+                    <p className={`text-sm ${!notif.isRead ? 'font-semibold text-foreground' : 'text-foreground'}`}>{notif.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{notif.message}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{notif.time}</p>
                   </div>
                   {!notif.isRead && (
                     <div className="h-2 w-2 mt-2 rounded-full bg-blue-600"></div>
@@ -100,14 +104,14 @@ export function Header() {
               ))}
             </div>
             <div className="p-2 border-t text-center">
-              <Link href="/notifications" className="text-sm text-zinc-600 hover:text-zinc-900 font-medium">Xem tất cả thông báo</Link>
+              <Link href="/notifications" className="text-sm text-muted-foreground hover:text-foreground font-medium">Xem tất cả thông báo</Link>
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* User Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-zinc-900">
+          <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-zinc-900">
             <Avatar className="h-8 w-8">
                 <AvatarImage src="/logo.png" alt="Admin" />
                 <AvatarFallback>AD</AvatarFallback>

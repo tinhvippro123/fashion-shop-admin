@@ -28,17 +28,19 @@ import {
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 import { Category } from "@/features/catalog/types/category";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 interface CategoryTableProps {
   categories: Category[];
+  isLoading?: boolean;
 }
 
-export function CategoryTable({ categories }: CategoryTableProps) {
+export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
   return (
-    <div className="rounded-md border bg-white overflow-hidden">
+    <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Tìm kiếm danh mục..."
@@ -67,11 +69,12 @@ export function CategoryTable({ categories }: CategoryTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((cat) => (
+              {isLoading ? <TableSkeleton columns={6} /> : (
+              categories.map((cat) => (
                 <TableRow key={cat.id}>
                   <TableCell className="font-medium">{cat.id}</TableCell>
                   <TableCell className="font-bold">{cat.name}</TableCell>
-                  <TableCell className="text-zinc-500">{cat.slug}</TableCell>
+                  <TableCell className="text-muted-foreground">{cat.slug}</TableCell>
                   <TableCell>{cat.productCount}</TableCell>
                   <TableCell>
                     <Badge variant={cat.status === "Hoạt động" ? "default" : "secondary"} className={cat.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : ""}>
@@ -80,7 +83,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -102,7 +105,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -111,21 +114,23 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </div>
 
         {/* Mobile List View */}
         <div className="md:hidden flex flex-col">
-          {categories.map((cat) => (
+          {isLoading ? <div className="p-4 text-center text-muted-foreground">Đang tải...</div> : (
+          categories.map((cat) => (
             <div key={cat.id} className="flex flex-col gap-2 p-4 border-b last:border-0 relative">
               <div className="flex items-center justify-between pr-8">
-                <span className="font-bold text-zinc-900 text-lg">{cat.name}</span>
+                <span className="font-bold text-foreground text-lg">{cat.name}</span>
               </div>
-              <div className="flex flex-col gap-1 text-sm text-zinc-500">
+              <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                 <span>Slug: {cat.slug}</span>
-                <span>Số sản phẩm: <strong className="text-zinc-900">{cat.productCount}</strong></span>
+                <span>Số sản phẩm: <strong className="text-foreground">{cat.productCount}</strong></span>
               </div>
               <div className="mt-2">
                 <Badge variant={cat.status === "Hoạt động" ? "default" : "secondary"} className={cat.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "text-[10px] px-2 py-0"}>
@@ -134,7 +139,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
               </div>
               <div className="absolute top-3 right-2">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -156,7 +161,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -165,7 +170,8 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     </DropdownMenu>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
   );

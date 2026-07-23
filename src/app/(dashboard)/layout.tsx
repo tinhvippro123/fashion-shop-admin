@@ -7,21 +7,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50/50">
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <div className="hidden lg:block shrink-0">
-          <Sidebar />
-        </div>
+    <div className="flex min-h-screen flex-col bg-muted/30">
+      {/* Sidebar - Fixed on Desktop */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
+        <Sidebar />
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="lg:pl-64 flex flex-1 flex-col min-w-0">
+        <Header />
         
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col min-w-0">
-          <Header />
-          
-          <main className="flex-1 p-6">
-            {children}
-          </main>
-        </div>
+        <main className="flex-1 p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

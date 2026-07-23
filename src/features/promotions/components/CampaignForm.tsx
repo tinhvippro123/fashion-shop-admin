@@ -34,7 +34,7 @@ export function CampaignForm() {
   const [targetType, setTargetType] = useState("all");
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/promotions">
@@ -47,7 +47,7 @@ export function CampaignForm() {
           <Link href="/promotions">
             <Button variant="outline">Hủy bỏ</Button>
           </Link>
-          <Button className="bg-zinc-900 hover:bg-zinc-800 text-white">
+          <Button className="">
             <Save className="mr-2 h-4 w-4" /> Lưu & Kích hoạt
           </Button>
         </div>
@@ -90,13 +90,13 @@ export function CampaignForm() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <CardTitle>Danh sách Sản phẩm tham gia</CardTitle>
                 <CardDescription>Chọn các sản phẩm cụ thể sẽ được áp dụng mức giảm giá này.</CardDescription>
               </div>
               <Dialog>
-                <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "bg-zinc-900 hover:bg-zinc-800")}>
+                <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "w-full sm:w-auto")}>
                   <Plus className="mr-2 h-4 w-4" /> Chọn Sản Phẩm
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
@@ -106,11 +106,11 @@ export function CampaignForm() {
                   <div className="flex flex-col gap-4 py-4">
                     <div className="flex gap-2">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-[180px] justify-between font-normal text-zinc-600")}>
+                        <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-[180px] justify-between font-normal text-muted-foreground")}>
                           Danh mục (Đã chọn 3) <span className="ml-2">▼</span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-[180px]">
-                          <div className="px-2 py-1.5 text-sm font-semibold text-zinc-900">Lọc theo Danh mục</div>
+                          <div className="px-2 py-1.5 text-sm font-semibold text-foreground">Lọc theo Danh mục</div>
                           <DropdownMenuSeparator />
                           <DropdownMenuCheckboxItem checked={false}>
                             Tất cả danh mục
@@ -124,79 +124,79 @@ export function CampaignForm() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                       <div className="relative flex-1">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Tìm tên sản phẩm hoặc mã SKU..." className="pl-9" />
                       </div>
                       <Button variant="secondary">Tìm</Button>
                     </div>
 
                     <div className="border rounded-md">
-                      <div className="bg-zinc-50 p-2.5 flex items-center gap-3 border-b">
+                      <div className="bg-muted/50 p-2.5 flex items-center gap-3 border-b">
                         <Checkbox id="select-all" />
                         <Label htmlFor="select-all" className="text-sm font-semibold cursor-pointer">Chọn tất cả (50)</Label>
                       </div>
                       <div className="max-h-[300px] overflow-y-auto p-2 space-y-2">
                         {/* Mock items */}
-                        <div className="flex items-center justify-between p-2 hover:bg-zinc-50 rounded-md border border-transparent hover:border-zinc-200">
+                        <div className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md border border-transparent hover:border-border">
                           <div className="flex items-center gap-3">
                             <Checkbox id="dlg-var-1" defaultChecked />
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                              <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                               <div className="flex flex-col">
-                                <Label htmlFor="dlg-var-1" className="text-sm font-medium cursor-pointer">Áo thun form rộng basic <span className="text-zinc-900 font-bold ml-1">(Đen / S)</span></Label>
-                                <span className="text-xs text-zinc-500">SKU: ATB-001-BLK-S</span>
+                                <Label htmlFor="dlg-var-1" className="text-sm font-medium cursor-pointer">Áo thun form rộng basic <span className="text-foreground font-bold ml-1">(Đen / S)</span></Label>
+                                <span className="text-xs text-muted-foreground">SKU: ATB-001-BLK-S</span>
                               </div>
                             </div>
                           </div>
-                          <span className="text-sm text-zinc-500">Tồn: 25</span>
+                          <span className="text-sm text-muted-foreground">Tồn: 25</span>
                         </div>
-                        <div className="flex items-center justify-between p-2 hover:bg-zinc-50 rounded-md border border-transparent hover:border-zinc-200">
+                        <div className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md border border-transparent hover:border-border">
                           <div className="flex items-center gap-3">
                             <Checkbox id="dlg-var-2" defaultChecked />
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                              <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                               <div className="flex flex-col">
-                                <Label htmlFor="dlg-var-2" className="text-sm font-medium cursor-pointer">Áo thun form rộng basic <span className="text-zinc-900 font-bold ml-1">(Đen / M)</span></Label>
-                                <span className="text-xs text-zinc-500">SKU: ATB-001-BLK-M</span>
+                                <Label htmlFor="dlg-var-2" className="text-sm font-medium cursor-pointer">Áo thun form rộng basic <span className="text-foreground font-bold ml-1">(Đen / M)</span></Label>
+                                <span className="text-xs text-muted-foreground">SKU: ATB-001-BLK-M</span>
                               </div>
                             </div>
                           </div>
-                          <span className="text-sm text-zinc-500">Tồn: 12</span>
+                          <span className="text-sm text-muted-foreground">Tồn: 12</span>
                         </div>
-                        <div className="flex items-center justify-between p-2 hover:bg-zinc-50 rounded-md border border-transparent hover:border-zinc-200">
+                        <div className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md border border-transparent hover:border-border">
                           <div className="flex items-center gap-3">
                             <Checkbox id="dlg-var-3" defaultChecked />
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                              <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                               <div className="flex flex-col">
-                                <Label htmlFor="dlg-var-3" className="text-sm font-medium cursor-pointer">Váy hoa cúc mùa hè <span className="text-zinc-900 font-bold ml-1">(Đỏ / S)</span></Label>
-                                <span className="text-xs text-zinc-500">SKU: VDH-001-RED-S</span>
+                                <Label htmlFor="dlg-var-3" className="text-sm font-medium cursor-pointer">Váy hoa cúc mùa hè <span className="text-foreground font-bold ml-1">(Đỏ / S)</span></Label>
+                                <span className="text-xs text-muted-foreground">SKU: VDH-001-RED-S</span>
                               </div>
                             </div>
                           </div>
-                          <span className="text-sm text-zinc-500">Tồn: 5</span>
+                          <span className="text-sm text-muted-foreground">Tồn: 5</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center bg-zinc-50 p-3 rounded-md border border-zinc-100">
+                    <div className="flex justify-between items-center bg-muted/50 p-3 rounded-md border border-border">
                       <span className="text-sm text-emerald-800 font-medium">Đã chọn: 3 phân loại</span>
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit" className="bg-zinc-900 hover:bg-zinc-800">Xác nhận</Button>
+                    <Button type="submit" className="">Xác nhận</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
             </CardHeader>
             <CardContent>
               {/* Thanh công cụ bảng chính */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 w-full">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-[180px] justify-between font-normal text-zinc-600")}>
+                  <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-[180px] justify-between font-normal text-muted-foreground")}>
                     Lọc Danh mục <span className="ml-2">▼</span>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[180px]">
-                    <div className="px-2 py-1.5 text-sm font-semibold text-zinc-900">Lọc theo Danh mục</div>
+                    <div className="px-2 py-1.5 text-sm font-semibold text-foreground">Lọc theo Danh mục</div>
                     <DropdownMenuSeparator />
                     <DropdownMenuCheckboxItem checked={false}>Tất cả danh mục</DropdownMenuCheckboxItem>
                     <DropdownMenuSeparator />
@@ -205,7 +205,7 @@ export function CampaignForm() {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <div className="relative flex-1 w-full sm:w-auto">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Tìm trong danh sách đã chọn..." className="pl-9" />
                 </div>
                 <Button variant="destructive" className="w-full sm:w-auto opacity-50 cursor-not-allowed">
@@ -216,72 +216,72 @@ export function CampaignForm() {
               {/* Main table of selected items */}
               <div className="border rounded-md overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-zinc-50 border-b">
+                  <thead className="bg-muted/50 border-b">
                     <tr>
                       <th className="px-4 py-3 w-12"><Checkbox id="selectAllMain" /></th>
-                      <th className="px-4 py-3 text-left font-semibold text-zinc-600 w-1/2">Sản phẩm / Phân loại</th>
-                      <th className="px-4 py-3 text-left font-semibold text-zinc-600">Kho</th>
-                      <th className="px-4 py-3 text-right font-semibold text-zinc-600">Thao tác</th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground w-1/2">Sản phẩm / Phân loại</th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Kho</th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao tác</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-100 bg-white">
-                    <tr className="hover:bg-zinc-50 transition-colors">
+                  <tbody className="divide-y divide-border bg-card">
+                    <tr className="hover:bg-muted/50 transition-colors">
                       <td className="px-4 py-3"><Checkbox id="chkMain1" /></td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                          <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                           <div className="flex flex-col">
                             <span className="font-medium">Áo thun form rộng basic</span>
-                            <span className="text-xs text-zinc-900 font-bold">Đen / Size S</span>
+                            <span className="text-xs text-foreground font-bold">Đen / Size S</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-zinc-600">25</td>
+                      <td className="px-4 py-3 text-muted-foreground">25</td>
                       <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-red-500">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>
-                    <tr className="hover:bg-zinc-50 transition-colors">
+                    <tr className="hover:bg-muted/50 transition-colors">
                       <td className="px-4 py-3"><Checkbox id="chkMain2" /></td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                          <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                           <div className="flex flex-col">
                             <span className="font-medium">Áo thun form rộng basic</span>
-                            <span className="text-xs text-zinc-900 font-bold">Đen / Size M</span>
+                            <span className="text-xs text-foreground font-bold">Đen / Size M</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-zinc-600">12</td>
+                      <td className="px-4 py-3 text-muted-foreground">12</td>
                       <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-red-500">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>
-                    <tr className="hover:bg-zinc-50 transition-colors">
+                    <tr className="hover:bg-muted/50 transition-colors">
                       <td className="px-4 py-3"><Checkbox id="chkMain3" /></td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center text-xs text-zinc-400">Ảnh</div>
+                          <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                           <div className="flex flex-col">
                             <span className="font-medium">Váy hoa cúc mùa hè</span>
-                            <span className="text-xs text-zinc-900 font-bold">Đỏ / Size S</span>
+                            <span className="text-xs text-foreground font-bold">Đỏ / Size S</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-zinc-600">5</td>
+                      <td className="px-4 py-3 text-muted-foreground">5</td>
                       <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-red-500">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
-                <div className="bg-zinc-50 p-3 border-t text-sm text-zinc-600 font-medium">
+                <div className="bg-muted/50 p-3 border-t text-sm text-muted-foreground font-medium">
                   Tổng cộng: 3 phân loại
                 </div>
               </div>
@@ -299,14 +299,14 @@ export function CampaignForm() {
               <div className="grid gap-2">
                 <Label htmlFor="start_date">Ngày bắt đầu</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input id="start_date" type="datetime-local" className="pl-9 h-10" />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="end_date">Ngày kết thúc</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input id="end_date" type="datetime-local" className="pl-9 h-10" />
                 </div>
               </div>
@@ -331,8 +331,8 @@ export function CampaignForm() {
               </Select>
 
               {audienceType === "tier" && (
-                <div className="p-3 bg-zinc-50 border rounded-md">
-                  <Label className="text-xs text-zinc-500 mb-2 block">Chọn Hạng thẻ (Tiers)</Label>
+                <div className="p-3 bg-muted/50 border rounded-md">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Chọn Hạng thẻ (Tiers)</Label>
                   <div className="grid grid-cols-1 gap-3">
                     {["Thành viên Bạc", "Thành viên Vàng", "Thành viên Kim Cương"].map((tier, i) => (
                       <div key={i} className="flex items-center space-x-2">
@@ -353,8 +353,8 @@ export function CampaignForm() {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="active" className="cursor-pointer text-zinc-800 font-semibold">Kích hoạt chiến dịch</Label>
-                  <span className="text-xs text-zinc-500">Chiến dịch sẽ tự động chạy khi đến ngày giờ bắt đầu</span>
+                  <Label htmlFor="active" className="cursor-pointer text-foreground font-semibold">Kích hoạt chiến dịch</Label>
+                  <span className="text-xs text-muted-foreground">Chiến dịch sẽ tự động chạy khi đến ngày giờ bắt đầu</span>
                 </div>
                 <Switch id="active" defaultChecked />
               </div>

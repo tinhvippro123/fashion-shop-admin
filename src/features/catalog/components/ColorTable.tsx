@@ -28,19 +28,20 @@ import {
 import { Label } from "@/shared/ui/label";
 
 import { useColors } from "@/features/catalog/hooks/useColors";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function ColorTable() {
   const { colors, isLoading } = useColors();
 
-  if (isLoading) return <div className="p-8 text-center text-zinc-500">Đang tải dữ liệu...</div>;
+  
 
   return (
     <>
 
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input type="search" placeholder="Tìm kiếm màu sắc..." className="pl-8" />
           </div>
         </div>
@@ -57,19 +58,20 @@ export function ColorTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {colors.map((color) => (
+              {isLoading ? <TableSkeleton columns={5} /> : (
+colors.map((color) => (
                 <TableRow key={color.id}>
                   <TableCell className="font-medium">{color.id}</TableCell>
                   <TableCell>{color.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <div className="h-6 w-6 rounded-full border shadow-sm" style={{ backgroundColor: color.hex }} />
-                      <span className="text-sm text-zinc-500">{color.hex}</span>
+                      <span className="text-sm text-muted-foreground">{color.hex}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
                                         <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -91,7 +93,7 @@ export function ColorTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -100,7 +102,8 @@ export function ColorTable() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+)}
             </TableBody>
           </Table>
         </div>
@@ -112,14 +115,14 @@ export function ColorTable() {
               <div className="flex items-center gap-3 pr-8">
                 <div className="h-8 w-8 rounded-full border shadow-sm shrink-0" style={{ backgroundColor: color.hex }} />
                 <div className="flex flex-col flex-1">
-                  <span className="font-bold text-zinc-900">{color.name}</span>
-                  <span className="text-xs text-zinc-500">{color.hex}</span>
+                  <span className="font-bold text-foreground">{color.name}</span>
+                  <span className="text-xs text-muted-foreground">{color.hex}</span>
                 </div>
               </div>
 
               <div className="absolute top-3 right-2">
                                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -141,7 +144,7 @@ export function ColorTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>

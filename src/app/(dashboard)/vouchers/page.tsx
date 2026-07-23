@@ -25,11 +25,11 @@ export default function VouchersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Mã giảm giá (Voucher)</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý các chương trình khuyến mãi bằng mã code.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý các chương trình khuyến mãi bằng mã code.</p>
         </div>
         <Dialog>
           <DialogTrigger render={
-            <Button className="bg-zinc-900 hover:bg-zinc-800">
+            <Button className="">
               <Plus className="mr-2 h-4 w-4" /> Tạo mã giảm giá
             </Button>
           } />
@@ -76,18 +76,18 @@ export default function VouchersPage() {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="public" className="cursor-pointer text-zinc-800">Hiển thị công khai</Label>
-                  <span className="text-xs text-zinc-500">Khách có thể thấy trên web. Nếu tắt, khách phải tự nhập mã ẩn.</span>
+                  <Label htmlFor="public" className="cursor-pointer text-foreground">Hiển thị công khai</Label>
+                  <span className="text-xs text-muted-foreground">Khách có thể thấy trên web. Nếu tắt, khách phải tự nhập mã ẩn.</span>
                 </div>
                 <Switch id="public" defaultChecked />
               </div>
               <div className="flex items-center justify-between mt-2">
-                <Label htmlFor="active" className="cursor-pointer text-zinc-800">Trạng thái hoạt động</Label>
+                <Label htmlFor="active" className="cursor-pointer text-foreground">Trạng thái hoạt động</Label>
                 <Switch id="active" defaultChecked />
               </div>
             </div>
             <DialogFooter>
-              <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu Voucher</Button>
+              <Button className=" w-full sm:w-auto">Lưu Voucher</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

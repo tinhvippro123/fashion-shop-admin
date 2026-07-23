@@ -15,17 +15,21 @@ import {
 } from "@/shared/ui/dialog";
 import { StaffTable } from "@/features/staffs";
 
+import { useState } from "react";
+
 export default function StaffsPage() {
+  const [role, setRole] = useState("sale");
+
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Nhân viên</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý danh sách nhân viên và quyền hạn trên hệ thống.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý danh sách nhân viên và quyền hạn trên hệ thống.</p>
         </div>
         <Dialog>
           <DialogTrigger render={
-            <Button className="bg-zinc-900 hover:bg-zinc-800">
+            <Button className="">
               <Plus className="mr-2 h-4 w-4" /> Thêm nhân viên
             </Button>
           } />
@@ -48,9 +52,13 @@ export default function StaffsPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Phân quyền</Label>
-                <Select defaultValue="sale">
+                <Select value={role} onValueChange={(val) => setRole(val || "sale")}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn phân quyền" />
+                    <span className="truncate">
+                      {role === "admin" && "Quản trị viên (Full quyền)"}
+                      {role === "sale" && "Nhân viên Sale (Xử lý đơn hàng)"}
+                      {role === "content" && "Nhân viên Content (Quản lý bài viết)"}
+                    </span>
                   </SelectTrigger>
                   <SelectContent align="start">
                     <SelectItem value="admin">Quản trị viên (Full quyền)</SelectItem>
@@ -62,7 +70,7 @@ export default function StaffsPage() {
             </div>
             <DialogFooter>
               <Button variant="outline">Hủy</Button>
-              <Button className="bg-zinc-900 hover:bg-zinc-800">Tạo tài khoản</Button>
+              <Button className="">Tạo tài khoản</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -10,10 +10,10 @@ export default function NotificationsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Tất cả thông báo</h2>
-          <p className="text-zinc-500">Quản lý và theo dõi các hoạt động trên hệ thống.</p>
+          <p className="text-muted-foreground">Quản lý và theo dõi các hoạt động trên hệ thống.</p>
         </div>
         <Button variant="outline" className="shrink-0">
-          <CheckCircle2 className="mr-2 h-4 w-4 text-zinc-500" />
+          <CheckCircle2 className="mr-2 h-4 w-4 text-muted-foreground" />
           Đánh dấu đã đọc tất cả
         </Button>
       </div>

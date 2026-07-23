@@ -21,12 +21,13 @@ const data = [
 
 export function OverviewChart() {
   return (
+    <div className="text-primary w-full h-full">
     <ResponsiveContainer width="100%" height={350}>
       <AreaChart data={data}>
         <defs>
           <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#18181b" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#18181b" stopOpacity={0} />
+            <stop offset="5%" stopColor="currentColor" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="currentColor" stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis
@@ -43,15 +44,22 @@ export function OverviewChart() {
           axisLine={false}
           tickFormatter={(value) => `${value}k`}
         />
-        <Tooltip />
+        <Tooltip 
+          contentStyle={{ 
+            backgroundColor: 'var(--color-card)', 
+            borderColor: 'var(--color-border)',
+            color: 'var(--color-card-foreground)'
+          }}
+        />
         <Area
           type="monotone"
           dataKey="total"
-          stroke="#18181b"
+          stroke="currentColor"
           fillOpacity={1}
           fill="url(#colorTotal)"
         />
       </AreaChart>
     </ResponsiveContainer>
+    </div>
   )
 }

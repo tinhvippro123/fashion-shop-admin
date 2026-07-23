@@ -20,11 +20,11 @@ export default function SizesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Kích thước</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý danh sách kích thước (Size) của sản phẩm.</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý danh sách kích thước (Size) của sản phẩm.</p>
         </div>
         <Dialog>
           <DialogTrigger render={
-            <Button className="bg-zinc-900 hover:bg-zinc-800">
+            <Button className="">
               <Plus className="mr-2 h-4 w-4" /> Thêm size
             </Button>
           } />
@@ -39,7 +39,7 @@ export default function SizesPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu kích thước</Button>
+              <Button className=" w-full sm:w-auto">Lưu kích thước</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

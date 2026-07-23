@@ -22,20 +22,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 
 import { useReviews } from "@/features/reviews/hooks/useReviews";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function ReviewTable() {
   const { reviews, isLoading } = useReviews();
 
-  if (isLoading) return <div className="p-8 text-center text-zinc-500">Đang tải dữ liệu...</div>;
-
   return (
     <>
-
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
-            <Input type="search" placeholder="Tìm kiếm đánh giá..." className="pl-8" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input type="search" placeholder="Tìm kiếm theo tên khách, email, nội dung..." className="pl-8" />
           </div>
           <Button variant="outline" className="hidden sm:flex ml-auto">
             <Filter className="mr-2 h-4 w-4" /> Lọc
@@ -59,53 +57,58 @@ export function ReviewTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reviews.map((review) => (
-                <TableRow key={review.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={review.user.avatar} alt={review.user.name} />
-                        <AvatarFallback>{review.user.initial}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{review.user.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/products/${review.product.id}/edit`} className="text-blue-600 hover:underline font-medium">
-                      {review.product.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex text-yellow-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'text-zinc-300'}`} />
-                        ))}
+              {isLoading ? <TableSkeleton columns={6} /> : (
+                reviews.map((review) => (
+                  <TableRow key={review.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={review.user.avatar} alt={review.user.name} />
+                          <AvatarFallback>{review.user.initial}</AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{review.user.name}</span>
                       </div>
-                      <span className="text-sm text-zinc-600 line-clamp-2" title={review.comment}>
-                        {review.comment}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-zinc-500">{review.date}</TableCell>
-                  <TableCell>
-                    <Badge variant={review.status === "Hiển thị" ? "default" : "secondary"} className={review.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-red-100 text-red-700 hover:bg-red-200 border-none"}>
-                      {review.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>{review.status === "Hiển thị" ? "Ẩn đánh giá" : "Hiện đánh giá"}</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      <Link href={`/products/${review.product.id}/edit`} className="text-blue-600 hover:underline font-medium">
+                        {review.product.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex text-yellow-400">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'text-zinc-300'}`} />
+                          ))}
+                        </div>
+                        <span className="text-sm text-muted-foreground line-clamp-2" title={review.comment}>
+                          {review.comment}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{review.date}</TableCell>
+                    <TableCell>
+                      <Badge variant={review.status === "Hiển thị" ? "default" : "secondary"} className={review.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-red-100 text-red-700 hover:bg-red-200 border-none"}>
+                        {review.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem render={<Link href={`/reviews/${review.id}`} className="w-full cursor-pointer" />}>
+                            Xem chi tiết
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>{review.status === "Hiển thị" ? "Ẩn đánh giá" : "Hiện đánh giá"}</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -120,19 +123,19 @@ export function ReviewTable() {
                   <AvatarFallback>{review.user.initial}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-1">
-                  <span className="font-bold text-zinc-900">{review.user.name}</span>
+                  <span className="font-bold text-foreground">{review.user.name}</span>
                   <div className="flex text-yellow-400 my-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'fill-current' : 'text-zinc-300'}`} />
                     ))}
                   </div>
-                  <span className="text-xs text-zinc-500 mb-2">{review.date}</span>
+                  <span className="text-xs text-muted-foreground mb-2">{review.date}</span>
                   
                   <Link href={`/products/${review.product.id}/edit`} className="text-xs text-blue-600 hover:underline font-medium mb-1 truncate">
                     Sp: {review.product.name}
                   </Link>
                   
-                  <p className="text-sm text-zinc-700 bg-zinc-50 p-2 rounded-md border text-left mt-1">
+                  <p className="text-sm text-foreground bg-muted/50 p-2 rounded-md border text-left mt-1">
                     "{review.comment}"
                   </p>
                   
@@ -146,10 +149,13 @@ export function ReviewTable() {
 
               <div className="absolute top-3 right-2">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                     <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem render={<Link href={`/reviews/${review.id}`} className="w-full cursor-pointer" />}>
+                      Xem chi tiết
+                    </DropdownMenuItem>
                     <DropdownMenuItem>{review.status === "Hiển thị" ? "Ẩn đánh giá" : "Hiện đánh giá"}</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
                   </DropdownMenuContent>

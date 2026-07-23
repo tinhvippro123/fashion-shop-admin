@@ -28,19 +28,20 @@ import {
 import { Label } from "@/shared/ui/label";
 
 import { useSizes } from "@/features/catalog/hooks/useSizes";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function SizeTable() {
   const { sizes, isLoading } = useSizes();
 
-  if (isLoading) return <div className="p-8 text-center text-zinc-500">Đang tải dữ liệu...</div>;
+  
 
   return (
     <>
 
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input type="search" placeholder="Tìm kiếm kích thước..." className="pl-8" />
           </div>
         </div>
@@ -56,13 +57,14 @@ export function SizeTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sizes.map((size) => (
+              {isLoading ? <TableSkeleton columns={4} /> : (
+sizes.map((size) => (
                 <TableRow key={size.id}>
-                  <TableCell className="font-medium text-zinc-500">{size.id}</TableCell>
+                  <TableCell className="font-medium text-muted-foreground">{size.id}</TableCell>
                   <TableCell className="font-bold">{size.name}</TableCell>
                   <TableCell className="text-right">
                                         <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -80,7 +82,7 @@ export function SizeTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -89,7 +91,8 @@ export function SizeTable() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+)}
             </TableBody>
           </Table>
         </div>
@@ -100,14 +103,14 @@ export function SizeTable() {
             <div key={size.id} className="flex flex-col gap-2 p-4 border-b last:border-0 relative">
               <div className="flex items-center gap-3 pr-8">
                 <div className="flex flex-col flex-1">
-                  <span className="font-bold text-zinc-900 text-lg">{size.name}</span>
-                  <span className="text-xs text-zinc-500">{size.id}</span>
+                  <span className="font-bold text-foreground text-lg">{size.name}</span>
+                  <span className="text-xs text-muted-foreground">{size.id}</span>
                 </div>
               </div>
 
               <div className="absolute top-3 right-2">
                                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -125,7 +128,7 @@ export function SizeTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>

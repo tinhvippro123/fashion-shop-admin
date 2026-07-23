@@ -56,7 +56,7 @@ export function PageForm({ isEdit = false }: { isEdit?: boolean }) {
               <div className="flex items-center justify-between mt-2">
                 <div>
                   <Label htmlFor="active" className="cursor-pointer">Xuất bản trang</Label>
-                  <p className="text-xs text-zinc-500 mt-1">Trang sẽ hiển thị công khai ngay lập tức.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Trang sẽ hiển thị công khai ngay lập tức.</p>
                 </div>
                 <Switch id="active" defaultChecked />
               </div>
@@ -86,7 +86,7 @@ export function PageForm({ isEdit = false }: { isEdit?: boolean }) {
             >
               Hủy
             </Link>
-            <Button className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white">
+            <Button className="flex-1 ">
               Lưu bài viết
             </Button>
           </div>

@@ -25,7 +25,7 @@ export function CategoryFormModal() {
   return (
     <Dialog>
       <DialogTrigger render={
-        <Button className="bg-zinc-900 hover:bg-zinc-800">
+        <Button className="">
           <Plus className="mr-2 h-4 w-4" /> Thêm danh mục
         </Button>
       } />
@@ -57,12 +57,12 @@ export function CategoryFormModal() {
             </Select>
           </div>
           <div className="flex items-center justify-between mt-2">
-            <Label htmlFor="active" className="cursor-pointer text-zinc-600">Trạng thái hoạt động</Label>
+            <Label htmlFor="active" className="cursor-pointer text-muted-foreground">Trạng thái hoạt động</Label>
             <Switch id="active" defaultChecked />
           </div>
         </div>
         <DialogFooter>
-          <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu danh mục</Button>
+          <Button className=" w-full sm:w-auto">Lưu danh mục</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -8,7 +8,7 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Báo cáo & Phân tích</h2>
-          <p className="text-zinc-500">Xem chi tiết doanh thu và hiệu quả kinh doanh.</p>
+          <p className="text-muted-foreground">Xem chi tiết doanh thu và hiệu quả kinh doanh.</p>
         </div>
       </div>
       

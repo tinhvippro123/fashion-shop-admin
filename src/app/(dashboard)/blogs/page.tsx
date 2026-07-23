@@ -11,10 +11,10 @@ export default function BlogsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Quản lý Bài viết</h2>
-          <p className="text-zinc-500">Quản lý các bài viết trên Blog và tin tức của cửa hàng.</p>
+          <p className="text-muted-foreground">Quản lý các bài viết trên Blog và tin tức của cửa hàng.</p>
         </div>
         <Link href="/blogs/create">
-          <Button className="gap-2 bg-zinc-900 hover:bg-zinc-800">
+          <Button className="gap-2 ">
             <PlusCircle className="h-4 w-4" /> Thêm Bài Viết Mới
           </Button>
         </Link>

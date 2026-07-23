@@ -8,7 +8,7 @@ import { PageForm } from "@/features/content";
 
 export default function EditStaticPage() {
   return (
-    <div className="flex flex-col gap-6 w-full pb-10">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
       <div className="flex items-center gap-4">
         <Link 
           href="/pages" 
@@ -18,7 +18,7 @@ export default function EditStaticPage() {
         </Link>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Chỉnh sửa trang tĩnh</h2>
-          <p className="text-zinc-500">Cập nhật nội dung trang tĩnh.</p>
+          <p className="text-muted-foreground">Cập nhật nội dung trang tĩnh.</p>
         </div>
       </div>
 

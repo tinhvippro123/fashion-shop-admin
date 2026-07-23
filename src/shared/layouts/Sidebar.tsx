@@ -82,7 +82,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-white">
+    <div className="flex h-full w-64 flex-col border-r bg-card">
       {/* Logo Area */}
       <div className="flex h-16 shrink-0 items-center border-b px-6">
         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl tracking-tight">
@@ -95,7 +95,7 @@ export function Sidebar() {
         <nav className="grid gap-4 px-3">
           {navGroups.map((group, index) => (
             <div key={index}>
-              <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {group.title}
               </h4>
               <div className="grid gap-1">
@@ -108,11 +108,11 @@ export function Sidebar() {
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                         isActive 
-                          ? "bg-zinc-900 text-white" 
-                          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
-                      <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-zinc-500")} />
+                      <item.icon className={cn("h-5 w-5", isActive ? "" : "text-muted-foreground")} />
                       {item.name}
                     </Link>
                   );
@@ -125,8 +125,8 @@ export function Sidebar() {
 
       {/* Footer Area (Optional) */}
       <div className="border-t p-4">
-        <div className="rounded-md bg-zinc-50 p-4 text-sm text-zinc-500">
-          <p className="font-semibold text-zinc-900 mb-1">Cần hỗ trợ?</p>
+        <div className="rounded-md bg-muted/50 p-4 text-sm text-muted-foreground">
+          <p className="font-semibold text-foreground mb-1">Cần hỗ trợ?</p>
           <p>Liên hệ bộ phận kỹ thuật để được trợ giúp.</p>
         </div>
       </div>

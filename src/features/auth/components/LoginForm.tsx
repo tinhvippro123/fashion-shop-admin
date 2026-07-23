@@ -9,7 +9,7 @@ export function LoginForm() {
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       {/* Nửa bên trái: Hình ảnh Branding */}
-      <div className="hidden bg-zinc-900 lg:block relative">
+      <div className="hidden bg-primary lg:block relative">
         <Image
           src="/login-bg.jpg"
           alt="Luxe Fashion Cover"
@@ -21,7 +21,7 @@ export function LoginForm() {
         
         {/* Logo góc trên */}
         <div className="absolute top-10 left-10 flex items-center gap-2">
-          <div className="bg-white/90 p-3 rounded-lg shadow-lg">
+          <div className="bg-card/90 p-3 rounded-lg shadow-lg">
             <Image src="/logo.png" alt="Luxe Fashion" width={140} height={40} className="object-contain" />
           </div>
         </div>
@@ -41,14 +41,14 @@ export function LoginForm() {
           
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold tracking-tight">Đăng nhập</h1>
-            <p className="text-balance text-zinc-500 text-sm mt-1">
+            <p className="text-balance text-muted-foreground text-sm mt-1">
               Nhập thông tin tài khoản để truy cập hệ thống
             </p>
           </div>
 
           <div className="grid gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="email" className="font-semibold text-zinc-700">Email</Label>
+              <Label htmlFor="email" className="font-semibold text-foreground">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -59,7 +59,7 @@ export function LoginForm() {
             </div>
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="font-semibold text-zinc-700">Mật khẩu</Label>
+                <Label htmlFor="password" className="font-semibold text-foreground">Mật khẩu</Label>
                 <Link
                   href="#"
                   className="inline-block text-sm font-medium text-blue-600 hover:underline"
@@ -72,13 +72,13 @@ export function LoginForm() {
             
             <Link 
               href="/dashboard" 
-              className={cn(buttonVariants({ variant: "default" }), "w-full h-11 text-base font-semibold bg-zinc-900 hover:bg-zinc-800")}
+              className={cn(buttonVariants({ variant: "default" }), "w-full h-11 text-base font-semibold ")}
             >
               Đăng nhập
             </Link>
           </div>
           
-          <div className="mt-2 text-center text-sm text-zinc-500">
+          <div className="mt-2 text-center text-sm text-muted-foreground">
             Hệ thống quản trị chỉ dành cho nhân viên nội bộ.
           </div>
         </div>

@@ -16,20 +16,20 @@ export function LoyaltySettings() {
   return (
     <>
       {/* Main Switch */}
-      <Card className="border-zinc-200 bg-zinc-50/50">
+      <Card className="border-border bg-muted/30">
         <CardContent className="flex items-center justify-between p-6">
           <div className="flex items-start gap-4">
-            <div className="bg-zinc-100 p-3 rounded-full text-zinc-900 mt-1">
+            <div className="bg-muted p-3 rounded-full text-foreground mt-1">
               <Award className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-zinc-900">Trạng thái Hệ thống Điểm Thưởng</h3>
-              <p className="text-sm text-zinc-500 mt-1">
+              <h3 className="text-lg font-bold text-foreground">Trạng thái Hệ thống Điểm Thưởng</h3>
+              <p className="text-sm text-muted-foreground mt-1">
                 Bật tính năng này để cho phép khách hàng tích lũy điểm khi mua sắm và sử dụng điểm để thanh toán.
               </p>
             </div>
           </div>
-          <Switch defaultChecked className="data-[state=checked]:bg-zinc-900" />
+          <Switch defaultChecked className="data-[state=checked]:bg-primary" />
         </CardContent>
       </Card>
 
@@ -51,17 +51,17 @@ export function LoyaltySettings() {
               </Label>
               <div className="flex items-center gap-4">
                 <Input type="number" defaultValue="100000" className="flex-1" />
-                <span className="font-medium text-zinc-500">=</span>
+                <span className="font-medium text-muted-foreground">=</span>
                 <Input type="number" defaultValue="1" className="w-24 text-center font-bold text-amber-600" />
                 <span className="font-medium text-amber-600">Điểm</span>
               </div>
-              <p className="text-xs text-zinc-500 mt-1">VD: Khách tiêu 100,000đ sẽ nhận được 1 Điểm thưởng.</p>
+              <p className="text-xs text-muted-foreground mt-1">VD: Khách tiêu 100,000đ sẽ nhận được 1 Điểm thưởng.</p>
             </div>
 
             <div className="flex items-center justify-between border-t pt-4">
               <div>
                 <Label className="font-semibold cursor-pointer">Thưởng điểm Đăng ký mới</Label>
-                <p className="text-xs text-zinc-500">Tặng điểm khi khách hàng tạo tài khoản thành công.</p>
+                <p className="text-xs text-muted-foreground">Tặng điểm khi khách hàng tạo tài khoản thành công.</p>
               </div>
               <Switch defaultChecked />
             </div>
@@ -88,11 +88,11 @@ export function LoyaltySettings() {
               </Label>
               <div className="flex items-center gap-4">
                 <Input type="number" defaultValue="1" className="w-24 text-center font-bold text-amber-600" />
-                <span className="font-medium text-zinc-500">=</span>
-                <Input type="number" defaultValue="1000" className="flex-1 font-bold text-zinc-900" />
-                <span className="font-medium text-zinc-900">VND</span>
+                <span className="font-medium text-muted-foreground">=</span>
+                <Input type="number" defaultValue="1000" className="flex-1 font-bold text-foreground" />
+                <span className="font-medium text-foreground">VND</span>
               </div>
-              <p className="text-xs text-zinc-500 mt-1">VD: 1 Điểm có thể trừ 1,000đ vào tổng hóa đơn.</p>
+              <p className="text-xs text-muted-foreground mt-1">VD: 1 Điểm có thể trừ 1,000đ vào tổng hóa đơn.</p>
             </div>
 
             <div className="grid gap-2 border-t pt-4">
@@ -101,7 +101,7 @@ export function LoyaltySettings() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="cursor-pointer border-0 bg-transparent p-0">
-                      <HelpCircle className="h-4 w-4 text-zinc-400" />
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Khách hàng phải đạt đủ số điểm này mới được quyền sử dụng điểm.</p>
@@ -110,9 +110,9 @@ export function LoyaltySettings() {
                 </TooltipProvider>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-zinc-600">Tối thiểu phải có</span>
+                <span className="text-sm text-muted-foreground">Tối thiểu phải có</span>
                 <Input type="number" defaultValue="100" className="w-24 text-center" />
-                <span className="text-sm text-zinc-600">Điểm trong ví</span>
+                <span className="text-sm text-muted-foreground">Điểm trong ví</span>
               </div>
             </div>
 
@@ -121,9 +121,9 @@ export function LoyaltySettings() {
                 <Label className="font-semibold">Giới hạn sử dụng / Đơn hàng</Label>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-zinc-600">Điểm trừ tối đa không quá</span>
+                <span className="text-sm text-muted-foreground">Điểm trừ tối đa không quá</span>
                 <Input type="number" defaultValue="50" className="w-24 text-center" />
-                <span className="text-sm text-zinc-600">% giá trị đơn hàng</span>
+                <span className="text-sm text-muted-foreground">% giá trị đơn hàng</span>
               </div>
             </div>
           </CardContent>

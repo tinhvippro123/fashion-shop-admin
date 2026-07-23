@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
+import { RichTextEditor } from "@/shared/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -36,31 +38,35 @@ interface ProductFormProps {
 
 
 export function ProductForm({ isEdit = false }: ProductFormProps) {
+  const [description, setDescription] = useState("");
   const [discountType, setDiscountType] = useState("percent");
   const [promoTarget, setPromoTarget] = useState("all");
 
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2 sm:gap-4">
           <BackButton />
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">{isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
-            <p className="text-zinc-500">{isEdit ? "Cập nhật thông tin của sản phẩm." : "Tạo mới một sản phẩm để đăng bán."}</p>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">{isEdit ? "Cập nhật thông tin của sản phẩm." : "Tạo mới một sản phẩm để đăng bán."}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline">Hủy bỏ</Button>
-          <Button className="gap-2 bg-zinc-900 hover:bg-zinc-800">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <Button variant="outline" className="flex-1 sm:flex-none">Hủy bỏ</Button>
+          <Button 
+            className="gap-2 flex-1 sm:flex-none"
+            onClick={() => toast.success(isEdit ? "Đã cập nhật sản phẩm thành công!" : "Đã tạo sản phẩm mới thành công!")}
+          >
             <Save className="h-4 w-4" /> Lưu sản phẩm
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="mb-6 bg-zinc-100">
-          <TabsTrigger value="basic" className="data-[state=active]:bg-white">Thông tin cơ bản</TabsTrigger>
-          <TabsTrigger value="variants" className="data-[state=active]:bg-white">Phân loại & Biến thể</TabsTrigger>
+        <TabsList className="mb-6 bg-muted">
+          <TabsTrigger value="basic" className="data-[state=active]:bg-card">Thông tin cơ bản</TabsTrigger>
+          <TabsTrigger value="variants" className="data-[state=active]:bg-card">Phân loại & Biến thể</TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic" className="mt-0">
@@ -79,10 +85,11 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="description">Mô tả chi tiết</Label>
-                <Textarea 
-                  id="description" 
+                <RichTextEditor 
+                  value={description}
+                  onChange={setDescription}
                   placeholder="Mô tả chất liệu, kiểu dáng..." 
-                  className="min-h-37.5" 
+                  editorClassName="min-h-[250px]" 
                 />
               </div>
             </CardContent>
@@ -117,10 +124,10 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
               <CardTitle>Hình ảnh</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-zinc-50 transition-colors cursor-pointer">
-                <UploadCloud className="h-8 w-8 text-zinc-400 mb-2" />
+              <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors cursor-pointer">
+                <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
                 <p className="text-sm font-medium">Kéo thả ảnh vào đây</p>
-                <p className="text-xs text-zinc-500 mt-1">Hỗ trợ JPG, PNG, WEBP (Max 5MB)</p>
+                <p className="text-xs text-muted-foreground mt-1">Hỗ trợ JPG, PNG, WEBP (Max 5MB)</p>
               </div>
             </CardContent>
           </Card>
@@ -168,7 +175,7 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-base font-semibold">Màu sắc (Colors)</Label>
                       <Dialog>
-                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100")}>
+                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-muted-foreground hover:text-foreground hover:bg-muted")}>
                           <Plus className="h-4 w-4 mr-1" /> Thêm màu mới
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-106.25">
@@ -199,7 +206,7 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                         <div key={i} className="flex items-center space-x-2">
                           <Checkbox id={`color-${i}`} defaultChecked={i === 0 || i === 2} />
                           <Label htmlFor={`color-${i}`} className="flex items-center gap-1.5 font-normal cursor-pointer">
-                            <div className="w-3.5 h-3.5 rounded-full border border-zinc-200 shadow-sm" style={{ backgroundColor: color.hex }}></div>
+                            <div className="w-3.5 h-3.5 rounded-full border border-border shadow-sm" style={{ backgroundColor: color.hex }}></div>
                             {color.name}
                           </Label>
                         </div>
@@ -210,7 +217,7 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-base font-semibold">Kích thước (Sizes)</Label>
                       <Dialog>
-                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100")}>
+                        <DialogTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 text-muted-foreground hover:text-foreground hover:bg-muted")}>
                           <Plus className="h-4 w-4 mr-1" /> Thêm size mới
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-106.25">
@@ -258,16 +265,16 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                     {MOCK_VARIANTS.map((v, i) => (
                       <div key={i} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                         <div className="flex flex-1 items-center gap-3">
-                           <div className="h-10 w-10 bg-zinc-100 rounded-md flex items-center justify-center border text-xs font-medium text-zinc-500">Ảnh</div>
+                           <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center border text-xs font-medium text-muted-foreground">Ảnh</div>
                            <div>
                              <p className="font-semibold text-sm">{v.color} / {v.size}</p>
-                             <p className="text-xs text-zinc-500">SKU: PROD-001-{i+1}</p>
+                             <p className="text-xs text-muted-foreground">SKU: PROD-001-{i+1}</p>
                            </div>
                         </div>
                         <div className="flex gap-2 w-full sm:w-auto">
                           <Input defaultValue={v.price} className="w-28 text-sm h-9" />
                           <Input defaultValue={v.stock} className="w-20 text-sm h-9" />
-                          <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400 hover:text-red-600">
+                          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-red-600">
                              <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -284,7 +291,7 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                     <CardDescription>Thiết lập chương trình khuyến mãi ra mắt cho sản phẩm này.</CardDescription>
                   </div>
                   <Dialog>
-                    <DialogTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-zinc-900 border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900")}>
+                    <DialogTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-foreground border-border hover:bg-muted hover:text-foreground")}>
                       <Plus className="h-4 w-4 mr-2" /> Tạo khuyến mãi nhanh
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-106.25">
@@ -312,22 +319,22 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                         </div>
                         
                         {promoTarget === "specific" && (
-                          <div className="grid gap-2 bg-zinc-50 p-3 rounded-md border">
-                            <Label className="text-xs text-zinc-500 mb-1">Chọn các biến thể muốn giảm giá:</Label>
+                          <div className="grid gap-2 bg-muted/50 p-3 rounded-md border">
+                            <Label className="text-xs text-muted-foreground mb-1">Chọn các biến thể muốn giảm giá:</Label>
                             <div className="max-h-30 overflow-y-auto space-y-2 pr-2">
-                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                              <div className="flex items-center justify-between bg-card p-2 border rounded-md">
                                 <div className="flex items-center space-x-2">
                                   <Checkbox id="create-var-1" />
                                   <Label htmlFor="create-var-1" className="text-sm font-medium">Đỏ đậm / Size S</Label>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                              <div className="flex items-center justify-between bg-card p-2 border rounded-md">
                                 <div className="flex items-center space-x-2">
                                   <Checkbox id="create-var-2" />
                                   <Label htmlFor="create-var-2" className="text-sm font-medium">Đỏ đậm / Size M</Label>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between bg-white p-2 border rounded-md">
+                              <div className="flex items-center justify-between bg-card p-2 border rounded-md">
                                 <div className="flex items-center space-x-2">
                                   <Checkbox id="create-var-3" />
                                   <Label htmlFor="create-var-3" className="text-sm font-medium">Đen tuyền / Size S</Label>
@@ -368,13 +375,13 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button type="submit" className="bg-zinc-900 hover:bg-zinc-800 text-white">Lưu thiết lập</Button>
+                        <Button type="submit" className="">Lưu thiết lập</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-zinc-500 italic">Chưa có khuyến mãi nào được thiết lập. Nhấn vào nút tạo nhanh để lên lịch khuyến mãi.</p>
+                  <p className="text-sm text-muted-foreground italic">Chưa có khuyến mãi nào được thiết lập. Nhấn vào nút tạo nhanh để lên lịch khuyến mãi.</p>
                 </CardContent>
               </Card>
             </div>
@@ -396,8 +403,8 @@ export function ProductForm({ isEdit = false }: ProductFormProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-zinc-50 transition-colors cursor-pointer mt-2">
-                    <UploadCloud className="h-8 w-8 text-zinc-400 mb-2" />
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors cursor-pointer mt-2">
+                    <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
                     <p className="text-sm font-medium">Kéo thả ảnh vào đây</p>
                   </div>
                 </CardContent>

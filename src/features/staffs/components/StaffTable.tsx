@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Plus, Shield, UserCog, Mail, Phone } from "lucide-react";
+import { Search, MoreHorizontal, Plus, Shield, UserCog, Mail, Phone, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,21 +31,25 @@ import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 import { useStaffs } from "@/features/staffs/hooks/useStaffs";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function StaffTable() {
   const { staffs, isLoading } = useStaffs();
 
-  if (isLoading) {
-    return <div className="flex justify-center p-8 text-zinc-500">Đang tải danh sách nhân viên...</div>;
-  }
+  
 
   return (
     <>
-      <div className="rounded-md border bg-white overflow-hidden">
+      <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
-            <Input type="search" placeholder="Tìm kiếm nhân viên..." className="pl-8" />
+          <div className="flex items-center gap-2 flex-1 max-w-sm">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input type="search" placeholder="Tìm kiếm nhân viên..." className="pl-8" />
+            </div>
+            <Button variant="outline">
+              <Filter className="mr-2 h-4 w-4" /> Lọc
+            </Button>
           </div>
         </div>
         
@@ -62,7 +66,8 @@ export function StaffTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {staffs.map((staff) => (
+              {isLoading ? <TableSkeleton columns={6} /> : (
+staffs.map((staff) => (
                 <TableRow key={staff.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -71,13 +76,13 @@ export function StaffTable() {
                         <AvatarFallback className={staff.role === "Quản trị viên" ? "bg-red-100 text-red-700" : ""}>{staff.initial}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-bold text-zinc-900">{staff.name}</span>
-                        <span className="text-xs text-zinc-500">{staff.id}</span>
+                        <span className="font-bold text-foreground">{staff.name}</span>
+                        <span className="text-xs text-muted-foreground">{staff.id}</span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1 text-sm text-zinc-600">
+                    <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> {staff.email}</div>
                       <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" /> {staff.phone}</div>
                     </div>
@@ -94,13 +99,13 @@ export function StaffTable() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={staff.status === "Hoạt động" ? "default" : "secondary"} className={staff.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300 border-none"}>
+                    <Badge variant={staff.status === "Hoạt động" ? "default" : "secondary"} className={staff.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-muted text-foreground hover:bg-zinc-300 border-none"}>
                       {staff.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                                         <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -139,7 +144,7 @@ export function StaffTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
@@ -149,7 +154,8 @@ export function StaffTable() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+)}
             </TableBody>
           </Table>
         </div>
@@ -164,8 +170,8 @@ export function StaffTable() {
                   <AvatarFallback className={staff.role === "Quản trị viên" ? "bg-red-100 text-red-700" : ""}>{staff.initial}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-1">
-                  <span className="font-bold text-zinc-900">{staff.name}</span>
-                  <span className="text-xs text-zinc-500 mb-1.5">{staff.id}</span>
+                  <span className="font-bold text-foreground">{staff.name}</span>
+                  <span className="text-xs text-muted-foreground mb-1.5">{staff.id}</span>
                   
                   <div className="flex gap-2 items-center flex-wrap">
                     <Badge variant="outline" className={
@@ -175,12 +181,12 @@ export function StaffTable() {
                     }>
                       {staff.role}
                     </Badge>
-                    <Badge variant={staff.status === "Hoạt động" ? "default" : "secondary"} className={staff.status === "Hoạt động" ? "bg-green-100 text-green-700 border-none text-[10px] px-1.5 py-0 shadow-none" : "bg-zinc-200 text-zinc-700 border-none text-[10px] px-1.5 py-0 shadow-none"}>
+                    <Badge variant={staff.status === "Hoạt động" ? "default" : "secondary"} className={staff.status === "Hoạt động" ? "bg-green-100 text-green-700 border-none text-[10px] px-1.5 py-0 shadow-none" : "bg-muted text-foreground border-none text-[10px] px-1.5 py-0 shadow-none"}>
                       {staff.status}
                     </Badge>
                   </div>
                   
-                  <div className="flex flex-col gap-1 text-xs text-zinc-600 mt-2">
+                  <div className="flex flex-col gap-1 text-xs text-muted-foreground mt-2">
                     <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {staff.email}</div>
                     <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {staff.phone}</div>
                   </div>
@@ -189,7 +195,7 @@ export function StaffTable() {
 
               <div className="absolute top-3 right-2">
                                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -228,7 +234,7 @@ export function StaffTable() {
                             </div>
                             <DialogFooter>
                               <Button variant="outline">Hủy</Button>
-                              <Button className="bg-zinc-900 hover:bg-zinc-800">Lưu thay đổi</Button>
+                              <Button className="">Lưu thay đổi</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>

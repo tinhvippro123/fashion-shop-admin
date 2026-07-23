@@ -12,6 +12,7 @@ import {
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
+import { RichTextEditor } from "@/shared/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -20,12 +21,9 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Switch } from "@/shared/ui/switch";
-import { Upload, Save } from "lucide-react";
-import dynamic from "next/dynamic";
+import { Save, ImagePlus, X, Calendar as CalendarIcon, Clock, Eye, Upload } from "lucide-react";
 import { useState } from "react";
-import "react-quill-new/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+import { toast } from "sonner";
 
 const categoryOptions = [
   { key: "trends", label: "Xu hướng thời trang" },
@@ -34,24 +32,28 @@ const categoryOptions = [
   { key: "care", label: "Hướng dẫn bảo quản" },
 ];
 
-export function BlogForm({ initialData }: { initialData?: any }) {
+export function BlogForm({ initialData, mode = "create" }: { initialData?: any; mode?: "create" | "edit" }) {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("tips");
 
   return (
-    <div className="flex flex-col gap-6 w-full pb-10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <BackButton />
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2 sm:mb-0">
+        <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+          <div className="mt-1 sm:mt-0"><BackButton /></div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Viết bài mới</h2>
-            <p className="text-zinc-500">Soạn thảo và xuất bản bài viết lên trang Blog.</p>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "Viết bài mới" : "Sửa bài viết"}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Soạn thảo và xuất bản bài viết lên trang Blog." : "Cập nhật nội dung bài viết."}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline">Lưu nháp</Button>
-          <Button className="gap-2 bg-zinc-900 hover:bg-zinc-800">
-            <Save className="h-4 w-4" /> Xuất bản
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <Button variant="ghost" className="flex-1 sm:flex-none">Hủy</Button>
+          {mode === "create" && <Button variant="outline" className="flex-1 sm:flex-none">Lưu nháp</Button>}
+          <Button 
+            className="gap-2 w-full sm:w-auto"
+            onClick={() => toast.success(mode === "create" ? "Đã xuất bản bài viết thành công!" : "Đã lưu thay đổi thành công!")}
+          >
+            <Save className="h-4 w-4" /> {mode === "create" ? "Xuất bản" : "Lưu thay đổi"}
           </Button>
         </div>
       </div>
@@ -71,36 +73,19 @@ export function BlogForm({ initialData }: { initialData?: any }) {
               
               <div className="grid gap-2">
                 <Label htmlFor="slug" className="font-semibold">Đường dẫn tĩnh (Slug)</Label>
-                <Input id="slug" placeholder="vd: 10-cach-phoi-do-di-da-lat" className="bg-zinc-50 text-zinc-500" />
-                <p className="text-xs text-zinc-500">Tự động tạo từ tiêu đề nếu để trống. Dùng cho đường dẫn SEO.</p>
+                <Input id="slug" placeholder="vd: 10-cach-phoi-do-di-da-lat" className="bg-muted/50 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">Tự động tạo từ tiêu đề nếu để trống. Dùng cho đường dẫn SEO.</p>
               </div>
 
               <div className="grid gap-2">
                 <Label className="font-semibold">Trình soạn thảo nội dung <span className="text-red-500">*</span></Label>
-                <div className="rounded-md border flex flex-col bg-white quill-wrapper">
-                  <ReactQuill 
-                    theme="snow" 
+                <div className="rounded-md border flex flex-col bg-card">
+                  <RichTextEditor 
                     value={content} 
                     onChange={setContent} 
-                    className="h-[400px] border-none"
+                    editorClassName="h-[400px] border-none"
                     placeholder="Bắt đầu viết nội dung tại đây..."
-                    bounds=".quill-wrapper"
-                    modules={{
-                      toolbar: [
-                        [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['link', 'image', 'video'],
-                        ['clean']
-                      ],
-                    }}
                   />
-                  {/* Space for the absolute positioned toolbar inside the quill container */}
-                  <div className="h-10"></div>
                 </div>
               </div>
             </CardContent>
@@ -151,7 +136,7 @@ export function BlogForm({ initialData }: { initialData?: any }) {
               <div className="grid gap-2">
                 <Label htmlFor="tags">Thẻ (Tags)</Label>
                 <Input id="tags" placeholder="VD: mùa đông, đà lạt, áo len..." />
-                <p className="text-xs text-zinc-500">Phân cách các thẻ bằng dấu phẩy (,)</p>
+                <p className="text-xs text-muted-foreground">Phân cách các thẻ bằng dấu phẩy (,)</p>
               </div>
             </CardContent>
           </Card>
@@ -162,10 +147,10 @@ export function BlogForm({ initialData }: { initialData?: any }) {
               <CardDescription>Kích thước khuyên dùng: 1200 x 630px.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-zinc-50 transition-colors">
-                <Upload className="h-8 w-8 text-zinc-400 mb-2" />
-                <p className="text-sm font-medium text-zinc-700">Nhấn để tải ảnh lên</p>
-                <p className="text-xs text-zinc-500 mt-1">Hỗ trợ JPG, PNG (Tối đa 2MB)</p>
+              <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-sm font-medium text-foreground">Nhấn để tải ảnh lên</p>
+                <p className="text-xs text-muted-foreground mt-1">Hỗ trợ JPG, PNG (Tối đa 2MB)</p>
               </div>
             </CardContent>
           </Card>
@@ -178,14 +163,14 @@ export function BlogForm({ initialData }: { initialData?: any }) {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="comment" className="font-semibold cursor-pointer">Cho phép bình luận</Label>
-                  <p className="text-xs text-zinc-500">Hiển thị khung bình luận ở cuối bài.</p>
+                  <p className="text-xs text-muted-foreground">Hiển thị khung bình luận ở cuối bài.</p>
                 </div>
                 <Switch id="comment" defaultChecked />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="pin" className="font-semibold cursor-pointer">Ghim bài viết</Label>
-                  <p className="text-xs text-zinc-500">Ghim lên đầu trang Blog.</p>
+                  <p className="text-xs text-muted-foreground">Ghim lên đầu trang Blog.</p>
                 </div>
                 <Switch id="pin" />
               </div>

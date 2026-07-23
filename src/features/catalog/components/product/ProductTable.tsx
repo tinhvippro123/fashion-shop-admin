@@ -22,17 +22,19 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { cn } from "@/shared/utils/utils";
 import { Product } from "@/features/catalog/types/product.admin";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 interface ProductTableProps {
   products: Product[];
+  isLoading?: boolean;
 }
 
-export function ProductTable({ products }: ProductTableProps) {
+export function ProductTable({ products, isLoading }: ProductTableProps) {
   return (
-    <div className="rounded-md border bg-white overflow-hidden">
+    <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Tìm kiếm tên sản phẩm, mã SKU..."
@@ -62,10 +64,11 @@ export function ProductTable({ products }: ProductTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {isLoading ? <TableSkeleton columns={7} /> : (
+              products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <div className="w-12 aspect-2/3 rounded-md bg-zinc-100 overflow-hidden relative">
+                    <div className="w-12 aspect-2/3 rounded-md bg-muted overflow-hidden relative">
                       <Image src="/login-bg.jpg" alt={product.name} fill className="object-cover" />
                     </div>
                   </TableCell>
@@ -78,7 +81,7 @@ export function ProductTable({ products }: ProductTableProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -90,29 +93,31 @@ export function ProductTable({ products }: ProductTableProps) {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </div>
 
         {/* Mobile List/Card View */}
         <div className="md:hidden flex flex-col">
-          {products.map((product) => (
+          {isLoading ? <div className="p-4 text-center text-muted-foreground">Đang tải...</div> : (
+          products.map((product) => (
             <div key={product.id} className="flex gap-4 p-4 border-b last:border-0 relative">
-              <div className="w-20 aspect-2/3 rounded-md bg-zinc-100 overflow-hidden relative shrink-0">
+              <div className="w-20 aspect-2/3 rounded-md bg-muted overflow-hidden relative shrink-0">
                 <Image src="/login-bg.jpg" alt={product.name} fill className="object-cover" />
               </div>
               <div className="flex flex-col flex-1 py-1">
-                <h4 className="font-semibold text-zinc-900 line-clamp-2 leading-tight mb-1 pr-6">{product.name}</h4>
-                <p className="text-sm text-zinc-500 mb-2">{product.category}</p>
+                <h4 className="font-semibold text-foreground line-clamp-2 leading-tight mb-1 pr-6">{product.name}</h4>
+                <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
                 <div className="mt-auto flex items-center justify-between">
-                  <span className="font-bold text-zinc-900">{product.price}</span>
+                  <span className="font-bold text-foreground">{product.price}</span>
                   <Badge className={cn("text-[10px] px-1.5 py-0", product.statusColor)}>{product.status}</Badge>
                 </div>
               </div>
               <div className="absolute top-3 right-2">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-zinc-100 outline-none">
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                     <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -124,7 +129,8 @@ export function ProductTable({ products }: ProductTableProps) {
                 </DropdownMenu>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
   );

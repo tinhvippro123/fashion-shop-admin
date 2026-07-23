@@ -23,10 +23,10 @@ export default function FaqsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Câu hỏi thường gặp</h2>
-          <p className="text-zinc-500 hidden sm:block">Quản lý danh sách câu hỏi và câu trả lời (FAQ).</p>
+          <p className="text-muted-foreground hidden sm:block">Quản lý danh sách câu hỏi và câu trả lời (FAQ).</p>
         </div>
         <Dialog>
-          <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white">
+          <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ">
             <Plus className="mr-2 h-4 w-4" /> Thêm câu hỏi
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
@@ -48,7 +48,7 @@ export default function FaqsPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button className="bg-zinc-900 hover:bg-zinc-800 w-full sm:w-auto">Lưu FAQ</Button>
+              <Button className=" w-full sm:w-auto">Lưu FAQ</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
