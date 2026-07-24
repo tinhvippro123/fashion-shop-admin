@@ -30,7 +30,7 @@ export default function CreateFlashSalePage() {
         </div>
       </div>
 
-      <FlashSaleForm />
+      <FlashSaleForm mode="create" />
     </div>
   );
 }

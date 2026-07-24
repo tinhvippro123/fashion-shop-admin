@@ -22,7 +22,7 @@ export default function EditStaticPage() {
         </div>
       </div>
 
-      <PageForm isEdit={true} />
+      <PageForm mode="edit" />
     </div>
   );
 }

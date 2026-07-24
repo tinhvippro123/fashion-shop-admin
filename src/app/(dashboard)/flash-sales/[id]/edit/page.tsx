@@ -30,7 +30,7 @@ export default function EditFlashSalePage() {
         </div>
       </div>
 
-      <FlashSaleForm isEdit={true} />
+      <FlashSaleForm mode="edit" />
     </div>
   );
 }

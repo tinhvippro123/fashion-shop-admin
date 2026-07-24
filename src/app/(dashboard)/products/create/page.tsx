@@ -3,5 +3,5 @@
 import { ProductForm } from "@/features/catalog";
 
 export default function CreateProductPage() {
-  return <ProductForm isEdit={false} />;
+  return <ProductForm mode="create" />;
 }
