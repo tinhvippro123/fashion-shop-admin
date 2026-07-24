@@ -39,7 +39,7 @@ export default function VouchersPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="code">Mã Code (Tự viết hoa)</Label>
+                <Label htmlFor="code">Mã Code (Từ viết hoa)</Label>
                 <Input id="code" placeholder="VD: SUMMER2026" className="uppercase" />
               </div>
               <div className="grid gap-2">
