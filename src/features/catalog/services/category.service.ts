@@ -1,3 +1,4 @@
+import { TCategoryPayload } from "../schemas/category.schema";
 import { Category } from "@/features/catalog/types/category";
 import { initialCategories } from "@/features/catalog/mocks/category.mock";
 
@@ -22,4 +23,20 @@ export const categoryService = {
   },
 
   // Các hàm tương lai: createCategory, updateCategory, deleteCategory...
+
+  async createCategory(data: TCategoryPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id: Date.now().toString(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+  async updateCategory(id: string, data: TCategoryPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
 };
+
+
+
+
+

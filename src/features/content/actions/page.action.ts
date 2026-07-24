@@ -11,12 +11,13 @@ export async function createPageAction(data: TPagePayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await pageService.createPage(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log("Saving page via service:", validated.data);
-  revalidatePath('/pages');
-  return { success: true, data: validated.data };
+  try {
+    const res = await pageService.createPage(validated.data);
+    revalidatePath('/pages');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o page" };
+  }
 }
 
 export async function updatePageAction(id: string | number, data: TPagePayload) {
@@ -25,10 +26,13 @@ export async function updatePageAction(id: string | number, data: TPagePayload) 
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await pageService.updatePage(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log(`Updating page ${id} via service:`, validated.data);
-  revalidatePath('/pages');
-  return { success: true, data: validated.data };
+  try {
+    const res = await pageService.updatePage(Number(id), validated.data);
+    revalidatePath('/pages');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t page" };
+  }
 }
+
+

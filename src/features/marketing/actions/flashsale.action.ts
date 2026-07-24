@@ -11,12 +11,13 @@ export async function createFlashSaleAction(data: TFlashSalePayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await flashSaleService.createFlashSale(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log("Saving flash sale via service:", validated.data);
-  revalidatePath('/flash-sales');
-  return { success: true, data: validated.data };
+  try {
+    const res = await flashSaleService.createFlashSale(validated.data);
+    revalidatePath('/flash-sales');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o flashsale" };
+  }
 }
 
 export async function updateFlashSaleAction(id: string | number, data: TFlashSalePayload) {
@@ -25,10 +26,13 @@ export async function updateFlashSaleAction(id: string | number, data: TFlashSal
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await flashSaleService.updateFlashSale(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log(`Updating flash sale ${id} via service:`, validated.data);
-  revalidatePath('/flash-sales');
-  return { success: true, data: validated.data };
+  try {
+    const res = await flashSaleService.updateFlashSale(Number(id), validated.data);
+    revalidatePath('/flash-sales');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t flashsale" };
+  }
 }
+
+

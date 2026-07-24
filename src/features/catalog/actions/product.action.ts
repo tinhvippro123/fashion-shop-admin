@@ -11,12 +11,13 @@ export async function createProductAction(data: TProductPayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await productService.createProduct(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log("Saving product via service:", validated.data);
-  revalidatePath('/products');
-  return { success: true, data: validated.data };
+  try {
+    const res = await productService.createProduct(validated.data);
+    revalidatePath('/products');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o product" };
+  }
 }
 
 export async function updateProductAction(id: string | number, data: TProductPayload) {
@@ -25,10 +26,13 @@ export async function updateProductAction(id: string | number, data: TProductPay
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await productService.updateProduct(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log(`Updating product ${id} via service:`, validated.data);
-  revalidatePath('/products');
-  return { success: true, data: validated.data };
+  try {
+    const res = await productService.updateProduct(id as string, validated.data);
+    revalidatePath('/products');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t product" };
+  }
 }
+
+

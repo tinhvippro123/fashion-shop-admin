@@ -5,3 +5,8 @@ export const faqService = {
     return new Promise(resolve => setTimeout(() => resolve(mockFaqs), 200));
   }
 };
+
+
+
+
+

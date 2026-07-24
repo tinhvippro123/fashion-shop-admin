@@ -11,12 +11,13 @@ export async function createCampaignAction(data: TCampaignPayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await promotionService.createCampaign(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log("Saving campaign via service:", validated.data);
-  revalidatePath('/promotions');
-  return { success: true, data: validated.data };
+  try {
+    const res = await promotionService.createCampaign(validated.data);
+    revalidatePath('/promotions');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o campaign" };
+  }
 }
 
 export async function updateCampaignAction(id: string | number, data: TCampaignPayload) {
@@ -25,10 +26,14 @@ export async function updateCampaignAction(id: string | number, data: TCampaignP
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await promotionService.updateCampaign(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log(`Updating campaign ${id} via service:`, validated.data);
-  revalidatePath('/promotions');
-  return { success: true, data: validated.data };
+  try {
+    const res = await promotionService.updateCampaign(Number(id), validated.data);
+    revalidatePath('/promotions');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t campaign" };
+  }
 }
+
+
+

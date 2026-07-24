@@ -66,25 +66,39 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
     }
   });
 
-  const discountType = form.watch("discountType");
+  const discountType = form.watch("discountType"); // eslint-disable-line
 
   function onSubmit(values: TCampaignPayload, status: "draft" | "active" = "active") {
     startTransition(async () => {
-      const payload = { ...values, status };
-      if (mode === "create") {
-        const res = await createCampaignAction(payload);
-        if (res.success) {
-          toast.success(status === "active" ? "Ðã luu và kích ho?t chi?n d?ch!" : "Ðã luu nháp chi?n d?ch!");
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateCampaignAction(initialData?.id || 1, payload);
-        if (res.success) {
-          toast.success(status === "active" ? "Ðã c?p nh?t chi?n d?ch!" : "Ðã c?p nh?t b?n nháp!");
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        const payload = { ...values, status };
+              if (mode === "create") {
+                const res = await createCampaignAction(payload);
+                if (res.success) {
+                  toast.success(status === "active" ? "ï¿½ï¿½ luu vï¿½ kï¿½ch ho?t chi?n d?ch!" : "ï¿½ï¿½ luu nhï¿½p chi?n d?ch!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateCampaignAction(initialData?.id || 1, payload);
+                if (res.success) {
+                  toast.success(status === "active" ? "ï¿½ï¿½ c?p nh?t chi?n d?ch!" : "ï¿½ï¿½ c?p nh?t b?n nhï¿½p!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n mï¿½y ch?!");
       }
     });
   }
@@ -101,31 +115,31 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chi?n d?ch khuy?n mãi</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chi?n d?ch khuy?n mï¿½i</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
               H?y b?
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nháp
+              Luu nhï¿½p
             </Button>
             <Button 
               type="submit"
               className="flex-1 sm:flex-none gap-2"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Luu & Kích ho?t
+              <Save className="h-4 w-4" /> Luu & Kï¿½ch ho?t
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* C?t trái: N?i dung chính & S?n ph?m */}
+          {/* C?t trï¿½i: N?i dung chï¿½nh & S?n ph?m */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin co b?n</CardTitle>
+                <CardTitle>Thï¿½ng tin co b?n</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -133,9 +147,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tên chi?n d?ch <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Tï¿½n chi?n d?ch <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Siêu Sale Hè 2026" {...field} />
+                        <Input placeholder="VD: Siï¿½u Sale Hï¿½ 2026" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -148,7 +162,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     name="discountType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Lo?i gi?m giá</FormLabel>
+                        <FormLabel>Lo?i gi?m giï¿½</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -189,8 +203,8 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Card>
               <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>Danh sách S?n ph?m tham gia</CardTitle>
-                  <CardDescription>Ch?n các s?n ph?m c? th? s? du?c áp d?ng m?c gi?m giá này.</CardDescription>
+                  <CardTitle>Danh sï¿½ch S?n ph?m tham gia</CardTitle>
+                  <CardDescription>Ch?n cï¿½c s?n ph?m c? th? s? du?c ï¿½p d?ng m?c gi?m giï¿½ nï¿½y.</CardDescription>
                 </div>
                 <Dialog>
                   <DialogTrigger className={cn(buttonVariants({ size: "sm", variant: "default" }), "w-full sm:w-auto")} type="button">
@@ -198,17 +212,17 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Thêm s?n ph?m vào chi?n d?ch</DialogTitle>
+                      <DialogTitle>Thï¿½m s?n ph?m vï¿½o chi?n d?ch</DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col gap-4 py-4">
                       {/* L?c & Ch?n s?n ph?m mock UI */}
                       <p className="text-sm text-muted-foreground italic">Ph?n ch?n s?n ph?m dang du?c thi?t k? d?ng UI Mockup.</p>
                       <div className="flex justify-between items-center bg-muted/50 p-3 rounded-md border border-border">
-                        <span className="text-sm text-emerald-800 font-medium">Ðã ch?n: 3 phân lo?i</span>
+                        <span className="text-sm text-emerald-800 font-medium">ï¿½ï¿½ ch?n: 3 phï¿½n lo?i</span>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="button">Xác nh?n</Button>
+                      <Button type="button">Xï¿½c nh?n</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -217,10 +231,10 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                 <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 w-full">
                   <div className="relative flex-1 w-full sm:w-auto">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Tìm trong danh sách dã ch?n..." className="pl-9" />
+                    <Input placeholder="Tï¿½m trong danh sï¿½ch dï¿½ ch?n..." className="pl-9" />
                   </div>
                   <Button variant="destructive" className="w-full sm:w-auto opacity-50 cursor-not-allowed" type="button">
-                    <Trash2 className="mr-2 h-4 w-4" /> Xóa hàng lo?t (0)
+                    <Trash2 className="mr-2 h-4 w-4" /> Xï¿½a hï¿½ng lo?t (0)
                   </Button>
                 </div>
 
@@ -229,9 +243,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50 border-b">
                       <tr>
-                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">S?n ph?m / Phân lo?i</th>
+                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">S?n ph?m / Phï¿½n lo?i</th>
                         <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Kho</th>
-                        <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao tác</th>
+                        <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao tï¿½c</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border bg-card">
@@ -240,8 +254,8 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">?nh</div>
                             <div className="flex flex-col">
-                              <span className="font-medium">Áo thun form r?ng basic</span>
-                              <span className="text-xs text-foreground font-bold">Ðen / Size S</span>
+                              <span className="font-medium">ï¿½o thun form r?ng basic</span>
+                              <span className="text-xs text-foreground font-bold">ï¿½en / Size S</span>
                             </div>
                           </div>
                         </td>
@@ -255,18 +269,18 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     </tbody>
                   </table>
                   <div className="bg-muted/50 p-3 border-t text-sm text-muted-foreground font-medium">
-                    T?ng c?ng: 1 phân lo?i
+                    T?ng c?ng: 1 phï¿½n lo?i
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* C?t ph?i: Cài d?t nâng cao */}
+          {/* C?t ph?i: Cï¿½i d?t nï¿½ng cao */}
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Th?i gian áp d?ng</CardTitle>
+                <CardTitle>Th?i gian ï¿½p d?ng</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -274,7 +288,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ngày b?t d?u <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Ngï¿½y b?t d?u <span className="text-red-500">*</span></FormLabel>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <FormControl>
@@ -290,7 +304,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="endDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ngày k?t thúc <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Ngï¿½y k?t thï¿½c <span className="text-red-500">*</span></FormLabel>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <FormControl>
@@ -306,18 +320,18 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
 
             <Card>
               <CardHeader>
-                <CardTitle>Ð?i tu?ng khách hàng</CardTitle>
+                <CardTitle>ï¿½?i tu?ng khï¿½ch hï¿½ng</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <Select value={audienceType} onValueChange={(val) => setAudienceType(val as string)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Ch?n d?i tu?ng">
-                      {audienceType === "all" ? "T?t c? khách hàng" : "Ch? áp d?ng theo H?ng thành viên"}
+                      {audienceType === "all" ? "T?t c? khï¿½ch hï¿½ng" : "Ch? ï¿½p d?ng theo H?ng thï¿½nh viï¿½n"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent align="start" alignItemWithTrigger={false}>
-                    <SelectItem value="all">T?t c? khách hàng</SelectItem>
-                    <SelectItem value="tier">H?ng thành viên (Membership Tier)</SelectItem>
+                    <SelectItem value="all">T?t c? khï¿½ch hï¿½ng</SelectItem>
+                    <SelectItem value="tier">H?ng thï¿½nh viï¿½n (Membership Tier)</SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
@@ -325,7 +339,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
 
             <Card>
               <CardHeader>
-                <CardTitle>Tr?ng thái</CardTitle>
+                <CardTitle>Tr?ng thï¿½i</CardTitle>
               </CardHeader>
               <CardContent>
                 <FormField
@@ -334,9 +348,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
-                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích ho?t chi?n d?ch</FormLabel>
+                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kï¿½ch ho?t chi?n d?ch</FormLabel>
                         <FormDescription>
-                          Chi?n d?ch s? t? d?ng ch?y khi d?n ngày gi? b?t d?u
+                          Chi?n d?ch s? t? d?ng ch?y khi d?n ngï¿½y gi? b?t d?u
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -356,3 +370,5 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
     </Form>
   );
 }
+
+

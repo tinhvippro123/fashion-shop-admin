@@ -43,17 +43,17 @@ import { createBlogAction, updateBlogAction } from "../actions/blog.action";
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Ðang t?i b? so?n th?o...</div> 
+  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">ï¿½ang t?i b? so?n th?o...</div> 
 });
 
 const categoryOptions = [
   { key: "trends", label: "Xu hu?ng th?i trang" },
   { key: "tips", label: "M?o ph?i d?" },
-  { key: "news", label: "Tin t?c c?a hàng" },
+  { key: "news", label: "Tin t?c c?a hï¿½ng" },
   { key: "care", label: "Hu?ng d?n b?o qu?n" },
 ];
 
-export function BlogForm({ initialData, mode = "create" }: { initialData?: any; mode?: "create" | "edit" }) {
+export function BlogForm({ initialData, mode = "create" }: { initialData?: Partial<TBlogPayload> & { id?: string | number }; mode?: "create" | "edit" }) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TBlogPayload>({
@@ -74,21 +74,35 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
 
   function onSubmit(values: TBlogPayload, status: "draft" | "published" = "published") {
     startTransition(async () => {
-      const payload = { ...values, status };
-      if (mode === "create") {
-        const res = await createBlogAction(payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã xu?t b?n bài vi?t thành công!" : "Ðã luu nháp bài vi?t!");
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateBlogAction(initialData?.id || 1, payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã luu thay d?i thành công!" : "Ðã c?p nh?t b?n nháp!");
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        const payload = { ...values, status };
+              if (mode === "create") {
+                const res = await createBlogAction(payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "ï¿½ï¿½ xu?t b?n bï¿½i vi?t thï¿½nh cï¿½ng!" : "ï¿½ï¿½ luu nhï¿½p bï¿½i vi?t!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateBlogAction(initialData?.id || 1, payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "ï¿½ï¿½ luu thay d?i thï¿½nh cï¿½ng!" : "ï¿½ï¿½ c?p nh?t b?n nhï¿½p!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n mï¿½y ch?!");
       }
     });
   }
@@ -104,8 +118,8 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
           <div className="flex items-start sm:items-center gap-2 sm:gap-4">
             <div className="mt-1 sm:mt-0"><BackButton /></div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "Vi?t bài m?i" : "S?a bài vi?t"}</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "So?n th?o và xu?t b?n bài vi?t lên trang Blog." : "C?p nh?t n?i dung bài vi?t."}</p>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "Vi?t bï¿½i m?i" : "S?a bï¿½i vi?t"}</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "So?n th?o vï¿½ xu?t b?n bï¿½i vi?t lï¿½n trang Blog." : "C?p nh?t n?i dung bï¿½i vi?t."}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
@@ -113,7 +127,7 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
               H?y
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nháp
+              Luu nhï¿½p
             </Button>
             <Button 
               type="submit"
@@ -130,7 +144,7 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
           <div className="md:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>N?i dung chính</CardTitle>
+                <CardTitle>N?i dung chï¿½nh</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-6">
                 <FormField
@@ -138,9 +152,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Tiêu d? bài vi?t <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Tiï¿½u d? bï¿½i vi?t <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: 10 Cách Ph?i Ð? Ði Ðà L?t Mùa L?nh C?c Xinh Cho N?" className="text-lg" {...field} />
+                        <Input placeholder="VD: 10 Cï¿½ch Ph?i ï¿½? ï¿½i ï¿½ï¿½ L?t Mï¿½a L?nh C?c Xinh Cho N?" className="text-lg" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -152,11 +166,11 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Ðu?ng d?n tinh (Slug)</FormLabel>
+                      <FormLabel className="font-semibold">ï¿½u?ng d?n tinh (Slug)</FormLabel>
                       <FormControl>
                         <Input placeholder="vd: 10-cach-phoi-do-di-da-lat" className="bg-muted/50" {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>T? d?ng t?o t? tiêu d? n?u d? tr?ng. Dùng cho du?ng d?n SEO.</FormDescription>
+                      <FormDescription>T? d?ng t?o t? tiï¿½u d? n?u d? tr?ng. Dï¿½ng cho du?ng d?n SEO.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -167,14 +181,14 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Trình so?n th?o n?i dung <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Trï¿½nh so?n th?o n?i dung <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <div className="rounded-md border flex flex-col bg-card">
                           <RichTextEditor 
                             value={field.value} 
                             onChange={field.onChange} 
                             editorClassName="h-[400px] border-none"
-                            placeholder="B?t d?u vi?t n?i dung t?i dây..."
+                            placeholder="B?t d?u vi?t n?i dung t?i dï¿½y..."
                           />
                         </div>
                       </FormControl>
@@ -187,8 +201,8 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
 
             <Card>
               <CardHeader>
-                <CardTitle>T?i uu SEO (Tùy ch?n)</CardTitle>
-                <CardDescription>Thi?t l?p các th? d? bài vi?t d? dàng lên top Google.</CardDescription>
+                <CardTitle>T?i uu SEO (Tï¿½y ch?n)</CardTitle>
+                <CardDescription>Thi?t l?p cï¿½c th? d? bï¿½i vi?t d? dï¿½ng lï¿½n top Google.</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
                 <FormField
@@ -196,9 +210,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="seoTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Th? Tiêu d? SEO (Meta Title)</FormLabel>
+                      <FormLabel>Th? Tiï¿½u d? SEO (Meta Title)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nh?p tiêu d? hi?n th? trên Google..." {...field} value={field.value || ""} />
+                        <Input placeholder="Nh?p tiï¿½u d? hi?n th? trï¿½n Google..." {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -209,9 +223,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="seoDesc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Th? Mô t? (Meta Description)</FormLabel>
+                      <FormLabel>Th? Mï¿½ t? (Meta Description)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Mô t? ng?n g?n n?i dung bài vi?t..." rows={3} {...field} value={field.value || ""} />
+                        <Textarea placeholder="Mï¿½ t? ng?n g?n n?i dung bï¿½i vi?t..." rows={3} {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -225,7 +239,7 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Phân lo?i</CardTitle>
+                <CardTitle>Phï¿½n lo?i</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -233,11 +247,11 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Chuyên m?c <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Chuyï¿½n m?c <span className="text-red-500">*</span></FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Ch?n chuyên m?c" />
+                            <SelectValue placeholder="Ch?n chuyï¿½n m?c" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -259,9 +273,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                     <FormItem>
                       <FormLabel>Th? (Tags)</FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: mùa dông, dà l?t, áo len..." {...field} value={field.value || ""} />
+                        <Input placeholder="VD: mï¿½a dï¿½ng, dï¿½ l?t, ï¿½o len..." {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>Phân cách các th? b?ng d?u ph?y (,)</FormDescription>
+                      <FormDescription>Phï¿½n cï¿½ch cï¿½c th? b?ng d?u ph?y (,)</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -271,13 +285,13 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
 
             <Card>
               <CardHeader>
-                <CardTitle>?nh bìa (Thumbnail)</CardTitle>
-                <CardDescription>Kích thu?c khuyên dùng: 1200 x 630px.</CardDescription>
+                <CardTitle>?nh bï¿½a (Thumbnail)</CardTitle>
+                <CardDescription>Kï¿½ch thu?c khuyï¿½n dï¿½ng: 1200 x 630px.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/50 transition-colors">
                   <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-sm font-medium text-foreground">Nh?n d? t?i ?nh lên</p>
+                  <p className="text-sm font-medium text-foreground">Nh?n d? t?i ?nh lï¿½n</p>
                   <p className="text-xs text-muted-foreground mt-1">H? tr? JPG, PNG (T?i da 2MB)</p>
                 </div>
               </CardContent>
@@ -285,7 +299,7 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
 
             <Card>
               <CardHeader>
-                <CardTitle>Cài d?t khác</CardTitle>
+                <CardTitle>Cï¿½i d?t khï¿½c</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -294,9 +308,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base cursor-pointer">Cho phép bình lu?n</FormLabel>
+                        <FormLabel className="text-base cursor-pointer">Cho phï¿½p bï¿½nh lu?n</FormLabel>
                         <FormDescription>
-                          Hi?n th? khung bình lu?n ? cu?i bài.
+                          Hi?n th? khung bï¿½nh lu?n ? cu?i bï¿½i.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -314,9 +328,9 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base cursor-pointer">Ghim bài vi?t</FormLabel>
+                        <FormLabel className="text-base cursor-pointer">Ghim bï¿½i vi?t</FormLabel>
                         <FormDescription>
-                          Ghim lên d?u trang Blog.
+                          Ghim lï¿½n d?u trang Blog.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -336,3 +350,4 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: any; 
     </Form>
   );
 }
+

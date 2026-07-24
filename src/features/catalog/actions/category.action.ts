@@ -11,12 +11,13 @@ export async function createCategoryAction(data: TCategoryPayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await categoryService.createCategory(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log("Saving category via service:", validated.data);
-  revalidatePath('/categories');
-  return { success: true, data: validated.data };
+  try {
+    const res = await categoryService.createCategory(validated.data);
+    revalidatePath('/categories');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o category" };
+  }
 }
 
 export async function updateCategoryAction(id: string | number, data: TCategoryPayload) {
@@ -25,10 +26,13 @@ export async function updateCategoryAction(id: string | number, data: TCategoryP
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await categoryService.updateCategory(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 800));
-  console.log(`Updating category ${id} via service:`, validated.data);
-  revalidatePath('/categories');
-  return { success: true, data: validated.data };
+  try {
+    const res = await categoryService.updateCategory(id as string, validated.data);
+    revalidatePath('/categories');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t category" };
+  }
 }
+
+

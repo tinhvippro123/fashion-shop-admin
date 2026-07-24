@@ -37,7 +37,7 @@ import { CategorySchema, TCategoryPayload } from "../../schemas/category.schema"
 import { createCategoryAction, updateCategoryAction } from "../../actions/category.action";
 
 export interface CategoryFormModalProps {
-  initialData?: any;
+  initialData?: Partial<TCategoryPayload> & { id?: string | number };
   mode?: "create" | "edit";
   trigger?: React.ReactElement;
 }
@@ -58,23 +58,37 @@ export function CategoryFormModal({ initialData, mode = "create", trigger }: Cat
 
   function onSubmit(values: TCategoryPayload) {
     startTransition(async () => {
-      if (mode === "create") {
-        const res = await createCategoryAction(values);
-        if (res.success) {
-          toast.success("Thêm danh mục thành công!");
-          setOpen(false);
-          form.reset();
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateCategoryAction(initialData?.id || 1, values);
-        if (res.success) {
-          toast.success("Cập nhật danh mục thành công!");
-          setOpen(false);
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        if (mode === "create") {
+                const res = await createCategoryAction(values);
+                if (res.success) {
+                  toast.success("Thêm danh mục thành công!");
+                  setOpen(false);
+                  form.reset();
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateCategoryAction(initialData?.id || 1, values);
+                if (res.success) {
+                  toast.success("Cập nhật danh mục thành công!");
+                  setOpen(false);
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n m�y ch?!");
       }
     });
   }
@@ -171,3 +185,4 @@ export function CategoryFormModal({ initialData, mode = "create", trigger }: Cat
     </Dialog>
   );
 }
+

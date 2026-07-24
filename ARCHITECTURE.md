@@ -249,8 +249,28 @@ src/
    
    function onSubmit(values: TDataPayload) {
      startTransition(async () => {
-       await createDataAction(values);
+       try {
+         const res = await createDataAction(values);
+         if (res.success) {
+           toast.success("Thành công!");
+           form.reset();
+         } else {
+           toast.error(res.error || "Có lỗi xảy ra");
+           // Ánh xạ lỗi Validation từ Server Action về UI
+           if (res.details) {
+             Object.keys(res.details).forEach((key) => {
+               form.setError(key as any, { type: "server", message: res.details[key][0] });
+             });
+           }
+         }
+       } catch (error) {
+         toast.error("Lỗi kết nối đến máy chủ!");
+       }
      });
    }
    // Return `<Form {...form}>...`
    ```
+
+### 9.4. Error Handling (BẮT BUỘC)
+- **Trong Server Action**: Phải luôn có khối `try...catch` bọc quanh lời gọi Service. Trả về `return { success: false, error: "Lỗi hệ thống" }` nếu Service ném Exception (tránh sập Next.js App Router).
+- **Trong Form Component**: Phải luôn có khối `try...catch` bọc quanh lời gọi Server Action. Xử lý field validation error bằng cách dùng `form.setError` với `res.details`.

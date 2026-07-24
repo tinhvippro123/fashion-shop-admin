@@ -11,12 +11,13 @@ export async function createColorAction(data: TColorPayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await colorService.createColor(validated.data);
-  await new Promise(resolve => setTimeout(resolve, 500));
-  console.log("Saving color via service:", validated.data);
-  revalidatePath('/colors');
-  return { success: true, data: validated.data };
+  try {
+    const res = await colorService.createColor(validated.data);
+    revalidatePath('/colors');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o color" };
+  }
 }
 
 export async function updateColorAction(id: string | number, data: TColorPayload) {
@@ -25,10 +26,13 @@ export async function updateColorAction(id: string | number, data: TColorPayload
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await colorService.updateColor(id as string, validated.data);
-  await new Promise(resolve => setTimeout(resolve, 500));
-  console.log(`Updating color ${id} via service:`, validated.data);
-  revalidatePath('/colors');
-  return { success: true, data: validated.data };
+  try {
+    const res = await colorService.updateColor(id as string, validated.data);
+    revalidatePath('/colors');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t color" };
+  }
 }
+
+

@@ -12,14 +12,13 @@ export async function createBlogAction(data: TBlogPayload) {
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await blogService.createBlog(validated.data);
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  console.log("Saving blog via service:", validated.data);
-  revalidatePath('/blogs');
-  return { success: true, data: validated.data };
+  try {
+    const res = await blogService.createBlog(validated.data);
+    revalidatePath('/blogs');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi t?o blog" };
+  }
 }
 
 export async function updateBlogAction(id: string | number, data: TBlogPayload) {
@@ -28,12 +27,13 @@ export async function updateBlogAction(id: string | number, data: TBlogPayload) 
     return { success: false, error: "Dữ liệu không hợp lệ", details: validated.error.flatten().fieldErrors };
   }
 
-  // Pass to service
-  // await blogService.updateBlog(id as string, validated.data);
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  console.log(`Updating blog ${id} via service:`, validated.data);
-  revalidatePath('/blogs');
-  return { success: true, data: validated.data };
+  try {
+    const res = await blogService.updateBlog(Number(id), validated.data);
+    revalidatePath('/blogs');
+    return { success: true, data: res };
+  } catch (error) {
+    return { success: false, error: "L?i h? th?ng khi c?p nh?t blog" };
+  }
 }
+
+

@@ -24,8 +24,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/shared/ui/form";
-import { ColorSchema, TColorPayload } from "../schemas/color.schema";
-import { createColorAction, updateColorAction } from "../actions/color.action";
+import { ColorSchema, TColorPayload } from "../../schemas/color.schema";
+import { createColorAction, updateColorAction } from "../../actions/color.action";
 
 export interface ColorFormModalProps {
   initialData?: any;
@@ -47,23 +47,37 @@ export function ColorFormModal({ initialData, mode = "create", trigger }: ColorF
 
   function onSubmit(values: TColorPayload) {
     startTransition(async () => {
-      if (mode === "create") {
-        const res = await createColorAction(values);
-        if (res.success) {
-          toast.success("Thêm màu sắc thành công!");
-          setOpen(false);
-          form.reset();
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateColorAction(initialData?.id || 1, values);
-        if (res.success) {
-          toast.success("Cập nhật màu sắc thành công!");
-          setOpen(false);
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        if (mode === "create") {
+                const res = await createColorAction(values);
+                if (res.success) {
+                  toast.success("Thêm màu sắc thành công!");
+                  setOpen(false);
+                  form.reset();
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateColorAction(initialData?.id || 1, values);
+                if (res.success) {
+                  toast.success("Cập nhật màu sắc thành công!");
+                  setOpen(false);
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n m�y ch?!");
       }
     });
   }
@@ -126,3 +140,4 @@ export function ColorFormModal({ initialData, mode = "create", trigger }: ColorF
     </Dialog>
   );
 }
+

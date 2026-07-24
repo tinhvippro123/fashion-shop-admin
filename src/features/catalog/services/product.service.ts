@@ -1,3 +1,4 @@
+import { TProductPayload } from "../schemas/product.schema";
 import { Product } from "@/features/catalog/types/product.admin";
 import { initialProducts } from "@/features/catalog/mocks/product.mock";
 
@@ -21,4 +22,20 @@ export const productService = {
   },
 
   // Các hàm tương lai: createProduct, updateProduct, deleteProduct...
+
+  async createProduct(data: TProductPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id: Date.now().toString(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+  async updateProduct(id: string, data: TProductPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
 };
+
+
+
+
+

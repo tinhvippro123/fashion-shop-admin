@@ -30,10 +30,10 @@ import { createPageAction, updatePageAction } from "../actions/page.action";
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Ðang t?i b? so?n th?o...</div> 
+  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">ï¿½ang t?i b? so?n th?o...</div> 
 });
 
-export function PageForm({ initialData, mode = "create" }: { initialData?: any; mode?: "create" | "edit" }) {
+export function PageForm({ initialData, mode = "create" }: { initialData?: Partial<TPagePayload> & { id?: string | number }; mode?: "create" | "edit" }) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TPagePayload>({
@@ -51,21 +51,35 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
 
   function onSubmit(values: TPagePayload, status: "draft" | "published" = "published") {
     startTransition(async () => {
-      const payload = { ...values, status };
-      if (mode === "create") {
-        const res = await createPageAction(payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã luu trang thành công!" : "Ðã luu nháp trang!");
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updatePageAction(initialData?.id || 1, payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã luu thay d?i trang!" : "Ðã c?p nh?t b?n nháp!");
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        const payload = { ...values, status };
+              if (mode === "create") {
+                const res = await createPageAction(payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "ï¿½ï¿½ luu trang thï¿½nh cï¿½ng!" : "ï¿½ï¿½ luu nhï¿½p trang!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updatePageAction(initialData?.id || 1, payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "ï¿½ï¿½ luu thay d?i trang!" : "ï¿½ï¿½ c?p nh?t b?n nhï¿½p!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n mï¿½y ch?!");
       }
     });
   }
@@ -83,7 +97,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
             <div className="mt-1 sm:mt-0"><BackButton /></div>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "T?o trang m?i" : "S?a trang"}</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Thi?t k? các trang n?i dung tinh." : "C?p nh?t n?i dung trang."}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Thi?t k? cï¿½c trang n?i dung tinh." : "C?p nh?t n?i dung trang."}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
@@ -91,7 +105,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
               H?y
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nháp
+              Luu nhï¿½p
             </Button>
             <Button 
               type="submit"
@@ -104,7 +118,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {/* C?t trái: Form thông tin & Editor */}
+          {/* C?t trï¿½i: Form thï¿½ng tin & Editor */}
           <div className="md:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
@@ -116,9 +130,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Tiêu d? trang <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Tiï¿½u d? trang <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: V? chúng tôi..." className="text-lg" {...field} />
+                        <Input placeholder="VD: V? chï¿½ng tï¿½i..." className="text-lg" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,11 +163,11 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
             </Card>
           </div>
 
-          {/* C?t ph?i: Cài d?t SEO & Tr?ng thái */}
+          {/* C?t ph?i: Cï¿½i d?t SEO & Tr?ng thï¿½i */}
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Cài d?t hi?n th?</CardTitle>
+                <CardTitle>Cï¿½i d?t hi?n th?</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -161,11 +175,11 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Ðu?ng d?n (Slug)</FormLabel>
+                      <FormLabel className="font-semibold">ï¿½u?ng d?n (Slug)</FormLabel>
                       <FormControl>
                         <Input placeholder="ve-chung-toi" className="bg-muted/50" {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>T? d?ng t?o t? tiêu d? n?u d? tr?ng.</FormDescription>
+                      <FormDescription>T? d?ng t?o t? tiï¿½u d? n?u d? tr?ng.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -178,7 +192,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
                       <div className="space-y-0.5">
                         <FormLabel className="text-base cursor-pointer">Xu?t b?n trang</FormLabel>
                         <FormDescription>
-                          Trang s? hi?n th? công khai ngay.
+                          Trang s? hi?n th? cï¿½ng khai ngay.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -195,7 +209,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
             
             <Card>
               <CardHeader>
-                <CardTitle>SEO (Tìm ki?m)</CardTitle>
+                <CardTitle>SEO (Tï¿½m ki?m)</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -203,9 +217,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="seoTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Th? tiêu d? (Meta Title)</FormLabel>
+                      <FormLabel>Th? tiï¿½u d? (Meta Title)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Tiêu d? hi?n th? trên Google..." {...field} value={field.value || ""} />
+                        <Input placeholder="Tiï¿½u d? hi?n th? trï¿½n Google..." {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -216,9 +230,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
                   name="seoDesc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mô t? (Meta Description)</FormLabel>
+                      <FormLabel>Mï¿½ t? (Meta Description)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Ðo?n mô t? ng?n hi?n th? trên Google..." className="min-h-24" {...field} value={field.value || ""} />
+                        <Textarea placeholder="ï¿½o?n mï¿½ t? ng?n hi?n th? trï¿½n Google..." className="min-h-24" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -232,3 +246,4 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: any; 
     </Form>
   );
 }
+

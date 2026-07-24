@@ -47,11 +47,11 @@ import { createProductAction, updateProductAction } from "../../actions/product.
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="h-[250px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Ðang t?i b? so?n th?o...</div> 
+  loading: () => <div className="min-h-[250px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Đang tải bộ soạn thảo...</div> 
 });
 
 interface ProductFormProps {
-  initialData?: any;
+  initialData?: Partial<TProductPayload> & { id?: string | number };
   mode?: "create" | "edit";
 }
 
@@ -76,21 +76,35 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
 
   function onSubmit(values: TProductPayload, status: "draft" | "published" = "published") {
     startTransition(async () => {
-      const payload = { ...values, status };
-      if (mode === "create") {
-        const res = await createProductAction(payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã luu s?n ph?m thành công!" : "Ðã luu nháp s?n ph?m!");
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateProductAction(initialData?.id || 1, payload);
-        if (res.success) {
-          toast.success(status === "published" ? "Ðã c?p nh?t s?n ph?m thành công!" : "Ðã c?p nh?t b?n nháp!");
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        const payload = { ...values, status };
+              if (mode === "create") {
+                const res = await createProductAction(payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "Ðã luu s?n ph?m thành công!" : "Ðã luu nháp s?n ph?m!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateProductAction(initialData?.id || 1, payload);
+                if (res.success) {
+                  toast.success(status === "published" ? "Ðã c?p nh?t s?n ph?m thành công!" : "Ðã c?p nh?t b?n nháp!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n m�y ch?!");
       }
     });
   }
@@ -395,3 +409,4 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
     </Form>
   );
 }
+

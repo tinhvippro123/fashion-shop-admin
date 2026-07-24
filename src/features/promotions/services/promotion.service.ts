@@ -1,3 +1,4 @@
+import { TCampaignPayload } from "../schemas/campaign.schema";
 import { Campaign, Voucher } from "@/features/promotions/types/promotion.admin";
 import { mockCampaigns, mockVouchers } from "@/features/promotions/mocks/promotion.mock";
 
@@ -19,4 +20,21 @@ export const promotionService = {
     await delay(400); // Giả lập network latency
     return mockVouchers;
   },
+
+  async createCampaign(data: TCampaignPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id: Date.now(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+  async updateCampaign(id: number, data: TCampaignPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(800);
+    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
 };
+
+
+
+
+
+

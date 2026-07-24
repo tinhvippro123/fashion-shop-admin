@@ -104,21 +104,35 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
 
   function onSubmit(values: TFlashSalePayload, status: "draft" | "active" | "scheduled" | "ended" = "scheduled") {
     startTransition(async () => {
-      const payload = { ...values, status };
-      if (mode === "create") {
-        const res = await createFlashSaleAction(payload);
-        if (res.success) {
-          toast.success(status === "draft" ? "Ðã luu nháp!" : "Ðã kích ho?t Flash Sale!");
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateFlashSaleAction(initialData?.id || 1, payload);
-        if (res.success) {
-          toast.success(status === "draft" ? "Ðã c?p nh?t b?n nháp!" : "Ðã c?p nh?t Flash Sale!");
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        const payload = { ...values, status };
+              if (mode === "create") {
+                const res = await createFlashSaleAction(payload);
+                if (res.success) {
+                  toast.success(status === "draft" ? "Ðã luu nháp!" : "Ðã kích ho?t Flash Sale!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateFlashSaleAction(initialData?.id || 1, payload);
+                if (res.success) {
+                  toast.success(status === "draft" ? "Ðã c?p nh?t b?n nháp!" : "Ðã c?p nh?t Flash Sale!");
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n m�y ch?!");
       }
     });
   }
@@ -452,3 +466,4 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
     </Form>
   );
 }
+

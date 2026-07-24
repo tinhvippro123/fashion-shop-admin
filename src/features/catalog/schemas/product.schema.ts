@@ -8,6 +8,10 @@ export const ProductSchema = z.object({
   stock: z.number().min(0, "Số lượng không hợp lệ"),
   category: z.string().min(1, "Vui lòng chọn danh mục"),
   brand: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  colors: z.array(z.string()).optional(),
+  sizes: z.array(z.string()).optional(),
+  variants: z.array(z.any()).optional(),
   status: z.enum(["draft", "published"])
 });
 

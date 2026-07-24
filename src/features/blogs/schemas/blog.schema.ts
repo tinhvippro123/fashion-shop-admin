@@ -8,6 +8,7 @@ export const BlogSchema = z.object({
   seoDesc: z.string().optional(),
   category: z.string().min(1, "Vui lòng chọn chuyên mục"),
   tags: z.string().optional(),
+  thumbnail: z.string().optional(),
   allowComment: z.boolean(),
   isPinned: z.boolean(),
   status: z.enum(["draft", "published"])

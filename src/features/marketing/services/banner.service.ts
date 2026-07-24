@@ -5,3 +5,8 @@ export const bannerService = {
     return new Promise(resolve => setTimeout(() => resolve(mockBanners), 200));
   }
 };
+
+
+
+
+

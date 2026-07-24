@@ -24,8 +24,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/shared/ui/form";
-import { SizeSchema, TSizePayload } from "../schemas/size.schema";
-import { createSizeAction, updateSizeAction } from "../actions/size.action";
+import { SizeSchema, TSizePayload } from "../../schemas/size.schema";
+import { createSizeAction, updateSizeAction } from "../../actions/size.action";
 
 export interface SizeFormModalProps {
   initialData?: any;
@@ -46,23 +46,37 @@ export function SizeFormModal({ initialData, mode = "create", trigger }: SizeFor
 
   function onSubmit(values: TSizePayload) {
     startTransition(async () => {
-      if (mode === "create") {
-        const res = await createSizeAction(values);
-        if (res.success) {
-          toast.success("Thêm kích thước thành công!");
-          setOpen(false);
-          form.reset();
-        } else {
-          toast.error(res.error as string);
-        }
-      } else {
-        const res = await updateSizeAction(initialData?.id || 1, values);
-        if (res.success) {
-          toast.success("Cập nhật kích thước thành công!");
-          setOpen(false);
-        } else {
-          toast.error(res.error as string);
-        }
+      try {
+        if (mode === "create") {
+                const res = await createSizeAction(values);
+                if (res.success) {
+                  toast.success("Thêm kích thước thành công!");
+                  setOpen(false);
+                  form.reset();
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              } else {
+                const res = await updateSizeAction(initialData?.id || 1, values);
+                if (res.success) {
+                  toast.success("Cập nhật kích thước thành công!");
+                  setOpen(false);
+                } else {
+                  toast.error(res.error as string);
+                    if (res.details) {
+                      Object.keys(res.details!).forEach((key) => {
+                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                      });
+                    }
+                }
+              }
+      } catch (error) {
+        toast.error("L?i k?t n?i d?n m�y ch?!");
       }
     });
   }
@@ -109,3 +123,4 @@ export function SizeFormModal({ initialData, mode = "create", trigger }: SizeFor
     </Dialog>
   );
 }
+
