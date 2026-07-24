@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Notification } from "@/features/marketing/types/notification.admin";
 import { notificationService } from "@/features/marketing/services/notification.service";
 export function useNotifications() {

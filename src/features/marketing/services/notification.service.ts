@@ -1,4 +1,4 @@
-﻿import { Notification } from "@/features/marketing/types/notification.admin";
+import { Notification } from "@/features/marketing/types/notification.admin";
 import { mockNotifications } from "@/features/marketing/mocks/notification.mock";
 export const notificationService = {
   async getNotifications(): Promise<Notification[]> {

@@ -1,4 +1,4 @@
-﻿export interface ReviewUser {
+export interface ReviewUser {
   name: string;
   avatar: string;
   initial: string;

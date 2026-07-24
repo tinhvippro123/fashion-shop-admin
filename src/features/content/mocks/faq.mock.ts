@@ -1,5 +1,5 @@
-﻿import { Faq } from "@/features/content/types/faq.admin";
+import { Faq } from "@/features/content/types/faq.admin";
 export const mockFaqs: Faq[] = [
-  { id: "FAQ-001", question: "Chính sách đổi trả như thế nào?", answer: "Chúng tôi hỗ trợ đổi trả trong vòng 7 ngày kể từ ngày nhận hàng với điều kiện nguyên tem mác." },
-  { id: "FAQ-002", question: "Phí giao hàng bao nhiêu?", answer: "Miễn phí giao hàng cho đơn từ 500,000 VNĐ. Các đơn khác phí ship đồng giá 30,000 VNĐ toàn quốc." }
+  { id: "FAQ-001", question: "Ch�nh s�ch d?i tr? nhu th? n�o?", answer: "Ch�ng t�i h? tr? d?i tr? trong v�ng 7 ng�y k? t? ng�y nh?n h�ng v?i di?u ki?n nguy�n tem m�c." },
+  { id: "FAQ-002", question: "Ph� giao h�ng bao nhi�u?", answer: "Mi?n ph� giao h�ng cho don t? 500,000 VN�. C�c don kh�c ph� ship d?ng gi� 30,000 VN� to�n qu?c." }
 ];

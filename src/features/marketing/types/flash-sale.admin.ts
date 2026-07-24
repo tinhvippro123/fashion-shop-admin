@@ -1,4 +1,4 @@
-﻿export interface FlashSale {
+export interface FlashSale {
   id: string;
   name: string;
   startTime: string;

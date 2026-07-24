@@ -1,4 +1,4 @@
-﻿import { Size } from "@/features/catalog/types/size.admin";
+import { Size } from "@/features/catalog/types/size.admin";
 export const mockSizes: Size[] = [
   { id: "SZ-001", name: "S" },
   { id: "SZ-002", name: "M" },

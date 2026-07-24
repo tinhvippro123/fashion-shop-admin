@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Size } from "@/features/catalog/types/size.admin";
 import { sizeService } from "@/features/catalog/services/size.service";
 export function useSizes() {

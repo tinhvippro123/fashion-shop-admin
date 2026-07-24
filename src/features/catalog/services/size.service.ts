@@ -1,4 +1,4 @@
-﻿import { Size } from "@/features/catalog/types/size.admin";
+import { Size } from "@/features/catalog/types/size.admin";
 import { mockSizes } from "@/features/catalog/mocks/size.mock";
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const sizeService = {

@@ -1,4 +1,4 @@
-﻿export interface Size {
+export interface Size {
   id: string;
   name: string;
 }

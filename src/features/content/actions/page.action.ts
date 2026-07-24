@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { PageSchema, TPagePayload } from "../schemas/page.schema";
 
 export async function createPageAction(data: TPagePayload) {
@@ -11,6 +12,7 @@ export async function createPageAction(data: TPagePayload) {
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log("Saving page:", validated.data);
+  revalidatePath('/pages');
   return { success: true, data: validated.data };
 }
 
@@ -22,5 +24,6 @@ export async function updatePageAction(id: string | number, data: TPagePayload) 
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log(`Updating page ${id}:`, validated.data);
+  revalidatePath('/pages');
   return { success: true, data: validated.data };
 }

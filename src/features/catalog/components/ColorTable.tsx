@@ -3,6 +3,7 @@
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import {
+
   Table,
   TableBody,
   TableCell,
@@ -29,6 +30,7 @@ import { Label } from "@/shared/ui/label";
 
 import { useColors } from "@/features/catalog/hooks/useColors";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { ColorFormModal } from "./ColorFormModal";
 
 export function ColorTable() {
   const { colors, isLoading } = useColors();
@@ -36,7 +38,14 @@ export function ColorTable() {
   
 
   return (
-    <>
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Màu sắc</h2>
+          <p className="text-muted-foreground hidden sm:block">Quản lý mã màu cho sản phẩm.</p>
+        </div>
+        <ColorFormModal mode="create" />
+      </div>
 
       <div className="rounded-md border bg-card overflow-hidden">
         <div className="flex items-center gap-4 p-4 border-b">
@@ -75,28 +84,11 @@ colors.map((color) => (
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa màu sắc</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-name-${color.id}`}>Tên màu</Label>
-                                <Input id={`edit-name-${color.id}`} defaultValue={color.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-hex-${color.id}`}>Mã màu (Hex)</Label>
-                                <Input id={`edit-hex-${color.id}`} defaultValue={color.hex} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <ColorFormModal 
+                          mode="edit" 
+                          initialData={color} 
+                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} 
+                        />
                         <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -126,28 +118,11 @@ colors.map((color) => (
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa màu sắc</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-name-${color.id}`}>Tên màu</Label>
-                                <Input id={`m-edit-name-${color.id}`} defaultValue={color.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-hex-${color.id}`}>Mã màu (Hex)</Label>
-                                <Input id={`m-edit-hex-${color.id}`} defaultValue={color.hex} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <ColorFormModal 
+                          mode="edit" 
+                          initialData={color} 
+                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} 
+                        />
                         <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -156,6 +131,6 @@ colors.map((color) => (
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

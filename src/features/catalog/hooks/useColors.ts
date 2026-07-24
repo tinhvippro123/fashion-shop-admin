@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Color } from "@/features/catalog/types/color.admin";
 import { colorService } from "@/features/catalog/services/color.service";
 export function useColors() {

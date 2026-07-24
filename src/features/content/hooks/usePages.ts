@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Page } from "@/features/content/types/page.admin";
 import { pageService } from "@/features/content/services/page.service";
 export function usePages() {

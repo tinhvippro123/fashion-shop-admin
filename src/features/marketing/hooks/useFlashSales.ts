@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FlashSale } from "@/features/marketing/types/flash-sale.admin";
 import { flashSaleService } from "@/features/marketing/services/flash-sale.service";
 export function useFlashSales() {

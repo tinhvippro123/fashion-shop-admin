@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Contact } from "@/features/content/types/contact.admin";
 import { contactService } from "@/features/content/services/contact.service";
 export function useContacts() {

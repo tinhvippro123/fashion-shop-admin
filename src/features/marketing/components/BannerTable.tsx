@@ -93,7 +93,7 @@ banners.map((banner) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa Banner</DialogTitle>
@@ -173,7 +173,7 @@ banners.map((banner) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa Banner</DialogTitle>

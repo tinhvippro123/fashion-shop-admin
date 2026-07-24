@@ -1,5 +1,5 @@
-﻿import { Contact } from "@/features/content/types/contact.admin";
+import { Contact } from "@/features/content/types/contact.admin";
 export const mockContacts: Contact[] = [
-  { id: "CT-001", name: "Nguyễn Văn A", email: "nguyenvana@gmail.com", subject: "Hỏi về chính sách đổi trả", date: "17/07/2026", status: "Chưa đọc" },
-  { id: "CT-002", name: "Trần Thị B", email: "tranthib@gmail.com", subject: "Sản phẩm bị lỗi giao hàng", date: "16/07/2026", status: "Đã đọc" }
+  { id: "CT-001", name: "Nguy?n Van A", email: "nguyenvana@gmail.com", subject: "H?i v? ch�nh s�ch d?i tr?", date: "17/07/2026", status: "Chua d?c" },
+  { id: "CT-002", name: "Tr?n Th? B", email: "tranthib@gmail.com", subject: "S?n ph?m b? l?i giao h�ng", date: "16/07/2026", status: "�� d?c" }
 ];

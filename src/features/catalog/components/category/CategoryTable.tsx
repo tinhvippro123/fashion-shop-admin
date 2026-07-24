@@ -19,16 +19,13 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
   DialogFooter,
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 import { Category } from "@/features/catalog/types/category";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { CategoryFormModal } from "./CategoryFormModal";
 
 interface CategoryTableProps {
   categories: Category[];
@@ -89,28 +86,11 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-106.25">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa danh mục</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-name-${cat.id}`}>Tên danh mục</Label>
-                                <Input id={`edit-name-${cat.id}`} defaultValue={cat.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-slug-${cat.id}`}>Đường dẫn (Slug)</Label>
-                                <Input id={`edit-slug-${cat.id}`} defaultValue={cat.slug} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <CategoryFormModal 
+                          mode="edit" 
+                          initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
+                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
+                        />
                         <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -145,28 +125,11 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-106.25">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa danh mục</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-name-${cat.id}`}>Tên danh mục</Label>
-                                <Input id={`m-edit-name-${cat.id}`} defaultValue={cat.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-slug-${cat.id}`}>Đường dẫn (Slug)</Label>
-                                <Input id={`m-edit-slug-${cat.id}`} defaultValue={cat.slug} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <CategoryFormModal 
+                          mode="edit" 
+                          initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
+                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
+                        />
                         <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

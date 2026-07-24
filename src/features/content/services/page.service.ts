@@ -1,4 +1,4 @@
-﻿import { Page } from "@/features/content/types/page.admin";
+import { Page } from "@/features/content/types/page.admin";
 import { mockPages } from "@/features/content/mocks/page.mock";
 export const pageService = {
   async getPages(): Promise<Page[]> {

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Faq } from "@/features/content/types/faq.admin";
 import { faqService } from "@/features/content/services/faq.service";
 export function useFaqs() {

@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { CampaignSchema, TCampaignPayload } from "../schemas/campaign.schema";
 
 export async function createCampaignAction(data: TCampaignPayload) {
@@ -11,6 +12,7 @@ export async function createCampaignAction(data: TCampaignPayload) {
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log("Saving campaign:", validated.data);
+  revalidatePath('/promotions');
   return { success: true, data: validated.data };
 }
 
@@ -22,5 +24,6 @@ export async function updateCampaignAction(id: string | number, data: TCampaignP
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log(`Updating campaign ${id}:`, validated.data);
+  revalidatePath('/promotions');
   return { success: true, data: validated.data };
 }

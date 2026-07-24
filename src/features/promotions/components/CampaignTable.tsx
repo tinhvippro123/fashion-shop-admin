@@ -140,7 +140,7 @@ campaigns.map((camp) => (
                         </DropdownMenuItem>
                         <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false} className="text-red-600">Xóa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Xác nhận xóa</DialogTitle>

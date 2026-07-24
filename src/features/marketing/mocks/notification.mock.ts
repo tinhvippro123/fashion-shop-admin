@@ -1,9 +1,9 @@
-﻿import { Notification } from "@/features/marketing/types/notification.admin";
+import { Notification } from "@/features/marketing/types/notification.admin";
 export const mockNotifications: Notification[] = [
-  { id: 1, title: "Đơn hàng mới", message: "Khách hàng Nguyễn Văn A vừa đặt đơn #ORD-123 trị giá 500,000đ", type: "ORDER", isRead: false, time: "5 phút trước" },
-  { id: 2, title: "Khách hàng mới", message: "Trần Thị B vừa đăng ký tài khoản", type: "USER", isRead: false, time: "1 giờ trước" },
-  { id: 3, title: "Đơn hàng hoàn tất", message: "Đơn hàng #ORD-099 đã giao thành công", type: "ORDER", isRead: false, time: "2 giờ trước" },
-  { id: 4, title: "Cảnh báo hệ thống", message: "Sản phẩm 'Áo sơ mi trắng' sắp hết hàng (còn 2 sản phẩm)", type: "SYSTEM", isRead: true, time: "1 ngày trước" },
-  { id: 5, title: "Yêu cầu hoàn tiền", message: "Khách hàng Lê Văn C yêu cầu hoàn tiền cho đơn #ORD-088", type: "ORDER", isRead: true, time: "2 ngày trước" },
-  { id: 6, title: "Đánh giá mới", message: "Sản phẩm 'Quần Âu đen' vừa nhận được 1 đánh giá 5 sao", type: "USER", isRead: true, time: "3 ngày trước" },
+  { id: 1, title: "�on h�ng m?i", message: "Kh�ch h�ng Nguy?n Van A v?a d?t don #ORD-123 tr? gi� 500,000d", type: "ORDER", isRead: false, time: "5 ph�t tru?c" },
+  { id: 2, title: "Kh�ch h�ng m?i", message: "Tr?n Th? B v?a dang k� t�i kho?n", type: "USER", isRead: false, time: "1 gi? tru?c" },
+  { id: 3, title: "�on h�ng ho�n t?t", message: "�on h�ng #ORD-099 d� giao th�nh c�ng", type: "ORDER", isRead: false, time: "2 gi? tru?c" },
+  { id: 4, title: "C?nh b�o h? th?ng", message: "S?n ph?m '�o so mi tr?ng' s?p h?t h�ng (c�n 2 s?n ph?m)", type: "SYSTEM", isRead: true, time: "1 ng�y tru?c" },
+  { id: 5, title: "Y�u c?u ho�n ti?n", message: "Kh�ch h�ng L� Van C y�u c?u ho�n ti?n cho don #ORD-088", type: "ORDER", isRead: true, time: "2 ng�y tru?c" },
+  { id: 6, title: "��nh gi� m?i", message: "S?n ph?m 'Qu?n �u den' v?a nh?n du?c 1 d�nh gi� 5 sao", type: "USER", isRead: true, time: "3 ng�y tru?c" },
 ];

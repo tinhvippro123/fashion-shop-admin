@@ -1,6 +1,6 @@
-﻿import { Page } from "@/features/content/types/page.admin";
+import { Page } from "@/features/content/types/page.admin";
 export const mockPages: Page[] = [
-  { id: "PG-001", title: "Về chúng tôi", slug: "ve-chung-toi", status: "Đã xuất bản", updatedAt: "17/07/2026" },
-  { id: "PG-002", title: "Chính sách bảo mật", slug: "chinh-sach-bao-mat", status: "Đã xuất bản", updatedAt: "16/07/2026" },
-  { id: "PG-003", title: "Điều khoản dịch vụ", slug: "dieu-khoan-dich-vu", status: "Bản nháp", updatedAt: "15/07/2026" }
+  { id: "PG-001", title: "V? ch�ng t�i", slug: "ve-chung-toi", status: "�� xu?t b?n", updatedAt: "17/07/2026" },
+  { id: "PG-002", title: "Ch�nh s�ch b?o m?t", slug: "chinh-sach-bao-mat", status: "�� xu?t b?n", updatedAt: "16/07/2026" },
+  { id: "PG-003", title: "�i?u kho?n d?ch v?", slug: "dieu-khoan-dich-vu", status: "B?n nh�p", updatedAt: "15/07/2026" }
 ];

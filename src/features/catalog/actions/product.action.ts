@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { ProductSchema, TProductPayload } from "../schemas/product.schema";
 
 export async function createProductAction(data: TProductPayload) {
@@ -11,6 +12,7 @@ export async function createProductAction(data: TProductPayload) {
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log("Saving product:", validated.data);
+  revalidatePath('/products');
   return { success: true, data: validated.data };
 }
 
@@ -22,5 +24,6 @@ export async function updateProductAction(id: string | number, data: TProductPay
 
   await new Promise(resolve => setTimeout(resolve, 800));
   console.log(`Updating product ${id}:`, validated.data);
+  revalidatePath('/products');
   return { success: true, data: validated.data };
 }

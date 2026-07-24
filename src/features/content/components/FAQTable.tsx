@@ -86,7 +86,7 @@ faqs.map((faq) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa câu hỏi thường gặp</DialogTitle>
@@ -108,7 +108,7 @@ faqs.map((faq) => (
                           </DialogContent>
                         </Dialog>
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false} className="text-red-600">Xóa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Xác nhận xóa</DialogTitle>
@@ -148,7 +148,7 @@ faqs.map((faq) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa câu hỏi thường gặp</DialogTitle>
@@ -170,7 +170,7 @@ faqs.map((faq) => (
                           </DialogContent>
                         </Dialog>
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false} className="text-red-600">Xóa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Xác nhận xóa</DialogTitle>

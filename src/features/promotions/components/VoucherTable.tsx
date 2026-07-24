@@ -96,7 +96,7 @@ vouchers.map((voucher) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>
@@ -175,7 +175,7 @@ vouchers.map((voucher) => (
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem closeOnClick={false}>Chỉnh sửa</DropdownMenuItem>} />
+                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                               <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>

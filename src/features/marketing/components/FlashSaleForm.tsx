@@ -264,9 +264,11 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   <CardDescription>Ch?n các s?n ph?m và thi?t l?p giá s?c + s? lu?ng gi?i h?n.</CardDescription>
                 </div>
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger className={cn(buttonVariants({ size: "sm" }), "gap-2 w-full sm:w-auto mt-2 sm:mt-0")} type="button">
-                    <Plus className="h-4 w-4" /> Thêm sản phẩm
-                  </DialogTrigger>
+                  <DialogTrigger render={
+                    <Button size="sm" className="gap-2 w-full sm:w-auto mt-2 sm:mt-0" type="button">
+                      <Plus className="h-4 w-4" /> Thêm sản phẩm
+                    </Button>
+                  } />
                   <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
                     <DialogHeader className="px-6 py-4 border-b">
                       <DialogTitle>Ch?n s?n ph?m tham gia Flash Sale</DialogTitle>
