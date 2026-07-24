@@ -1,4 +1,4 @@
 import { Notification } from "../types/notification.admin";
 export const mockNotifications: Notification[] = [
-  { id: "N-001", title: "Bảo trì hệ thống", type: "system", status: "sent", sentAt: "2024-03-20" },
+  { id: 1, title: "Bảo trì hệ thống", message: "Hệ thống bảo trì", type: "system", isRead: false, time: "2024-03-20" },
 ];

@@ -1,5 +1,4 @@
-﻿import { FAQ } from "../types/faq.admin";
-export const mockFaqs: FAQ[] = [
-  { id: "F-001", question: "ChÃ­nh sÃ¡ch Ä‘á»•i tráº£?", answer: "Äá»•i tráº£ trong 7 ngÃ y...", category: "ChÃ­nh sÃ¡ch", status: "published" },
+import { Faq } from "../types/faq.admin";
+export const mockFaqs: Faq[] = [
+  { id: "F-001", question: "Chính sách đổi trả?", answer: "Đổi trả trong 7 ngày..." },
 ];
-
