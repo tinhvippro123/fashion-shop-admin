@@ -180,6 +180,34 @@ Thư mục `shared/` chứa những tài nguyên dùng chung cho **TOÀN BỘ �
 - **Bắt Lỗi Tự Động (Single Source of Truth):** Chỉ định nghĩa luật 1 lần duy nhất ở file `*.schema.ts` qua **Zod**. Lỗi sẽ tự động hiển thị màu đỏ ngay dưới input lập tức nếu sai (ví dụ: title phải dài hơn 5 ký tự), không cần bất kỳ lệnh `if/else` nào trong UI.
 - **Bảo mật Tối đa & Dễ dàng hiển thị Loading:** Toàn bộ dữ liệu của form được ném về một **Server Action** (chạy ở Node.js backend). Client gọi hàm thông qua `useTransition`, Next.js sẽ tự động quản lý trạng thái `isPending` (loading) để làm mờ nút Save mà không cần code state bằng tay. Logic gọi Database được ẩn hoàn toàn khỏi trình duyệt.
 
+#### 📁 So sánh Phân bổ Cấu trúc Thư mục (Old vs New)
+
+**Kiến trúc Cũ (Tất cả nhét vào một chỗ, khó tái sử dụng):**
+```text
+src/
+└── app/
+    └── products/
+        ├── create/
+        │   ├── page.tsx       (Chứa luôn UI Form, khai báo hàng chục useState, và fetch API)
+        │   └── validate.ts    (Các hàm check lỗi if/else tự chế)
+```
+
+**Kiến trúc Mới (Phân tách rõ ràng từng chức năng - Vertical Slicing):**
+```text
+src/
+├── app/
+│   └── (dashboard)/products/create/
+│       └── page.tsx           (Chỉ gọi Component <ProductForm mode="create" /> - Rất ngắn gọn)
+│
+└── features/catalog/          (Nhóm nghiệp vụ Catalog)
+    ├── components/
+    │   └── ProductForm.tsx    (Chỉ chứa UI + React Hook Form, KHÔNG gọi fetch API)
+    ├── actions/
+    │   └── product.action.ts  (Chỉ chứa hàm "use server" xử lý dữ liệu và lưu DB)
+    └── schemas/
+        └── product.schema.ts  (Chỉ chứa Zod Schema định nghĩa luật kiểm tra lỗi)
+```
+
 ### 9.1. Form State & Validation (React Hook Form + Zod)
 - **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Việc dùng `useState` thuần túy cho Form sinh ra rất nhiều boilerplate code. React sẽ re-render lại toàn bộ component mỗi khi user gõ một ký tự vào input, làm giật lag đối với Form lớn có nhiều component phức tạp như RichTextEditor. Hơn nữa, việc tự viết code check lỗi (validation) bằng `if/else` rất dễ rò rỉ lỗi và không đồng nhất.
 - **Giải pháp (Kiến trúc mới):** 
