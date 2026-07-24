@@ -1,7 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { LoginForm } from "@/features/auth";
-
-export default function LoginPage() {
-  return <LoginForm />;
+export default function RootPage() {
+  redirect("/dashboard");
 }

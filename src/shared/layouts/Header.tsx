@@ -19,8 +19,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { ShoppingBag, UserPlus, Info } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
+import { useSession, signOut } from "next-auth/react";
 
 export function Header() {
+  const { data: session } = useSession();
   const [unreadCount, setUnreadCount] = useState(3);
   const notifications = [
     { id: 1, title: "Đơn hàng mới", message: "Khách hàng Nguyễn Văn A vừa đặt đơn #ORD-123", type: "ORDER", isRead: false, time: "5 phút trước" },
@@ -113,21 +115,22 @@ export function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-zinc-900">
             <Avatar className="h-8 w-8">
-                <AvatarImage src="/logo.png" alt="Admin" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage src="/logo.png" alt={session?.user?.name || "Admin"} />
+                <AvatarFallback>{session?.user?.name ? session.user.name.charAt(0) : "AD"}</AvatarFallback>
               </Avatar>
             <span className="sr-only">Toggle user menu</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Admin LUXE</DropdownMenuLabel>
+              <DropdownMenuLabel>{session?.user?.name || "Admin LUXE"}</DropdownMenuLabel>
+              <div className="px-2 pb-2 text-xs text-muted-foreground">{session?.user?.email}</div>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Cài đặt tài khoản</DropdownMenuItem>
             <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href="/" className="w-full text-red-600 cursor-pointer">Đăng xuất</Link>
+            <DropdownMenuItem onClick={() => signOut()}>
+              <span className="w-full text-red-600 cursor-pointer">Đăng xuất</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,11 +1,49 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/shared/ui/button";
-import { cn } from "@/shared/utils/utils";
+import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error("Tài khoản hoặc mật khẩu không chính xác!");
+      } else {
+        toast.success("Đăng nhập thành công!");
+        router.push("/dashboard");
+        router.refresh(); // Refresh to update layout auth state
+      }
+    } catch (error) {
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại!");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       {/* Nửa bên trái: Hình ảnh Branding */}
@@ -17,7 +55,7 @@ export function LoginForm() {
           className="h-full w-full object-cover opacity-80"
           priority
         />
-        <div className="absolute inset-0 bg-black/30" /> {/* Phủ nhẹ màu tối để làm nổi bật text */}
+        <div className="absolute inset-0 bg-black/30" />
         
         {/* Logo góc trên */}
         <div className="absolute top-10 left-10 flex items-center gap-2">
@@ -46,37 +84,52 @@ export function LoginForm() {
             </p>
           </div>
 
-          <div className="grid gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="font-semibold text-foreground">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@luxefashion.com"
-                required
-                className="h-11"
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="font-semibold text-foreground">Mật khẩu</Label>
-                <Link
-                  href="#"
-                  className="inline-block text-sm font-medium text-blue-600 hover:underline"
-                >
-                  Quên mật khẩu?
-                </Link>
+          <form onSubmit={onSubmit}>
+            <div className="grid gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="font-semibold text-foreground">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="admin@luxefashion.com"
+                  defaultValue="admin@luxefashion.com"
+                  required
+                  className="h-11"
+                  disabled={isLoading}
+                />
               </div>
-              <Input id="password" type="password" required className="h-11" />
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="font-semibold text-foreground">Mật khẩu</Label>
+                  <Link
+                    href="#"
+                    className="inline-block text-sm font-medium text-blue-600 hover:underline"
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                </div>
+                <Input 
+                  id="password" 
+                  name="password" 
+                  type="password" 
+                  defaultValue="admin123"
+                  required 
+                  className="h-11"
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full h-11 text-base font-semibold"
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                {isLoading ? "Đang xử lý..." : "Đăng nhập"}
+              </Button>
             </div>
-            
-            <Link 
-              href="/dashboard" 
-              className={cn(buttonVariants({ variant: "default" }), "w-full h-11 text-base font-semibold ")}
-            >
-              Đăng nhập
-            </Link>
-          </div>
+          </form>
           
           <div className="mt-2 text-center text-sm text-muted-foreground">
             Hệ thống quản trị chỉ dành cho nhân viên nội bộ.
