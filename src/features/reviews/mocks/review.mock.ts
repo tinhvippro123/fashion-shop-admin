@@ -1,6 +1,4 @@
-import { Review } from "@/features/reviews/types/review.admin";
+import { Review } from "../types/review.admin";
 export const mockReviews: Review[] = [
-  { id: "REV-001", user: { name: "Nguy?n Van A", avatar: "/avatars/1.jpg", initial: "N" }, product: { id: "PROD-001", name: "¡o Thun Nam C? TrÚn" }, rating: 5, comment: "Ch?t v?i m·t, m?c r?t thÌch. S? ?ng h? shop thÍm!", date: "15/07/2026", status: "Hi?n th?" },
-  { id: "REV-002", user: { name: "Tr?n Th? B", avatar: "/avatars/2.jpg", initial: "T" }, product: { id: "PROD-005", name: "Qu?n Jean N? ?ng R?ng" }, rating: 4, comment: "Form qu?n d?p nhung m‡u hoi nh?t hon so v?i hÏnh m?t xÌu.", date: "12/07/2026", status: "Hi?n th?" },
-  { id: "REV-003", user: { name: "LÍ Ho‡ng C", avatar: "", initial: "L" }, product: { id: "PROD-012", name: "¡o Kho·c Bomber Nam" }, rating: 1, comment: "Giao h‡ng qu· ch?m, shop h? tr? kÈm.", date: "10/07/2026", status: "B? ?n" }
+  { id: "R-001", customerName: "Tr·∫ßn B", productName: "√Åo thun T-Shirt", rating: 5, comment: "S·∫£n ph·∫©m r·∫•t t·ªët", status: "approved", createdAt: "2024-03-20" },
 ];

@@ -1,7 +1,6 @@
-import { Color } from "@/features/catalog/types/color.admin";
+import { Color } from "../types/color.admin";
 export const mockColors: Color[] = [
-  { id: "COL-001", name: "�? d?m", hex: "#8B0000" },
+  { id: "COL-001", name: "Đỏ đậm", hex: "#8B0000" },
   { id: "COL-002", name: "Xanh navy", hex: "#000080" },
-  { id: "COL-003", name: "Tr?ng", hex: "#FFFFFF" },
-  { id: "COL-004", name: "�en tuy?n", hex: "#000000" },
+  { id: "COL-003", name: "Trắng tinh", hex: "#FFFFFF" },
 ];

@@ -1,248 +1,248 @@
-# 🏛️ Next.js Enterprise Architecture Guidelines
+﻿# ðŸ›ï¸ Next.js Enterprise Architecture Guidelines
 
-Tài liệu này quy định các tiêu chuẩn và nguyên tắc thiết kế kiến trúc cho dự án Next.js. Dự án áp dụng sự kết hợp giữa **Vertical Slice Architecture** (Kiến trúc theo chiều dọc) và **Clean Architecture**, tập trung vào tính module hóa (modular), khả năng mở rộng (scalability) và dễ dàng bảo trì.
+TÃ i liá»‡u nÃ y quy Ä‘á»‹nh cÃ¡c tiÃªu chuáº©n vÃ  nguyÃªn táº¯c thiáº¿t káº¿ kiáº¿n trÃºc cho dá»± Ã¡n Next.js. Dá»± Ã¡n Ã¡p dá»¥ng sá»± káº¿t há»£p giá»¯a **Vertical Slice Architecture** (Kiáº¿n trÃºc theo chiá»u dá»c) vÃ  **Clean Architecture**, táº­p trung vÃ o tÃ­nh module hÃ³a (modular), kháº£ nÄƒng má»Ÿ rá»™ng (scalability) vÃ  dá»… dÃ ng báº£o trÃ¬.
 
 > [!IMPORTANT]
-> Tất cả các thành viên trong dự án **BẮT BUỘC** phải đọc hiểu và tuân thủ các quy tắc này trước khi commit code. Mọi Pull Request vi phạm cấu trúc thư mục hoặc ranh giới module (boundary) sẽ không được merge.
+> Táº¥t cáº£ cÃ¡c thÃ nh viÃªn trong dá»± Ã¡n **Báº®T BUá»˜C** pháº£i Ä‘á»c hiá»ƒu vÃ  tuÃ¢n thá»§ cÃ¡c quy táº¯c nÃ y trÆ°á»›c khi commit code. Má»i Pull Request vi pháº¡m cáº¥u trÃºc thÆ° má»¥c hoáº·c ranh giá»›i module (boundary) sáº½ khÃ´ng Ä‘Æ°á»£c merge.
 
 ---
 
-## Tổng quan cấu trúc thư mục (Folder Structure)
+## Tá»•ng quan cáº¥u trÃºc thÆ° má»¥c (Folder Structure)
 
-Dưới đây là sơ đồ tổng quan của dự án. Mọi thư mục và file mới đều phải tuân thủ nghiêm ngặt vị trí theo cấu trúc này:
+DÆ°á»›i Ä‘Ã¢y lÃ  sÆ¡ Ä‘á»“ tá»•ng quan cá»§a dá»± Ã¡n. Má»i thÆ° má»¥c vÃ  file má»›i Ä‘á»u pháº£i tuÃ¢n thá»§ nghiÃªm ngáº·t vá»‹ trÃ­ theo cáº¥u trÃºc nÃ y:
 
 ```text
 src/
-├── app/                     # 1. ROUTING & ORCHESTRATION LAYER (Chỉ làm nhiệm vụ điều phối trang)
-│   ├── (auth)/              # Nhóm route xác thực
-│   ├── (storefront)/        # Nhóm route khách hàng
-│   ├── api/                 # Next.js Route Handlers (Webhooks/External API)
-│   └── layout.tsx           # Root Layout
-│
-├── features/                # 2. FEATURE MODULES (Domain-Driven / Vertical Slicing)
-│   └── [feature-name]/      # Ví dụ: catalog, cart, payment...
-│       ├── components/      # (Presentation) UI Component
-│       ├── actions/         # (Controller) Server Actions
-│       ├── hooks/           # (State) TanStack Query hooks, Custom hooks
-│       ├── services/        # (Use Case) Logic nghiệp vụ gọi API
-│       ├── schemas/         # (Validation) Zod schema
-│       ├── utils/           # (Utils) Tiện ích riêng của feature
-│       ├── types.ts         # Typescript interfaces nội bộ
-│       └── index.ts         # [PUBLIC API] Điểm export duy nhất
-│
-├── shared/                  # 3. GLOBAL SHARED (Dùng chung toàn app)
-│   ├── ui/                  # Shadcn UI & Dumb Components
-│   ├── layouts/             # Navbar, Footer toàn cục
-│   ├── configs/             # Cấu hình app (http.client, env)
-│   └── utils/               # Tiện ích chung
-│
-├── stores/                  # 4. GLOBAL APP STATE (Zustand)
-│   └── ui.store.ts          # State UI toàn cục (Đóng mở menu, loading...)
-│
-└── assets/                  # 5. STATIC ASSETS
+â”œâ”€â”€ app/                     # 1. ROUTING & ORCHESTRATION LAYER (Chá»‰ lÃ m nhiá»‡m vá»¥ Ä‘iá»u phá»‘i trang)
+â”‚   â”œâ”€â”€ (auth)/              # NhÃ³m route xÃ¡c thá»±c
+â”‚   â”œâ”€â”€ (storefront)/        # NhÃ³m route khÃ¡ch hÃ ng
+â”‚   â”œâ”€â”€ api/                 # Next.js Route Handlers (Webhooks/External API)
+â”‚   â””â”€â”€ layout.tsx           # Root Layout
+â”‚
+â”œâ”€â”€ features/                # 2. FEATURE MODULES (Domain-Driven / Vertical Slicing)
+â”‚   â””â”€â”€ [feature-name]/      # VÃ­ dá»¥: catalog, cart, payment...
+â”‚       â”œâ”€â”€ components/      # (Presentation) UI Component
+â”‚       â”œâ”€â”€ actions/         # (Controller) Server Actions
+â”‚       â”œâ”€â”€ hooks/           # (State) TanStack Query hooks, Custom hooks
+â”‚       â”œâ”€â”€ services/        # (Use Case) Logic nghiá»‡p vá»¥ gá»i API
+â”‚       â”œâ”€â”€ schemas/         # (Validation) Zod schema
+â”‚       â”œâ”€â”€ utils/           # (Utils) Tiá»‡n Ã­ch riÃªng cá»§a feature
+â”‚       â”œâ”€â”€ types.ts         # Typescript interfaces ná»™i bá»™
+â”‚       â””â”€â”€ index.ts         # [PUBLIC API] Äiá»ƒm export duy nháº¥t
+â”‚
+â”œâ”€â”€ shared/                  # 3. GLOBAL SHARED (DÃ¹ng chung toÃ n app)
+â”‚   â”œâ”€â”€ ui/                  # Shadcn UI & Dumb Components
+â”‚   â”œâ”€â”€ layouts/             # Navbar, Footer toÃ n cá»¥c
+â”‚   â”œâ”€â”€ configs/             # Cáº¥u hÃ¬nh app (http.client, env)
+â”‚   â””â”€â”€ utils/               # Tiá»‡n Ã­ch chung
+â”‚
+â”œâ”€â”€ stores/                  # 4. GLOBAL APP STATE (Zustand)
+â”‚   â””â”€â”€ ui.store.ts          # State UI toÃ n cá»¥c (ÄÃ³ng má»Ÿ menu, loading...)
+â”‚
+â””â”€â”€ assets/                  # 5. STATIC ASSETS
 ```
 
 ---
 
-## Quy tắc 1: Vai trò của Lớp Điều Phối (`app/`)
+## Quy táº¯c 1: Vai trÃ² cá»§a Lá»›p Äiá»u Phá»‘i (`app/`)
 
-Thư mục `app/` chỉ chịu trách nhiệm về Routing (Định tuyến) và Orchestration (Điều phối). **Tuyệt đối không viết Business Logic tại đây.**
+ThÆ° má»¥c `app/` chá»‰ chá»‹u trÃ¡ch nhiá»‡m vá» Routing (Äá»‹nh tuyáº¿n) vÃ  Orchestration (Äiá»u phá»‘i). **Tuyá»‡t Ä‘á»‘i khÃ´ng viáº¿t Business Logic táº¡i Ä‘Ã¢y.**
 
-- **Nhiệm vụ:**
-  - Định nghĩa Layout, Page, Loading, Error Boundary.
-  - Lấy dữ liệu (Data Fetching) trên Server (thông qua Service hoặc Server Action).
-  - Khởi tạo Metadata (SEO).
-  - Truyền dữ liệu xuống các Client Components hoặc các Container Components thuộc `features/`.
-- **Cấm:**
-  - Không viết các logic tính toán phức tạp, map/reduce data trực tiếp trong `page.tsx` hoặc `layout.tsx`.
-  - Không gọi trực tiếp Fetch API từ bên thứ 3 mà không thông qua HTTP Client chung hoặc Service của Feature.
+- **Nhiá»‡m vá»¥:**
+  - Äá»‹nh nghÄ©a Layout, Page, Loading, Error Boundary.
+  - Láº¥y dá»¯ liá»‡u (Data Fetching) trÃªn Server (thÃ´ng qua Service hoáº·c Server Action).
+  - Khá»Ÿi táº¡o Metadata (SEO).
+  - Truyá»n dá»¯ liá»‡u xuá»‘ng cÃ¡c Client Components hoáº·c cÃ¡c Container Components thuá»™c `features/`.
+- **Cáº¥m:**
+  - KhÃ´ng viáº¿t cÃ¡c logic tÃ­nh toÃ¡n phá»©c táº¡p, map/reduce data trá»±c tiáº¿p trong `page.tsx` hoáº·c `layout.tsx`.
+  - KhÃ´ng gá»i trá»±c tiáº¿p Fetch API tá»« bÃªn thá»© 3 mÃ  khÃ´ng thÃ´ng qua HTTP Client chung hoáº·c Service cá»§a Feature.
 
 ---
 
-## Quy tắc 2: Tôn trọng Biên Giới Feature (`features/`)
+## Quy táº¯c 2: TÃ´n trá»ng BiÃªn Giá»›i Feature (`features/`)
 
-Đây là trái tim của dự án. Mỗi Feature là một module độc lập mang tính nghiệp vụ (Ví dụ: `payment`, `cart`, `catalog`).
+ÄÃ¢y lÃ  trÃ¡i tim cá»§a dá»± Ã¡n. Má»—i Feature lÃ  má»™t module Ä‘á»™c láº­p mang tÃ­nh nghiá»‡p vá»¥ (VÃ­ dá»¥: `payment`, `cart`, `catalog`).
 
-### 2.1. Cánh cửa duy nhất: `index.ts` (Public API)
-- Mọi tài nguyên (Component, Type, Hook) muốn chia sẻ cho phần khác của App hoặc Feature khác sử dụng **BẮT BUỘC** phải được export qua file `index.ts` ở thư mục gốc của feature đó.
-- Các file khác bên ngoài thư mục `features/[feature-name]` **chỉ được phép** import từ file `index.ts` này. Tuyệt đối cấm Deep Import.
+### 2.1. CÃ¡nh cá»­a duy nháº¥t: `index.ts` (Public API)
+- Má»i tÃ i nguyÃªn (Component, Type, Hook) muá»‘n chia sáº» cho pháº§n khÃ¡c cá»§a App hoáº·c Feature khÃ¡c sá»­ dá»¥ng **Báº®T BUá»˜C** pháº£i Ä‘Æ°á»£c export qua file `index.ts` á»Ÿ thÆ° má»¥c gá»‘c cá»§a feature Ä‘Ã³.
+- CÃ¡c file khÃ¡c bÃªn ngoÃ i thÆ° má»¥c `features/[feature-name]` **chá»‰ Ä‘Æ°á»£c phÃ©p** import tá»« file `index.ts` nÃ y. Tuyá»‡t Ä‘á»‘i cáº¥m Deep Import.
 
 > [!CAUTION]
 > **Sai (Deep Import):** `import { PaymentMethod } from '@/features/payment/components/payment-method'`  
-> **Đúng:** `import { PaymentMethod } from '@/features/payment'`
+> **ÄÃºng:** `import { PaymentMethod } from '@/features/payment'`
 
-### 2.2. Giao tiếp chéo giữa các Features (Cross-Feature Communication)
-- **Không Import UI chéo nhau:** Feature A không nên render trực tiếp Component giao diện nội bộ của Feature B nếu điều đó tạo ra sự phụ thuộc cứng (tight coupling).
-- **Tránh Vòng Lặp Phụ Thuộc (Circular Dependency):** Nếu Feature A phụ thuộc Feature B, và B gọi lại A -> Thiết kế sai. 
-- **Giải pháp:** Nếu có sự giao thoa nghiệp vụ quá lớn, hãy tách phần giao thoa đó thành một Feature thứ 3, hoặc sử dụng các cơ chế như *Render Props*, *Children injection* ở cấp độ `app/` (Page) để kết nối chúng lại, hoặc sử dụng Event Bus.
+### 2.2. Giao tiáº¿p chÃ©o giá»¯a cÃ¡c Features (Cross-Feature Communication)
+- **KhÃ´ng Import UI chÃ©o nhau:** Feature A khÃ´ng nÃªn render trá»±c tiáº¿p Component giao diá»‡n ná»™i bá»™ cá»§a Feature B náº¿u Ä‘iá»u Ä‘Ã³ táº¡o ra sá»± phá»¥ thuá»™c cá»©ng (tight coupling).
+- **TrÃ¡nh VÃ²ng Láº·p Phá»¥ Thuá»™c (Circular Dependency):** Náº¿u Feature A phá»¥ thuá»™c Feature B, vÃ  B gá»i láº¡i A -> Thiáº¿t káº¿ sai. 
+- **Giáº£i phÃ¡p:** Náº¿u cÃ³ sá»± giao thoa nghiá»‡p vá»¥ quÃ¡ lá»›n, hÃ£y tÃ¡ch pháº§n giao thoa Ä‘Ã³ thÃ nh má»™t Feature thá»© 3, hoáº·c sá»­ dá»¥ng cÃ¡c cÆ¡ cháº¿ nhÆ° *Render Props*, *Children injection* á»Ÿ cáº¥p Ä‘á»™ `app/` (Page) Ä‘á»ƒ káº¿t ná»‘i chÃºng láº¡i, hoáº·c sá»­ dá»¥ng Event Bus.
 
 ---
 
-## Quy tắc 3: Tách biệt Controller và Service (Clean Architecture)
+## Quy táº¯c 3: TÃ¡ch biá»‡t Controller vÃ  Service (Clean Architecture)
 
-Trong mỗi Feature, logic xử lý dữ liệu phải tuân thủ luồng: **UI -> Action (Controller) -> Service (Use Case)**.
+Trong má»—i Feature, logic xá»­ lÃ½ dá»¯ liá»‡u pháº£i tuÃ¢n thá»§ luá»“ng: **UI -> Action (Controller) -> Service (Use Case)**.
 
 ### 3.1. Server Actions (`actions/`)
-- Đóng vai trò là Controller nhận Request từ Client Component.
-- **Nhiệm vụ:** Nhận dữ liệu -> Gọi Zod Validate -> Chuyển payload chuẩn cho Service -> Nhận kết quả từ Service -> Revalidate Path (Next.js Cache) hoặc Redirect -> Trả về Response cho Client.
-- **KHÔNG** chứa logic nghiệp vụ cốt lõi (tính toán, thuật toán phức tạp).
+- ÄÃ³ng vai trÃ² lÃ  Controller nháº­n Request tá»« Client Component.
+- **Nhiá»‡m vá»¥:** Nháº­n dá»¯ liá»‡u -> Gá»i Zod Validate -> Chuyá»ƒn payload chuáº©n cho Service -> Nháº­n káº¿t quáº£ tá»« Service -> Revalidate Path (Next.js Cache) hoáº·c Redirect -> Tráº£ vá» Response cho Client.
+- **KHÃ”NG** chá»©a logic nghiá»‡p vá»¥ cá»‘t lÃµi (tÃ­nh toÃ¡n, thuáº­t toÃ¡n phá»©c táº¡p).
 
 ### 3.2. Services (`services/`)
-- Đóng vai trò là Use Case / Business Logic.
-- Đây là nơi xử lý logic nghiệp vụ tinh túy nhất. Logic ở đây độc lập hoàn toàn với Next.js (không gọi cache, revalidate hay headers của Next.js).
-- **Nhiệm vụ:** Tương tác với Database, External API, thực hiện tính toán.
-- **BẮT BUỘC** sử dụng `shared/configs/http.client.ts` để gọi API. Không dùng `fetch` hay `axios` trực tiếp để đảm bảo đồng bộ interceptors và xử lý Token.
+- ÄÃ³ng vai trÃ² lÃ  Use Case / Business Logic.
+- ÄÃ¢y lÃ  nÆ¡i xá»­ lÃ½ logic nghiá»‡p vá»¥ tinh tÃºy nháº¥t. Logic á»Ÿ Ä‘Ã¢y Ä‘á»™c láº­p hoÃ n toÃ n vá»›i Next.js (khÃ´ng gá»i cache, revalidate hay headers cá»§a Next.js).
+- **Nhiá»‡m vá»¥:** TÆ°Æ¡ng tÃ¡c vá»›i Database, External API, thá»±c hiá»‡n tÃ­nh toÃ¡n.
+- **Báº®T BUá»˜C** sá»­ dá»¥ng `shared/configs/http.client.ts` Ä‘á»ƒ gá»i API. KhÃ´ng dÃ¹ng `fetch` hay `axios` trá»±c tiáº¿p Ä‘á»ƒ Ä‘áº£m báº£o Ä‘á»“ng bá»™ interceptors vÃ  xá»­ lÃ½ Token.
 
 ---
 
-## Quy tắc 4: Khi nào nên đưa vào `shared/`?
+## Quy táº¯c 4: Khi nÃ o nÃªn Ä‘Æ°a vÃ o `shared/`?
 
-Thư mục `shared/` chứa những tài nguyên dùng chung cho **TOÀN BỘ ỨNG DỤNG**.
+ThÆ° má»¥c `shared/` chá»©a nhá»¯ng tÃ i nguyÃªn dÃ¹ng chung cho **TOÃ€N Bá»˜ á»¨NG Dá»¤NG**.
 
-- **Quy tắc "Rule of Two":** Đừng vội tạo Component hay Utils trong `shared/` ngay từ đầu. Hãy cứ viết nó bên trong thư mục `features/`. Khi và chỉ khi bạn phát hiện ra logic/component này được tái sử dụng nguyên vẹn ở một **Feature thứ 2**, lúc đó mới tiến hành refactor và kéo nó ra thư mục `shared/ui/` hoặc `shared/utils/`.
-- Không nhét các logic mang tính chất "Nghiệp vụ" (Domain logic) vào `shared/`. Khối `shared` chỉ chứa các yếu tố cơ sở (UI kit (Shadcn), Form Helpers, Regex chung...).
-
----
-
-## Quy tắc 5: Chiến lược State Management
-
-- **UI State (Global):** Các trạng thái chỉ ảnh hưởng đến hiển thị mà không dính tới dữ liệu Database (Đóng/mở sidebar, Theme Dark/Light) -> Đặt tại `stores/ui.store.ts` (Dùng Zustand).
-- **Domain State:** Trạng thái mang tính chất dữ liệu nghiệp vụ (Giỏ hàng, Quá trình checkout) -> Đặt tại thư mục `stores/` của chính Feature đó (VD: `features/cart/stores/cart.store.ts`). Không gom chung Domain State vào Global Store.
-- **Server State:** Luôn ưu tiên dùng **TanStack Query (React Query)** kết hợp trong `features/[name]/hooks/` để quản lý việc fetch, cache, polling và mutate dữ liệu từ Server.
+- **Quy táº¯c "Rule of Two":** Äá»«ng vá»™i táº¡o Component hay Utils trong `shared/` ngay tá»« Ä‘áº§u. HÃ£y cá»© viáº¿t nÃ³ bÃªn trong thÆ° má»¥c `features/`. Khi vÃ  chá»‰ khi báº¡n phÃ¡t hiá»‡n ra logic/component nÃ y Ä‘Æ°á»£c tÃ¡i sá»­ dá»¥ng nguyÃªn váº¹n á»Ÿ má»™t **Feature thá»© 2**, lÃºc Ä‘Ã³ má»›i tiáº¿n hÃ nh refactor vÃ  kÃ©o nÃ³ ra thÆ° má»¥c `shared/ui/` hoáº·c `shared/utils/`.
+- KhÃ´ng nhÃ©t cÃ¡c logic mang tÃ­nh cháº¥t "Nghiá»‡p vá»¥" (Domain logic) vÃ o `shared/`. Khá»‘i `shared` chá»‰ chá»©a cÃ¡c yáº¿u tá»‘ cÆ¡ sá»Ÿ (UI kit (Shadcn), Form Helpers, Regex chung...).
 
 ---
 
-## Quy tắc 6: Schemas và Types
+## Quy táº¯c 5: Chiáº¿n lÆ°á»£c State Management
 
-Để tránh nhầm lẫn giữa Type của TypeScript và Schema của Zod:
-
-- **`schemas/` (Zod Validation):** Đại diện cho "Nguồn chân lý dữ liệu" (Single Source of Truth). Dùng để validate dữ liệu từ bên ngoài đi vào hệ thống (API Responses, Payload POST/PUT, Form Data). Hãy tận dụng `.transform()` của Zod để chuyển đổi dữ liệu (DTO) nếu cấu trúc đơn giản.
-- **`types.ts` (Internal Types):** Dùng cho các Type/Interface thuần nội bộ (VD: Props của Component, type cho các biến nội bộ) không cần validate runtime.
-- **Luôn export Type từ Zod Schema:** Sử dụng `export type TPaymentPayload = z.infer<typeof PaymentSchema>` để tránh phải bảo trì định dạng Type ở hai nơi.
+- **UI State (Global):** CÃ¡c tráº¡ng thÃ¡i chá»‰ áº£nh hÆ°á»Ÿng Ä‘áº¿n hiá»ƒn thá»‹ mÃ  khÃ´ng dÃ­nh tá»›i dá»¯ liá»‡u Database (ÄÃ³ng/má»Ÿ sidebar, Theme Dark/Light) -> Äáº·t táº¡i `stores/ui.store.ts` (DÃ¹ng Zustand).
+- **Domain State:** Tráº¡ng thÃ¡i mang tÃ­nh cháº¥t dá»¯ liá»‡u nghiá»‡p vá»¥ (Giá» hÃ ng, QuÃ¡ trÃ¬nh checkout) -> Äáº·t táº¡i thÆ° má»¥c `stores/` cá»§a chÃ­nh Feature Ä‘Ã³ (VD: `features/cart/stores/cart.store.ts`). KhÃ´ng gom chung Domain State vÃ o Global Store.
+- **Server State:** LuÃ´n Æ°u tiÃªn dÃ¹ng **TanStack Query (React Query)** káº¿t há»£p trong `features/[name]/hooks/` Ä‘á»ƒ quáº£n lÃ½ viá»‡c fetch, cache, polling vÃ  mutate dá»¯ liá»‡u tá»« Server.
 
 ---
 
-## Quy tắc 7: Co-location (Gom cụm và Viết Test)
+## Quy táº¯c 6: Schemas vÃ  Types
 
-- Tất cả các file liên quan chặt chẽ đến một đơn vị code phải nằm ngay cạnh nó.
-- **Unit Test:** File test bắt buộc phải nằm cùng cấp thư mục với file source.
-  - Giao diện: `payment-method.tsx` -> `payment-method.test.tsx` (Dùng React Testing Library)
-  - Logic: `payment.service.ts` -> `payment.service.spec.ts` (Dùng Jest / Vitest)
+Äá»ƒ trÃ¡nh nháº§m láº«n giá»¯a Type cá»§a TypeScript vÃ  Schema cá»§a Zod:
+
+- **`schemas/` (Zod Validation):** Äáº¡i diá»‡n cho "Nguá»“n chÃ¢n lÃ½ dá»¯ liá»‡u" (Single Source of Truth). DÃ¹ng Ä‘á»ƒ validate dá»¯ liá»‡u tá»« bÃªn ngoÃ i Ä‘i vÃ o há»‡ thá»‘ng (API Responses, Payload POST/PUT, Form Data). HÃ£y táº­n dá»¥ng `.transform()` cá»§a Zod Ä‘á»ƒ chuyá»ƒn Ä‘á»•i dá»¯ liá»‡u (DTO) náº¿u cáº¥u trÃºc Ä‘Æ¡n giáº£n.
+- **`types.ts` (Internal Types):** DÃ¹ng cho cÃ¡c Type/Interface thuáº§n ná»™i bá»™ (VD: Props cá»§a Component, type cho cÃ¡c biáº¿n ná»™i bá»™) khÃ´ng cáº§n validate runtime.
+- **LuÃ´n export Type tá»« Zod Schema:** Sá»­ dá»¥ng `export type TPaymentPayload = z.infer<typeof PaymentSchema>` Ä‘á»ƒ trÃ¡nh pháº£i báº£o trÃ¬ Ä‘á»‹nh dáº¡ng Type á»Ÿ hai nÆ¡i.
+
+---
+
+## Quy táº¯c 7: Co-location (Gom cá»¥m vÃ  Viáº¿t Test)
+
+- Táº¥t cáº£ cÃ¡c file liÃªn quan cháº·t cháº½ Ä‘áº¿n má»™t Ä‘Æ¡n vá»‹ code pháº£i náº±m ngay cáº¡nh nÃ³.
+- **Unit Test:** File test báº¯t buá»™c pháº£i náº±m cÃ¹ng cáº¥p thÆ° má»¥c vá»›i file source.
+  - Giao diá»‡n: `payment-method.tsx` -> `payment-method.test.tsx` (DÃ¹ng React Testing Library)
+  - Logic: `payment.service.ts` -> `payment.service.spec.ts` (DÃ¹ng Jest / Vitest)
 
 > [!TIP]
-> Việc đặt file test ngay cạnh source code giúp Developer dễ dàng nhận biết module nào đã được cover test và giúp việc refactor an toàn hơn rất nhiều.
+> Viá»‡c Ä‘áº·t file test ngay cáº¡nh source code giÃºp Developer dá»… dÃ ng nháº­n biáº¿t module nÃ o Ä‘Ã£ Ä‘Æ°á»£c cover test vÃ  giÃºp viá»‡c refactor an toÃ n hÆ¡n ráº¥t nhiá»u.
 
 ---
 
-## Quy tắc 8: Phân Lớp Kiến Trúc Dữ Liệu (Data Architecture Layers)
+## Quy táº¯c 8: PhÃ¢n Lá»›p Kiáº¿n TrÃºc Dá»¯ Liá»‡u (Data Architecture Layers)
 
-Để code dễ bảo trì, dễ mở rộng và tuân thủ chặt chẽ Clean Architecture & Single Responsibility Principle (SRP), mỗi Feature (ví dụ: `features/catalog`) phải được chia thành 5 lớp rạch ròi. Lớp này không được làm nhiệm vụ của lớp khác:
+Äá»ƒ code dá»… báº£o trÃ¬, dá»… má»Ÿ rá»™ng vÃ  tuÃ¢n thá»§ cháº·t cháº½ Clean Architecture & Single Responsibility Principle (SRP), má»—i Feature (vÃ­ dá»¥: `features/catalog`) pháº£i Ä‘Æ°á»£c chia thÃ nh 5 lá»›p ráº¡ch rÃ²i. Lá»›p nÃ y khÃ´ng Ä‘Æ°á»£c lÃ m nhiá»‡m vá»¥ cá»§a lá»›p khÃ¡c:
 
-1. **`types/` (Tầng Domain - Lõi)**
-   - Định nghĩa hình hài của dữ liệu (ví dụ: `interface Product`).
-   - Mọi thành phần khác trong Feature đều phải tuân theo "bản hợp đồng" này.
+1. **`types/` (Táº§ng Domain - LÃµi)**
+   - Äá»‹nh nghÄ©a hÃ¬nh hÃ i cá»§a dá»¯ liá»‡u (vÃ­ dá»¥: `interface Product`).
+   - Má»i thÃ nh pháº§n khÃ¡c trong Feature Ä‘á»u pháº£i tuÃ¢n theo "báº£n há»£p Ä‘á»“ng" nÃ y.
 
-2. **`mocks/` (Tầng Dữ Liệu Tĩnh - Data)**
-   - Nơi chứa toàn bộ dữ liệu giả (`initialData`, `MOCK_OPTIONS`).
-   - Giúp tách biệt dữ liệu cứng ra khỏi UI và Logic. 
+2. **`mocks/` (Táº§ng Dá»¯ Liá»‡u TÄ©nh - Data)**
+   - NÆ¡i chá»©a toÃ n bá»™ dá»¯ liá»‡u giáº£ (`initialData`, `MOCK_OPTIONS`).
+   - GiÃºp tÃ¡ch biá»‡t dá»¯ liá»‡u cá»©ng ra khá»i UI vÃ  Logic. 
 
-3. **`services/` (Tầng Gọi API - Use Case / Data Access)**
-   - Nơi chuyên đảm nhận việc giao tiếp với Database hoặc External API (Backend).
-   - Chỉ trả về dữ liệu (Promise), không liên quan đến React hay State. 
-   - *Lợi ích:* Khi API thật (Backend) hoàn thiện, bạn **chỉ cần sửa mã trong file Service** bằng Axios/Fetch. Toàn bộ Hook và UI bên ngoài không cần sửa 1 dòng nào!
+3. **`services/` (Táº§ng Gá»i API - Use Case / Data Access)**
+   - NÆ¡i chuyÃªn Ä‘áº£m nháº­n viá»‡c giao tiáº¿p vá»›i Database hoáº·c External API (Backend).
+   - Chá»‰ tráº£ vá» dá»¯ liá»‡u (Promise), khÃ´ng liÃªn quan Ä‘áº¿n React hay State. 
+   - *Lá»£i Ã­ch:* Khi API tháº­t (Backend) hoÃ n thiá»‡n, báº¡n **chá»‰ cáº§n sá»­a mÃ£ trong file Service** báº±ng Axios/Fetch. ToÃ n bá»™ Hook vÃ  UI bÃªn ngoÃ i khÃ´ng cáº§n sá»­a 1 dÃ²ng nÃ o!
 
-4. **`hooks/` (Tầng Logic - Application)**
-   - Nơi chứa não bộ của Frontend (React State, `useEffect`, React Query).
-   - Hook sẽ gọi `services/` để lấy dữ liệu, sau đó lưu vào State và trả về cho Component.
-   - Không chứa giao diện HTML/JSX, không chứa mảng dữ liệu tĩnh (Mock).
+4. **`hooks/` (Táº§ng Logic - Application)**
+   - NÆ¡i chá»©a nÃ£o bá»™ cá»§a Frontend (React State, `useEffect`, React Query).
+   - Hook sáº½ gá»i `services/` Ä‘á»ƒ láº¥y dá»¯ liá»‡u, sau Ä‘Ã³ lÆ°u vÃ o State vÃ  tráº£ vá» cho Component.
+   - KhÃ´ng chá»©a giao diá»‡n HTML/JSX, khÃ´ng chá»©a máº£ng dá»¯ liá»‡u tÄ©nh (Mock).
 
-5. **`components/` (Tầng Giao Diện - Presentation)**
-   - Đóng vai trò là "Dumb Components" (Component ngốc nghếch).
-   - Nhiệm vụ duy nhất: Nhận dữ liệu (từ Hook truyền xuống) và vẽ ra UI (HTML/Tailwind).
-   - Không tự gọi API, không tự định nghĩa dữ liệu giả bên trong.
+5. **`components/` (Táº§ng Giao Diá»‡n - Presentation)**
+   - ÄÃ³ng vai trÃ² lÃ  "Dumb Components" (Component ngá»‘c ngháº¿ch).
+   - Nhiá»‡m vá»¥ duy nháº¥t: Nháº­n dá»¯ liá»‡u (tá»« Hook truyá»n xuá»‘ng) vÃ  váº½ ra UI (HTML/Tailwind).
+   - KhÃ´ng tá»± gá»i API, khÃ´ng tá»± Ä‘á»‹nh nghÄ©a dá»¯ liá»‡u giáº£ bÃªn trong.
 
 ---
 
-## Quy tắc 9: Tiêu chuẩn Quản lý Form và Dữ liệu (Production-Ready)
+## Quy táº¯c 9: TiÃªu chuáº©n Quáº£n lÃ½ Form vÃ  Dá»¯ liá»‡u (Production-Ready)
 
-Để đảm bảo hệ thống Admin đạt chuẩn Production, hiệu năng cao và bảo mật, tất cả các Form phức tạp (Product, Campaign, FlashSale, Blog,...) bắt buộc tuân thủ kiến trúc sau:
+Äá»ƒ Ä‘áº£m báº£o há»‡ thá»‘ng Admin Ä‘áº¡t chuáº©n Production, hiá»‡u nÄƒng cao vÃ  báº£o máº­t, táº¥t cáº£ cÃ¡c Form phá»©c táº¡p (Product, Campaign, FlashSale, Blog,...) báº¯t buá»™c tuÃ¢n thá»§ kiáº¿n trÃºc sau:
 
-### ⚖️ So sánh Kiến trúc Form: Cũ vs Mới
+### âš–ï¸ So sÃ¡nh Kiáº¿n trÃºc Form: CÅ© vs Má»›i
 
-#### ❌ Vấn đề của Kiến trúc Cũ (Sử dụng React thuần)
-- **Lạm dụng `useState`:** Mỗi trường như `name`, `price`, `description`... phải khai báo một biến state riêng biệt. Form càng lớn, code càng dài và rối.
-- **Trải nghiệm giật lag:** Khi gõ một phím, `useState` thay đổi, kéo theo **toàn bộ giao diện của form phải re-render**. Đặc biệt nếu Form chứa `RichTextEditor`, tình trạng giật lag rất rõ rệt.
-- **Xử lý Submit thủ công:** Gọi trực tiếp `fetch('/api/...')` trong Component buộc Developer phải tự viết thêm state `isLoading`, tự viết code bắt lỗi kiểu `if (!title) setErr("Lỗi")`. Rất mệt mỏi và dễ dính bug.
-- **Lộ Logic:** Khách truy cập (hoặc hacker) mở F12 (Network) là thấy rõ Form đang gọi qua API nào, dữ liệu gửi đi có cấu trúc ra sao.
+#### âŒ Váº¥n Ä‘á» cá»§a Kiáº¿n trÃºc CÅ© (Sá»­ dá»¥ng React thuáº§n)
+- **Láº¡m dá»¥ng `useState`:** Má»—i trÆ°á»ng nhÆ° `name`, `price`, `description`... pháº£i khai bÃ¡o má»™t biáº¿n state riÃªng biá»‡t. Form cÃ ng lá»›n, code cÃ ng dÃ i vÃ  rá»‘i.
+- **Tráº£i nghiá»‡m giáº­t lag:** Khi gÃµ má»™t phÃ­m, `useState` thay Ä‘á»•i, kÃ©o theo **toÃ n bá»™ giao diá»‡n cá»§a form pháº£i re-render**. Äáº·c biá»‡t náº¿u Form chá»©a `RichTextEditor`, tÃ¬nh tráº¡ng giáº­t lag ráº¥t rÃµ rá»‡t.
+- **Xá»­ lÃ½ Submit thá»§ cÃ´ng:** Gá»i trá»±c tiáº¿p `fetch('/api/...')` trong Component buá»™c Developer pháº£i tá»± viáº¿t thÃªm state `isLoading`, tá»± viáº¿t code báº¯t lá»—i kiá»ƒu `if (!title) setErr("Lá»—i")`. Ráº¥t má»‡t má»i vÃ  dá»… dÃ­nh bug.
+- **Lá»™ Logic:** KhÃ¡ch truy cáº­p (hoáº·c hacker) má»Ÿ F12 (Network) lÃ  tháº¥y rÃµ Form Ä‘ang gá»i qua API nÃ o, dá»¯ liá»‡u gá»­i Ä‘i cÃ³ cáº¥u trÃºc ra sao.
 
-#### ✅ Lợi ích của Kiến trúc Mới (RHF + Zod + Server Actions)
-- **Siêu Mượt (Uncontrolled Components):** `React Hook Form` không cần dùng `useState` cho từng input. Thẻ input nào thay đổi thì chỉ bản thân thẻ đó cập nhật, form không bị re-render, triệt tiêu hoàn toàn giật lag.
-- **Bắt Lỗi Tự Động (Single Source of Truth):** Chỉ định nghĩa luật 1 lần duy nhất ở file `*.schema.ts` qua **Zod**. Lỗi sẽ tự động hiển thị màu đỏ ngay dưới input lập tức nếu sai (ví dụ: title phải dài hơn 5 ký tự), không cần bất kỳ lệnh `if/else` nào trong UI.
-- **Bảo mật Tối đa & Dễ dàng hiển thị Loading:** Toàn bộ dữ liệu của form được ném về một **Server Action** (chạy ở Node.js backend). Client gọi hàm thông qua `useTransition`, Next.js sẽ tự động quản lý trạng thái `isPending` (loading) để làm mờ nút Save mà không cần code state bằng tay. Logic gọi Database được ẩn hoàn toàn khỏi trình duyệt.
+#### âœ… Lá»£i Ã­ch cá»§a Kiáº¿n trÃºc Má»›i (RHF + Zod + Server Actions)
+- **SiÃªu MÆ°á»£t (Uncontrolled Components):** `React Hook Form` khÃ´ng cáº§n dÃ¹ng `useState` cho tá»«ng input. Tháº» input nÃ o thay Ä‘á»•i thÃ¬ chá»‰ báº£n thÃ¢n tháº» Ä‘Ã³ cáº­p nháº­t, form khÃ´ng bá»‹ re-render, triá»‡t tiÃªu hoÃ n toÃ n giáº­t lag.
+- **Báº¯t Lá»—i Tá»± Äá»™ng (Single Source of Truth):** Chá»‰ Ä‘á»‹nh nghÄ©a luáº­t 1 láº§n duy nháº¥t á»Ÿ file `*.schema.ts` qua **Zod**. Lá»—i sáº½ tá»± Ä‘á»™ng hiá»ƒn thá»‹ mÃ u Ä‘á» ngay dÆ°á»›i input láº­p tá»©c náº¿u sai (vÃ­ dá»¥: title pháº£i dÃ i hÆ¡n 5 kÃ½ tá»±), khÃ´ng cáº§n báº¥t ká»³ lá»‡nh `if/else` nÃ o trong UI.
+- **Báº£o máº­t Tá»‘i Ä‘a & Dá»… dÃ ng hiá»ƒn thá»‹ Loading:** ToÃ n bá»™ dá»¯ liá»‡u cá»§a form Ä‘Æ°á»£c nÃ©m vá» má»™t **Server Action** (cháº¡y á»Ÿ Node.js backend). Client gá»i hÃ m thÃ´ng qua `useTransition`, Next.js sáº½ tá»± Ä‘á»™ng quáº£n lÃ½ tráº¡ng thÃ¡i `isPending` (loading) Ä‘á»ƒ lÃ m má» nÃºt Save mÃ  khÃ´ng cáº§n code state báº±ng tay. Logic gá»i Database Ä‘Æ°á»£c áº©n hoÃ n toÃ n khá»i trÃ¬nh duyá»‡t.
 
-#### 📁 So sánh Phân bổ Cấu trúc Thư mục (Old vs New)
+#### ðŸ“ So sÃ¡nh PhÃ¢n bá»• Cáº¥u trÃºc ThÆ° má»¥c (Old vs New)
 
-**Kiến trúc Cũ (Tất cả nhét vào một chỗ, khó tái sử dụng):**
+**Kiáº¿n trÃºc CÅ© (Táº¥t cáº£ nhÃ©t vÃ o má»™t chá»—, khÃ³ tÃ¡i sá»­ dá»¥ng):**
 ```text
 src/
-└── app/
-    └── products/
-        ├── create/
-        │   ├── page.tsx       (Chứa luôn UI Form, khai báo hàng chục useState, và fetch API)
-        │   └── validate.ts    (Các hàm check lỗi if/else tự chế)
+â””â”€â”€ app/
+    â””â”€â”€ products/
+        â”œâ”€â”€ create/
+        â”‚   â”œâ”€â”€ page.tsx       (Chá»©a luÃ´n UI Form, khai bÃ¡o hÃ ng chá»¥c useState, vÃ  fetch API)
+        â”‚   â””â”€â”€ validate.ts    (CÃ¡c hÃ m check lá»—i if/else tá»± cháº¿)
 ```
 
-**Kiến trúc Mới (Phân tách rõ ràng từng chức năng - Vertical Slicing):**
+**Kiáº¿n trÃºc Má»›i (PhÃ¢n tÃ¡ch rÃµ rÃ ng tá»«ng chá»©c nÄƒng - Vertical Slicing):**
 ```text
 src/
-├── app/
-│   └── (dashboard)/products/create/
-│       └── page.tsx           (Chỉ gọi Component <ProductForm mode="create" /> - Rất ngắn gọn)
-│
-└── features/catalog/          (Nhóm nghiệp vụ Catalog)
-    ├── components/
-    │   └── ProductForm.tsx    (Chỉ chứa UI + React Hook Form, KHÔNG gọi fetch API)
-    ├── actions/
-    │   └── product.action.ts  (Chỉ chứa hàm "use server" xử lý dữ liệu và lưu DB)
-    └── schemas/
-        └── product.schema.ts  (Chỉ chứa Zod Schema định nghĩa luật kiểm tra lỗi)
+â”œâ”€â”€ app/
+â”‚   â””â”€â”€ (dashboard)/products/create/
+â”‚       â””â”€â”€ page.tsx           (Chá»‰ gá»i Component <ProductForm mode="create" /> - Ráº¥t ngáº¯n gá»n)
+â”‚
+â””â”€â”€ features/catalog/          (NhÃ³m nghiá»‡p vá»¥ Catalog)
+    â”œâ”€â”€ components/
+    â”‚   â””â”€â”€ ProductForm.tsx    (Chá»‰ chá»©a UI + React Hook Form, KHÃ”NG gá»i fetch API)
+    â”œâ”€â”€ actions/
+    â”‚   â””â”€â”€ product.action.ts  (Chá»‰ chá»©a hÃ m "use server" xá»­ lÃ½ dá»¯ liá»‡u vÃ  lÆ°u DB)
+    â””â”€â”€ schemas/
+        â””â”€â”€ product.schema.ts  (Chá»‰ chá»©a Zod Schema Ä‘á»‹nh nghÄ©a luáº­t kiá»ƒm tra lá»—i)
 ```
 
 ### 9.1. Form State & Validation (React Hook Form + Zod)
-- **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Việc dùng `useState` thuần túy cho Form sinh ra rất nhiều boilerplate code. React sẽ re-render lại toàn bộ component mỗi khi user gõ một ký tự vào input, làm giật lag đối với Form lớn có nhiều component phức tạp như RichTextEditor. Hơn nữa, việc tự viết code check lỗi (validation) bằng `if/else` rất dễ rò rỉ lỗi và không đồng nhất.
-- **Giải pháp (Kiến trúc mới):** 
-  - Sử dụng **React Hook Form (RHF)** để quản lý state (Uncontrolled Components).
-  - Sử dụng **Zod** để khai báo Schema validation (`@hookform/resolvers/zod`).
-  - Sử dụng Component `<Form>` của Shadcn UI để kết dính RHF vào giao diện một cách gọn gàng.
-- **Lợi ích:** Zod đóng vai trò là Single Source of Truth cho cấu trúc dữ liệu. RHF giúp component không bị re-render liên tục khi gõ phím, tăng hiệu năng đáng kể. Code sạch sẽ, dễ bảo trì, dễ thêm bớt trường dữ liệu. Lỗi (Errors) hiển thị ngay lập tức (Real-time feedback).
+- **Táº¡i sao pháº£i lÃ m? (Váº¥n Ä‘á» kiáº¿n trÃºc cÅ©):** Viá»‡c dÃ¹ng `useState` thuáº§n tÃºy cho Form sinh ra ráº¥t nhiá»u boilerplate code. React sáº½ re-render láº¡i toÃ n bá»™ component má»—i khi user gÃµ má»™t kÃ½ tá»± vÃ o input, lÃ m giáº­t lag Ä‘á»‘i vá»›i Form lá»›n cÃ³ nhiá»u component phá»©c táº¡p nhÆ° RichTextEditor. HÆ¡n ná»¯a, viá»‡c tá»± viáº¿t code check lá»—i (validation) báº±ng `if/else` ráº¥t dá»… rÃ² rá»‰ lá»—i vÃ  khÃ´ng Ä‘á»“ng nháº¥t.
+- **Giáº£i phÃ¡p (Kiáº¿n trÃºc má»›i):** 
+  - Sá»­ dá»¥ng **React Hook Form (RHF)** Ä‘á»ƒ quáº£n lÃ½ state (Uncontrolled Components).
+  - Sá»­ dá»¥ng **Zod** Ä‘á»ƒ khai bÃ¡o Schema validation (`@hookform/resolvers/zod`).
+  - Sá»­ dá»¥ng Component `<Form>` cá»§a Shadcn UI Ä‘á»ƒ káº¿t dÃ­nh RHF vÃ o giao diá»‡n má»™t cÃ¡ch gá»n gÃ ng.
+- **Lá»£i Ã­ch:** Zod Ä‘Ã³ng vai trÃ² lÃ  Single Source of Truth cho cáº¥u trÃºc dá»¯ liá»‡u. RHF giÃºp component khÃ´ng bá»‹ re-render liÃªn tá»¥c khi gÃµ phÃ­m, tÄƒng hiá»‡u nÄƒng Ä‘Ã¡ng ká»ƒ. Code sáº¡ch sáº½, dá»… báº£o trÃ¬, dá»… thÃªm bá»›t trÆ°á»ng dá»¯ liá»‡u. Lá»—i (Errors) hiá»ƒn thá»‹ ngay láº­p tá»©c (Real-time feedback).
 
-### 9.2. Bảo mật & Xử lý Submit (Server Actions)
-- **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Trực tiếp gọi `fetch("/api/...")` ở Client Form đòi hỏi phải tự xử lý loading state thủ công, dễ bị lộ endpoint và logic kiểm tra nghiệp vụ ở trình duyệt.
-- **Giải pháp (Kiến trúc mới):**
-  - Khai báo các hàm xử lý dữ liệu với chỉ thị `"use server"` trong thư mục `actions/`.
-  - Component ở Client gọi trực tiếp hàm này thông qua `useTransition`.
-- **Lợi ích:** Mọi quá trình tính toán, gọi Database diễn ra 100% trên Server, an toàn tuyệt đối. Tự động hỗ trợ Type-Safe (Client biết chính xác hàm Action trả về kiểu dữ liệu gì). Kết hợp với `useTransition` giúp tạo ra hiệu ứng Loading mượt mà.
+### 9.2. Báº£o máº­t & Xá»­ lÃ½ Submit (Server Actions)
+- **Táº¡i sao pháº£i lÃ m? (Váº¥n Ä‘á» kiáº¿n trÃºc cÅ©):** Trá»±c tiáº¿p gá»i `fetch("/api/...")` á»Ÿ Client Form Ä‘Ã²i há»i pháº£i tá»± xá»­ lÃ½ loading state thá»§ cÃ´ng, dá»… bá»‹ lá»™ endpoint vÃ  logic kiá»ƒm tra nghiá»‡p vá»¥ á»Ÿ trÃ¬nh duyá»‡t.
+- **Giáº£i phÃ¡p (Kiáº¿n trÃºc má»›i):**
+  - Khai bÃ¡o cÃ¡c hÃ m xá»­ lÃ½ dá»¯ liá»‡u vá»›i chá»‰ thá»‹ `"use server"` trong thÆ° má»¥c `actions/`.
+  - Component á»Ÿ Client gá»i trá»±c tiáº¿p hÃ m nÃ y thÃ´ng qua `useTransition`.
+- **Lá»£i Ã­ch:** Má»i quÃ¡ trÃ¬nh tÃ­nh toÃ¡n, gá»i Database diá»…n ra 100% trÃªn Server, an toÃ n tuyá»‡t Ä‘á»‘i. Tá»± Ä‘á»™ng há»— trá»£ Type-Safe (Client biáº¿t chÃ­nh xÃ¡c hÃ m Action tráº£ vá» kiá»ƒu dá»¯ liá»‡u gÃ¬). Káº¿t há»£p vá»›i `useTransition` giÃºp táº¡o ra hiá»‡u á»©ng Loading mÆ°á»£t mÃ .
 
-### 9.3. Tối ưu Tải trang (Lazy Loading với Dynamic Import)
-- **Giải pháp:** Bắt buộc bọc các Component nặng (Rich Text Editor, Biểu đồ) bằng `next/dynamic` với tùy chọn `ssr: false`.
-- **Lợi ích:** Giảm tải Bundle Size ban đầu. Khắc phục hoàn toàn các lỗi "Window is not defined" do các thư viện thao tác trực tiếp DOM chạy ở chế độ SSR.
+### 9.3. Tá»‘i Æ°u Táº£i trang (Lazy Loading vá»›i Dynamic Import)
+- **Giáº£i phÃ¡p:** Báº¯t buá»™c bá»c cÃ¡c Component náº·ng (Rich Text Editor, Biá»ƒu Ä‘á»“) báº±ng `next/dynamic` vá»›i tÃ¹y chá»n `ssr: false`.
+- **Lá»£i Ã­ch:** Giáº£m táº£i Bundle Size ban Ä‘áº§u. Kháº¯c phá»¥c hoÃ n toÃ n cÃ¡c lá»—i "Window is not defined" do cÃ¡c thÆ° viá»‡n thao tÃ¡c trá»±c tiáº¿p DOM cháº¡y á»Ÿ cháº¿ Ä‘á»™ SSR.
 
-### 💡 Trình tự Implement một Form:
-1. **Bước 1: Khai báo Schema (`*.schema.ts`):** 
+### ðŸ’¡ TrÃ¬nh tá»± Implement má»™t Form:
+1. **BÆ°á»›c 1: Khai bÃ¡o Schema (`*.schema.ts`):** 
    ```ts
    export const DataSchema = z.object({ title: z.string().min(5), status: z.enum(["draft", "published"]) });
    export type TDataPayload = z.infer<typeof DataSchema>;
    ```
-2. **Bước 2: Viết Server Action (`*.action.ts`):** Nơi tiếp nhận và xử lý (an toàn trên server).
+2. **BÆ°á»›c 2: Viáº¿t Server Action (`*.action.ts`):** NÆ¡i tiáº¿p nháº­n vÃ  xá»­ lÃ½ (an toÃ n trÃªn server).
    ```ts
    "use server";
    export async function createDataAction(data: TDataPayload) {
      const validated = DataSchema.safeParse(data);
-     if (!validated.success) return { success: false, error: "Lỗi" };
+     if (!validated.success) return { success: false, error: "Lá»—i" };
      return { success: true, data: validated.data };
    }
    ```
-3. **Bước 3: Viết UI Component (`*Form.tsx`):**
+3. **BÆ°á»›c 3: Viáº¿t UI Component (`*Form.tsx`):**
    ```tsx
    const form = useForm<TDataPayload>({ resolver: zodResolver(DataSchema) });
    const [isPending, startTransition] = useTransition();
@@ -252,11 +252,11 @@ src/
        try {
          const res = await createDataAction(values);
          if (res.success) {
-           toast.success("Thành công!");
+           toast.success("ThÃ nh cÃ´ng!");
            form.reset();
          } else {
-           toast.error(res.error || "Có lỗi xảy ra");
-           // Ánh xạ lỗi Validation từ Server Action về UI
+           toast.error(res.error || "CÃ³ lá»—i xáº£y ra");
+           // Ãnh xáº¡ lá»—i Validation tá»« Server Action vá» UI
            if (res.details) {
              Object.keys(res.details).forEach((key) => {
                form.setError(key as any, { type: "server", message: res.details[key][0] });
@@ -264,13 +264,14 @@ src/
            }
          }
        } catch (error) {
-         toast.error("Lỗi kết nối đến máy chủ!");
+         toast.error("Lá»—i káº¿t ná»‘i Ä‘áº¿n mÃ¡y chá»§!");
        }
      });
    }
    // Return `<Form {...form}>...`
    ```
 
-### 9.4. Error Handling (BẮT BUỘC)
-- **Trong Server Action**: Phải luôn có khối `try...catch` bọc quanh lời gọi Service. Trả về `return { success: false, error: "Lỗi hệ thống" }` nếu Service ném Exception (tránh sập Next.js App Router).
-- **Trong Form Component**: Phải luôn có khối `try...catch` bọc quanh lời gọi Server Action. Xử lý field validation error bằng cách dùng `form.setError` với `res.details`.
+### 9.4. Error Handling (Báº®T BUá»˜C)
+- **Trong Server Action**: Pháº£i luÃ´n cÃ³ khá»‘i `try...catch` bá»c quanh lá»i gá»i Service. Tráº£ vá» `return { success: false, error: "Lá»—i há»‡ thá»‘ng" }` náº¿u Service nÃ©m Exception (trÃ¡nh sáº­p Next.js App Router).
+- **Trong Form Component**: Pháº£i luÃ´n cÃ³ khá»‘i `try...catch` bá»c quanh lá»i gá»i Server Action. Xá»­ lÃ½ field validation error báº±ng cÃ¡ch dÃ¹ng `form.setError` vá»›i `res.details`.
+
