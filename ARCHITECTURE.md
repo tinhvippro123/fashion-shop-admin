@@ -160,3 +160,56 @@ Thư mục `shared/` chứa những tài nguyên dùng chung cho **TOÀN BỘ �
    - Đóng vai trò là "Dumb Components" (Component ngốc nghếch).
    - Nhiệm vụ duy nhất: Nhận dữ liệu (từ Hook truyền xuống) và vẽ ra UI (HTML/Tailwind).
    - Không tự gọi API, không tự định nghĩa dữ liệu giả bên trong.
+
+---
+
+## Quy tắc 9: Tiêu chuẩn Quản lý Form và Dữ liệu (Production-Ready)
+
+Để đảm bảo hệ thống Admin đạt chuẩn Production, hiệu năng cao và bảo mật, tất cả các Form phức tạp (Product, Campaign, FlashSale, Blog,...) bắt buộc tuân thủ kiến trúc sau:
+
+### 9.1. Form State & Validation (React Hook Form + Zod)
+- **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Việc dùng `useState` thuần túy cho Form sinh ra rất nhiều boilerplate code. React sẽ re-render lại toàn bộ component mỗi khi user gõ một ký tự vào input, làm giật lag đối với Form lớn có nhiều component phức tạp như RichTextEditor. Hơn nữa, việc tự viết code check lỗi (validation) bằng `if/else` rất dễ rò rỉ lỗi và không đồng nhất.
+- **Giải pháp (Kiến trúc mới):** 
+  - Sử dụng **React Hook Form (RHF)** để quản lý state (Uncontrolled Components).
+  - Sử dụng **Zod** để khai báo Schema validation (`@hookform/resolvers/zod`).
+  - Sử dụng Component `<Form>` của Shadcn UI để kết dính RHF vào giao diện một cách gọn gàng.
+- **Lợi ích:** Zod đóng vai trò là Single Source of Truth cho cấu trúc dữ liệu. RHF giúp component không bị re-render liên tục khi gõ phím, tăng hiệu năng đáng kể. Code sạch sẽ, dễ bảo trì, dễ thêm bớt trường dữ liệu. Lỗi (Errors) hiển thị ngay lập tức (Real-time feedback).
+
+### 9.2. Bảo mật & Xử lý Submit (Server Actions)
+- **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Trực tiếp gọi `fetch("/api/...")` ở Client Form đòi hỏi phải tự xử lý loading state thủ công, dễ bị lộ endpoint và logic kiểm tra nghiệp vụ ở trình duyệt.
+- **Giải pháp (Kiến trúc mới):**
+  - Khai báo các hàm xử lý dữ liệu với chỉ thị `"use server"` trong thư mục `actions/`.
+  - Component ở Client gọi trực tiếp hàm này thông qua `useTransition`.
+- **Lợi ích:** Mọi quá trình tính toán, gọi Database diễn ra 100% trên Server, an toàn tuyệt đối. Tự động hỗ trợ Type-Safe (Client biết chính xác hàm Action trả về kiểu dữ liệu gì). Kết hợp với `useTransition` giúp tạo ra hiệu ứng Loading mượt mà.
+
+### 9.3. Tối ưu Tải trang (Lazy Loading với Dynamic Import)
+- **Giải pháp:** Bắt buộc bọc các Component nặng (Rich Text Editor, Biểu đồ) bằng `next/dynamic` với tùy chọn `ssr: false`.
+- **Lợi ích:** Giảm tải Bundle Size ban đầu. Khắc phục hoàn toàn các lỗi "Window is not defined" do các thư viện thao tác trực tiếp DOM chạy ở chế độ SSR.
+
+### 💡 Trình tự Implement một Form:
+1. **Bước 1: Khai báo Schema (`*.schema.ts`):** 
+   ```ts
+   export const DataSchema = z.object({ title: z.string().min(5), status: z.enum(["draft", "published"]) });
+   export type TDataPayload = z.infer<typeof DataSchema>;
+   ```
+2. **Bước 2: Viết Server Action (`*.action.ts`):** Nơi tiếp nhận và xử lý (an toàn trên server).
+   ```ts
+   "use server";
+   export async function createDataAction(data: TDataPayload) {
+     const validated = DataSchema.safeParse(data);
+     if (!validated.success) return { success: false, error: "Lỗi" };
+     return { success: true, data: validated.data };
+   }
+   ```
+3. **Bước 3: Viết UI Component (`*Form.tsx`):**
+   ```tsx
+   const form = useForm<TDataPayload>({ resolver: zodResolver(DataSchema) });
+   const [isPending, startTransition] = useTransition();
+   
+   function onSubmit(values: TDataPayload) {
+     startTransition(async () => {
+       await createDataAction(values);
+     });
+   }
+   // Return `<Form {...form}>...`
+   ```
