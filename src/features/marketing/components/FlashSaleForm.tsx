@@ -56,7 +56,7 @@ const CATALOG_PRODUCTS = [
 ];
 
 interface FlashSaleFormProps {
-  initialData?: any;
+  initialData?: Partial<TFlashSalePayload> & { id?: string | number };
   mode?: "create" | "edit";
 }
 
@@ -114,7 +114,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
@@ -126,7 +126,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
@@ -369,7 +369,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                           </TableCell>
                         </TableRow>
                       ) : (
-                        products.map((product: any) => (
+                        products.map((product) => (
                           <TableRow key={product.id}>
                             <TableCell>
                               <div className="flex items-center gap-3">
@@ -412,7 +412,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                       Chua có s?n ph?m nào. Hãy thêm s?n ph?m!
                     </div>
                   ) : (
-                    products.map((product: any) => (
+                    products.map((product) => (
                       <div key={product.id} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm">
                         <div className="flex items-start gap-3 pr-8 mb-4">
                           <div className="h-12 w-12 shrink-0 bg-muted rounded-md flex items-center justify-center text-[10px] text-muted-foreground border">?nh</div>

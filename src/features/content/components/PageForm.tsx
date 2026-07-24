@@ -30,7 +30,7 @@ import { createPageAction, updatePageAction } from "../actions/page.action";
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">�ang t?i b? so?n th?o...</div> 
+  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Đang tải bộ soạn thảo...</div> 
 });
 
 export function PageForm({ initialData, mode = "create" }: { initialData?: Partial<TPagePayload> & { id?: string | number }; mode?: "create" | "edit" }) {
@@ -56,7 +56,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
               if (mode === "create") {
                 const res = await createPageAction(payload);
                 if (res.success) {
-                  toast.success(status === "published" ? "�� luu trang th�nh c�ng!" : "�� luu nh�p trang!");
+                  toast.success(status === "published" ? "Đã lưu trang thành công!" : "Đã lưu nháp trang!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -68,7 +68,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
               } else {
                 const res = await updatePageAction(initialData?.id || 1, payload);
                 if (res.success) {
-                  toast.success(status === "published" ? "�� luu thay d?i trang!" : "�� c?p nh?t b?n nh�p!");
+                  toast.success(status === "published" ? "Đã lưu thay đổi trang!" : "Đã cập nhật bản nháp!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -79,7 +79,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                 }
               }
       } catch (error) {
-        toast.error("L?i k?t n?i d?n m�y ch?!");
+        toast.error("Lỗi kết nối đến máy chủ!");
       }
     });
   }
@@ -96,33 +96,33 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
           <div className="flex items-start sm:items-center gap-2 sm:gap-4">
             <div className="mt-1 sm:mt-0"><BackButton /></div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "T?o trang m?i" : "S?a trang"}</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Thi?t k? c�c trang n?i dung tinh." : "C?p nh?t n?i dung trang."}</p>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "create" ? "Tạo trang mới" : "Sửa trang"}</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">{mode === "create" ? "Thiết kế các trang nội dung tĩnh." : "Cập nhật nội dung trang."}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/pages" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
-              H?y
+              Hủy
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nh�p
+              Lưu nháp
             </Button>
             <Button 
               type="submit"
               className="flex-1 sm:flex-none gap-2"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Luu trang
+              <Save className="h-4 w-4" /> Lưu trang
             </Button>
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {/* C?t tr�i: Form th�ng tin & Editor */}
+          {/* Cột trái: Form thông tin & Editor */}
           <div className="md:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>N?i dung trang</CardTitle>
+                <CardTitle>Nội dung trang</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -130,9 +130,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">Ti�u d? trang <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Tiêu đề trang <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: V? ch�ng t�i..." className="text-lg" {...field} />
+                        <Input placeholder="VD: Về chúng tôi..." className="text-lg" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -144,14 +144,14 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">N?i dung (Rich Text) <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="font-semibold">Nội dung (Rich Text) <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <div className="rounded-md border flex flex-col bg-card">
                           <RichTextEditor 
                             value={field.value}
                             onChange={field.onChange}
                             editorClassName="h-[400px] border-none"
-                            placeholder="B?t d?u so?n th?o n?i dung trang..."
+                            placeholder="Bắt đầu soạn thảo nội dung trang..."
                           />
                         </div>
                       </FormControl>
@@ -163,11 +163,11 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
             </Card>
           </div>
 
-          {/* C?t ph?i: C�i d?t SEO & Tr?ng th�i */}
+          {/* Cột phải: Cài đặt SEO & Trạng thái */}
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>C�i d?t hi?n th?</CardTitle>
+                <CardTitle>Cài đặt hiển thị</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -175,11 +175,11 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">�u?ng d?n (Slug)</FormLabel>
+                      <FormLabel className="font-semibold">Đường dẫn (Slug)</FormLabel>
                       <FormControl>
                         <Input placeholder="ve-chung-toi" className="bg-muted/50" {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>T? d?ng t?o t? ti�u d? n?u d? tr?ng.</FormDescription>
+                      <FormDescription>Tự động tạo từ tiêu đề nếu để trống.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -190,9 +190,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base cursor-pointer">Xu?t b?n trang</FormLabel>
+                        <FormLabel className="text-base cursor-pointer">Xuất bản trang</FormLabel>
                         <FormDescription>
-                          Trang s? hi?n th? c�ng khai ngay.
+                          Trang sẽ hiển thị công khai ngay.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -209,7 +209,7 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
             
             <Card>
               <CardHeader>
-                <CardTitle>SEO (T�m ki?m)</CardTitle>
+                <CardTitle>SEO (Tìm kiếm)</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -217,9 +217,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   name="seoTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Th? ti�u d? (Meta Title)</FormLabel>
+                      <FormLabel>Thẻ tiêu đề (Meta Title)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ti�u d? hi?n th? tr�n Google..." {...field} value={field.value || ""} />
+                        <Input placeholder="Tiêu đề hiển thị trên Google..." {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -230,9 +230,9 @@ export function PageForm({ initialData, mode = "create" }: { initialData?: Parti
                   name="seoDesc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>M� t? (Meta Description)</FormLabel>
+                      <FormLabel>Mô tả (Meta Description)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="�o?n m� t? ng?n hi?n th? tr�n Google..." className="min-h-24" {...field} value={field.value || ""} />
+                        <Textarea placeholder="Đoạn mô tả ngắn hiển thị trên Google..." className="min-h-24" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

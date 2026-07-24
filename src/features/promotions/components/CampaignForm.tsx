@@ -75,7 +75,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
               if (mode === "create") {
                 const res = await createCampaignAction(payload);
                 if (res.success) {
-                  toast.success(status === "active" ? "�� luu v� k�ch ho?t chi?n d?ch!" : "�� luu nh�p chi?n d?ch!");
+                  toast.success(status === "active" ? "Đã lưu và kích hoạt chiến dịch!" : "Đã lưu nháp chiến dịch!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -87,7 +87,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
               } else {
                 const res = await updateCampaignAction(initialData?.id || 1, payload);
                 if (res.success) {
-                  toast.success(status === "active" ? "�� c?p nh?t chi?n d?ch!" : "�� c?p nh?t b?n nh�p!");
+                  toast.success(status === "active" ? "Đã cập nhật chiến dịch!" : "Đã cập nhật bản nháp!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -98,7 +98,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                 }
               }
       } catch (error) {
-        toast.error("L?i k?t n?i d?n m�y ch?!");
+        toast.error("Lỗi kết nối đến máy chủ!");
       }
     });
   }
@@ -115,31 +115,31 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chi?n d?ch khuy?n m�i</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chiến dịch khuyến mãi</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
-              H?y b?
+              Hủy bỏ
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nh�p
+              Lưu nháp
             </Button>
             <Button 
               type="submit"
               className="flex-1 sm:flex-none gap-2"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Luu & K�ch ho?t
+              <Save className="h-4 w-4" /> Lưu & Kích hoạt
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* C?t tr�i: N?i dung ch�nh & S?n ph?m */}
+          {/* Cột trái: Nội dung chính & Sản phẩm */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Th�ng tin co b?n</CardTitle>
+                <CardTitle>Thông tin cơ bản</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -147,9 +147,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>T�n chi?n d?ch <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Tên chiến dịch <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Si�u Sale H� 2026" {...field} />
+                        <Input placeholder="VD: Siêu Sale Hè 2026" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -162,16 +162,16 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     name="discountType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Lo?i gi?m gi�</FormLabel>
+                        <FormLabel>Loại giảm giá</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Ch?n lo?i" />
+                              <SelectValue placeholder="Chọn loại" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent align="start" alignItemWithTrigger={false}>
-                            <SelectItem value="percent">Gi?m theo ph?n tram (%)</SelectItem>
-                            <SelectItem value="amount">Gi?m theo s? ti?n (VND)</SelectItem>
+                            <SelectItem value="percent">Giảm theo phần trăm (%)</SelectItem>
+                            <SelectItem value="amount">Giảm theo số tiền (VND)</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -183,7 +183,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     name="discountValue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>M?c gi?m <span className="text-red-500">*</span></FormLabel>
+                        <FormLabel>Mức giảm <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
@@ -203,26 +203,26 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Card>
               <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>Danh s�ch S?n ph?m tham gia</CardTitle>
-                  <CardDescription>Ch?n c�c s?n ph?m c? th? s? du?c �p d?ng m?c gi?m gi� n�y.</CardDescription>
+                  <CardTitle>Danh sách Sản phẩm tham gia</CardTitle>
+                  <CardDescription>Chọn các sản phẩm cụ thể sẽ được áp dụng mức giảm giá này.</CardDescription>
                 </div>
                 <Dialog>
                   <DialogTrigger className={cn(buttonVariants({ size: "sm", variant: "default" }), "w-full sm:w-auto")} type="button">
-                    <Plus className="mr-2 h-4 w-4" /> Ch?n S?n Ph?m
+                    <Plus className="mr-2 h-4 w-4" /> Chọn Sản Phẩm
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Th�m s?n ph?m v�o chi?n d?ch</DialogTitle>
+                      <DialogTitle>Thêm sản phẩm vào chiến dịch</DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col gap-4 py-4">
-                      {/* L?c & Ch?n s?n ph?m mock UI */}
-                      <p className="text-sm text-muted-foreground italic">Ph?n ch?n s?n ph?m dang du?c thi?t k? d?ng UI Mockup.</p>
+                      {/* Lọc & Chọn sản phẩm mock UI */}
+                      <p className="text-sm text-muted-foreground italic">Phần chọn sản phẩm đang được thiết kế dạng UI Mockup.</p>
                       <div className="flex justify-between items-center bg-muted/50 p-3 rounded-md border border-border">
-                        <span className="text-sm text-emerald-800 font-medium">�� ch?n: 3 ph�n lo?i</span>
+                        <span className="text-sm text-emerald-800 font-medium">Đã chọn: 3 phân loại</span>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="button">X�c nh?n</Button>
+                      <Button type="button">Xác nhận</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -231,10 +231,10 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                 <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 w-full">
                   <div className="relative flex-1 w-full sm:w-auto">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="T�m trong danh s�ch d� ch?n..." className="pl-9" />
+                    <Input placeholder="Tìm trong danh sách đã chọn..." className="pl-9" />
                   </div>
                   <Button variant="destructive" className="w-full sm:w-auto opacity-50 cursor-not-allowed" type="button">
-                    <Trash2 className="mr-2 h-4 w-4" /> X�a h�ng lo?t (0)
+                    <Trash2 className="mr-2 h-4 w-4" /> Xóa hàng loạt (0)
                   </Button>
                 </div>
 
@@ -243,19 +243,19 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50 border-b">
                       <tr>
-                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">S?n ph?m / Ph�n lo?i</th>
+                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Sản phẩm / Phân loại</th>
                         <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Kho</th>
-                        <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao t�c</th>
+                        <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao tác</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border bg-card">
                       <tr className="hover:bg-muted/50 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">?nh</div>
+                            <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                             <div className="flex flex-col">
-                              <span className="font-medium">�o thun form r?ng basic</span>
-                              <span className="text-xs text-foreground font-bold">�en / Size S</span>
+                              <span className="font-medium">Áo thun form rộng basic</span>
+                              <span className="text-xs text-foreground font-bold">Đen / Size S</span>
                             </div>
                           </div>
                         </td>
@@ -269,18 +269,18 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     </tbody>
                   </table>
                   <div className="bg-muted/50 p-3 border-t text-sm text-muted-foreground font-medium">
-                    T?ng c?ng: 1 ph�n lo?i
+                    Tổng cộng: 1 phân loại
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* C?t ph?i: C�i d?t n�ng cao */}
+          {/* Cột phải: Cài đặt nâng cao */}
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Th?i gian �p d?ng</CardTitle>
+                <CardTitle>Thời gian áp dụng</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <FormField
@@ -288,7 +288,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ng�y b?t d?u <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Ngày bắt đầu <span className="text-red-500">*</span></FormLabel>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <FormControl>
@@ -304,7 +304,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="endDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ng�y k?t th�c <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Ngày kết thúc <span className="text-red-500">*</span></FormLabel>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <FormControl>
@@ -320,18 +320,18 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
 
             <Card>
               <CardHeader>
-                <CardTitle>�?i tu?ng kh�ch h�ng</CardTitle>
+                <CardTitle>Đối tượng khách hàng</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <Select value={audienceType} onValueChange={(val) => setAudienceType(val as string)}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Ch?n d?i tu?ng">
-                      {audienceType === "all" ? "T?t c? kh�ch h�ng" : "Ch? �p d?ng theo H?ng th�nh vi�n"}
+                    <SelectValue placeholder="Chọn đối tượng">
+                      {audienceType === "all" ? "Tất cả khách hàng" : "Chỉ áp dụng theo Hạng thành viên"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent align="start" alignItemWithTrigger={false}>
-                    <SelectItem value="all">T?t c? kh�ch h�ng</SelectItem>
-                    <SelectItem value="tier">H?ng th�nh vi�n (Membership Tier)</SelectItem>
+                    <SelectItem value="all">Tất cả khách hàng</SelectItem>
+                    <SelectItem value="tier">Hạng thành viên (Membership Tier)</SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
@@ -339,7 +339,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
 
             <Card>
               <CardHeader>
-                <CardTitle>Tr?ng th�i</CardTitle>
+                <CardTitle>Trạng thái</CardTitle>
               </CardHeader>
               <CardContent>
                 <FormField
@@ -348,9 +348,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
-                        <FormLabel className="cursor-pointer text-foreground font-semibold">K�ch ho?t chi?n d?ch</FormLabel>
+                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích hoạt chiến dịch</FormLabel>
                         <FormDescription>
-                          Chi?n d?ch s? t? d?ng ch?y khi d?n ng�y gi? b?t d?u
+                          Chiến dịch sẽ tự động chạy khi đến ngày giờ bắt đầu
                         </FormDescription>
                       </div>
                       <FormControl>

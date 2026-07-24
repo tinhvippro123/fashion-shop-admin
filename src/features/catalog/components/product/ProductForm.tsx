@@ -47,7 +47,7 @@ import { createProductAction, updateProductAction } from "../../actions/product.
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="min-h-[250px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Đang tải bộ soạn thảo...</div> 
+  loading: () => <div className="h-[250px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">Đang tải bộ soạn thảo...</div> 
 });
 
 interface ProductFormProps {
@@ -81,7 +81,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
               if (mode === "create") {
                 const res = await createProductAction(payload);
                 if (res.success) {
-                  toast.success(status === "published" ? "Ðã luu s?n ph?m thành công!" : "Ðã luu nháp s?n ph?m!");
+                  toast.success(status === "published" ? "Đã lưu sản phẩm thành công!" : "Đã lưu nháp sản phẩm!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -93,7 +93,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
               } else {
                 const res = await updateProductAction(initialData?.id || 1, payload);
                 if (res.success) {
-                  toast.success(status === "published" ? "Ðã c?p nh?t s?n ph?m thành công!" : "Ðã c?p nh?t b?n nháp!");
+                  toast.success(status === "published" ? "Đã cập nhật sản phẩm thành công!" : "Đã cập nhật bản nháp!");
                 } else {
                   toast.error(res.error as string);
                     if (res.details) {
@@ -104,7 +104,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                 }
               }
       } catch (error) {
-        toast.error("L?i k?t n?i d?n m�y ch?!");
+        toast.error("Lỗi kết nối đến máy chủ!");
       }
     });
   }
@@ -120,41 +120,41 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
           <div className="flex items-center gap-2 sm:gap-4">
             <BackButton />
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "edit" ? "Ch?nh s?a s?n ph?m" : "Thêm s?n ph?m m?i"}</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">{mode === "edit" ? "C?p nh?t thông tin c?a s?n ph?m." : "T?o m?i m?t s?n ph?m d? dang bán."}</p>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{mode === "edit" ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">{mode === "edit" ? "Cập nhật thông tin của sản phẩm." : "Tạo mới một sản phẩm để đăng bán."}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/products" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:inline-flex")}>
-              H?y b?
+              Hủy bỏ
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nháp
+              Lưu nháp
             </Button>
             <Button 
               type="submit"
               className="gap-2 flex-1 sm:flex-none"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Luu s?n ph?m
+              <Save className="h-4 w-4" /> Lưu sản phẩm
             </Button>
           </div>
         </div>
 
         <Tabs defaultValue="basic" className="w-full">
           <TabsList className="mb-6 bg-muted">
-            <TabsTrigger value="basic" className="data-[state=active]:bg-card">Thông tin co b?n</TabsTrigger>
-            <TabsTrigger value="variants" className="data-[state=active]:bg-card">Phân lo?i & Bi?n th?</TabsTrigger>
+            <TabsTrigger value="basic" className="data-[state=active]:bg-card">Thông tin cơ bản</TabsTrigger>
+            <TabsTrigger value="variants" className="data-[state=active]:bg-card">Phân loại & Biến thể</TabsTrigger>
           </TabsList>
 
           <TabsContent value="basic" className="mt-0">
             <div className="grid gap-6 md:grid-cols-3">
-              {/* C?t trái: Form thông tin */}
+              {/* Cột trái: Form thông tin */}
               <div className="md:col-span-2 flex flex-col gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Thông tin co b?n</CardTitle>
-                    <CardDescription>Nh?p tên và mô t? cho s?n ph?m</CardDescription>
+                    <CardTitle>Thông tin cơ bản</CardTitle>
+                    <CardDescription>Nhập tên và mô tả cho sản phẩm</CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-6">
                     <FormField
@@ -162,9 +162,9 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tên s?n ph?m <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>Tên sản phẩm <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
-                            <Input placeholder="VD: Váy d?m d? h?i n?..." {...field} />
+                            <Input placeholder="VD: Váy đầm dạ hội nữ..." {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -175,13 +175,13 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Mô t? chi ti?t</FormLabel>
+                          <FormLabel>Mô tả chi tiết</FormLabel>
                           <FormControl>
                             <div className="rounded-md border flex flex-col bg-card">
                               <RichTextEditor 
                                 value={field.value || ""}
                                 onChange={field.onChange}
-                                placeholder="Mô t? ch?t li?u, ki?u dáng..." 
+                                placeholder="Mô tả chất liệu, kiểu dáng..." 
                                 editorClassName="min-h-[250px] border-none" 
                               />
                             </div>
@@ -203,11 +203,11 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="price"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-2">
-                          <FormLabel>Giá niêm y?t (VNÐ) <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>Giá niêm yết (VNĐ) <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <Input type="number" placeholder="VD: 1500000" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                           </FormControl>
-                          <FormDescription>Ð? thi?t l?p gi?m giá, vui lòng t?o chi?n d?ch trong m?c Khuy?n mãi.</FormDescription>
+                          <FormDescription>Để thiết lập giảm giá, vui lòng tạo chiến dịch trong mục Khuyến mãi.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -230,7 +230,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="stock"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>S? lu?ng trong kho <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>Số lượng trong kho <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <Input type="number" placeholder="100" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                           </FormControl>
@@ -246,7 +246,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
               <div className="flex flex-col gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Hình ?nh</CardTitle>
+                    <CardTitle>Hình ảnh</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors cursor-pointer">
@@ -259,7 +259,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Phân lo?i</CardTitle>
+                    <CardTitle>Phân loại</CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-6">
                     <FormField
@@ -267,18 +267,18 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Danh m?c chính <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>Danh mục chính <span className="text-red-500">*</span></FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Ch?n danh m?c" />
+                                <SelectValue placeholder="Chọn danh mục" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="vay-dam">Váy d?m</SelectItem>
-                              <SelectItem value="ao-nu">Áo n?</SelectItem>
-                              <SelectItem value="quan-nu">Qu?n n?</SelectItem>
-                              <SelectItem value="phu-kien">Ph? ki?n</SelectItem>
+                              <SelectItem value="vay-dam">Váy đầm</SelectItem>
+                              <SelectItem value="ao-nu">Áo nữ</SelectItem>
+                              <SelectItem value="quan-nu">Quần nữ</SelectItem>
+                              <SelectItem value="phu-kien">Phụ kiện</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -290,7 +290,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                       name="brand"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nhãn hi?u</FormLabel>
+                          <FormLabel>Nhãn hiệu</FormLabel>
                           <FormControl>
                             <Input placeholder="Luxe Fashion" {...field} value={field.value || ""} />
                           </FormControl>
@@ -309,13 +309,13 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
               <div className="md:col-span-2 flex flex-col gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Thu?c tính s?n ph?m</CardTitle>
-                    <CardDescription>Ch?n các màu s?c và kích thu?c có s?n cho s?n ph?m này.</CardDescription>
+                    <CardTitle>Thuộc tính sản phẩm</CardTitle>
+                    <CardDescription>Chọn các màu sắc và kích thước có sẵn cho sản phẩm này.</CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-8">
                     <div className="grid gap-4">
                       <div className="flex items-center justify-between">
-                        <Label className="text-base font-semibold">Màu s?c (Colors)</Label>
+                        <Label className="text-base font-semibold">Màu sắc (Colors)</Label>
                       </div>
                       <div className="flex flex-wrap gap-4">
                         {MOCK_COLORS.map((color, i) => (
@@ -331,7 +331,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                     </div>
                     <div className="grid gap-4">
                       <div className="flex items-center justify-between">
-                        <Label className="text-base font-semibold">Kích thu?c (Sizes)</Label>
+                        <Label className="text-base font-semibold">Kích thước (Sizes)</Label>
                       </div>
                       <div className="flex flex-wrap gap-4">
                         {MOCK_SIZES.map((size, i) => (
@@ -348,17 +348,17 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                      <CardTitle>Danh sách Bi?n th? (Variants)</CardTitle>
-                      <CardDescription>Qu?n lý giá và kho cho t?ng phân lo?i c? th?.</CardDescription>
+                      <CardTitle>Danh sách Biến thể (Variants)</CardTitle>
+                      <CardDescription>Quản lý giá và kho cho từng phân loại cụ thể.</CardDescription>
                     </div>
-                    <Button variant="outline" size="sm" type="button"><Plus className="h-4 w-4 mr-2" /> T?o t? d?ng</Button>
+                    <Button variant="outline" size="sm" type="button"><Plus className="h-4 w-4 mr-2" /> Tạo tự động</Button>
                   </CardHeader>
                   <CardContent>
                     <div className="border rounded-md divide-y">
                       {MOCK_VARIANTS.map((v, i) => (
                         <div key={i} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                           <div className="flex flex-1 items-center gap-3">
-                             <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center border text-xs font-medium text-muted-foreground">?nh</div>
+                             <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center border text-xs font-medium text-muted-foreground">Ảnh</div>
                              <div>
                                <p className="font-semibold text-sm">{v.color} / {v.size}</p>
                                <p className="text-xs text-muted-foreground">SKU: PROD-001-{i+1}</p>
@@ -381,17 +381,17 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
               <div className="flex flex-col gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Hình ?nh theo Màu</CardTitle>
-                    <CardDescription>T?i lên album ?nh riêng cho t?ng màu.</CardDescription>
+                    <CardTitle>Hình ảnh theo Màu</CardTitle>
+                    <CardDescription>Tải lên album ảnh riêng cho từng màu.</CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label>Ch?n màu</Label>
+                      <Label>Chọn màu</Label>
                       <Select defaultValue="red">
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="red">Ð? d?m</SelectItem>
-                          <SelectItem value="black">Ðen tuy?n</SelectItem>
+                          <SelectItem value="red">Đỏ đậm</SelectItem>
+                          <SelectItem value="black">Đen tuyền</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

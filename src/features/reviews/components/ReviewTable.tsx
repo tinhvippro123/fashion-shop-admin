@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Star, MessageSquare, Filter } from "lucide-react";
+import { Search, MoreHorizontal, Star, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -138,7 +138,7 @@ export function ReviewTable() {
                   </Link>
                   
                   <p className="text-sm text-foreground bg-muted/50 p-2 rounded-md border text-left mt-1">
-                    "{review.comment}"
+                    &quot;{review.comment}&quot;
                   </p>
                   
                   <div className="mt-3">

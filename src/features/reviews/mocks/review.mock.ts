@@ -7,6 +7,6 @@ export const mockReviews: Review[] = [
     rating: 5, 
     comment: "Sản phẩm rất tốt", 
     date: "2024-03-20", 
-    status: "approved" 
+    status: "Hiển thị" 
   },
 ];
