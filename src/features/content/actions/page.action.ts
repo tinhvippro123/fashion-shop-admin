@@ -1,6 +1,5 @@
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { PageSchema, TPagePayload } from "../schemas/page.schema";
 import { pageService } from "../services/page.service";
@@ -15,7 +14,7 @@ export async function createPageAction(data: TPagePayload) {
     const res = await pageService.createPage(validated.data);
     revalidatePath('/pages');
     return { success: true, data: res };
-  } catch (error) {
+  } catch {
     return { success: false, error: "L?i h? th?ng khi t?o page" };
   }
 }
@@ -30,7 +29,7 @@ export async function updatePageAction(id: string | number, data: TPagePayload) 
     const res = await pageService.updatePage(Number(id), validated.data);
     revalidatePath('/pages');
     return { success: true, data: res };
-  } catch (error) {
+  } catch {
     return { success: false, error: "L?i h? th?ng khi c?p nh?t page" };
   }
 }

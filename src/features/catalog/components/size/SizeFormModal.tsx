@@ -28,7 +28,7 @@ import { SizeSchema, TSizePayload } from "../../schemas/size.schema";
 import { createSizeAction, updateSizeAction } from "../../actions/size.action";
 
 export interface SizeFormModalProps {
-  initialData?: any;
+  initialData?: Partial<TSizePayload> & { id?: string | number };
   mode?: "create" | "edit";
   trigger?: React.ReactElement;
 }
@@ -57,7 +57,7 @@ export function SizeFormModal({ initialData, mode = "create", trigger }: SizeFor
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TSizePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
@@ -70,7 +70,7 @@ export function SizeFormModal({ initialData, mode = "create", trigger }: SizeFor
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TSizePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }

@@ -1,6 +1,5 @@
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { BlogSchema, TBlogPayload } from "../schemas/blog.schema";
 import { blogService } from "../services/blog.service";
@@ -16,7 +15,7 @@ export async function createBlogAction(data: TBlogPayload) {
     const res = await blogService.createBlog(validated.data);
     revalidatePath('/blogs');
     return { success: true, data: res };
-  } catch (error) {
+  } catch {
     return { success: false, error: "L?i h? th?ng khi t?o blog" };
   }
 }
@@ -31,7 +30,7 @@ export async function updateBlogAction(id: string | number, data: TBlogPayload) 
     const res = await blogService.updateBlog(Number(id), validated.data);
     revalidatePath('/blogs');
     return { success: true, data: res };
-  } catch (error) {
+  } catch {
     return { success: false, error: "L?i h? th?ng khi c?p nh?t blog" };
   }
 }

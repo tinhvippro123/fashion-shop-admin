@@ -28,7 +28,7 @@ import { ColorSchema, TColorPayload } from "../../schemas/color.schema";
 import { createColorAction, updateColorAction } from "../../actions/color.action";
 
 export interface ColorFormModalProps {
-  initialData?: any;
+  initialData?: Partial<TColorPayload> & { id?: string | number };
   mode?: "create" | "edit";
   trigger?: React.ReactElement;
 }
@@ -58,7 +58,7 @@ export function ColorFormModal({ initialData, mode = "create", trigger }: ColorF
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TColorPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
@@ -71,7 +71,7 @@ export function ColorFormModal({ initialData, mode = "create", trigger }: ColorF
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TColorPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }

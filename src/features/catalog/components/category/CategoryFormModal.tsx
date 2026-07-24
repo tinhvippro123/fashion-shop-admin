@@ -69,7 +69,7 @@ export function CategoryFormModal({ initialData, mode = "create", trigger }: Cat
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TCategoryPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
@@ -82,7 +82,7 @@ export function CategoryFormModal({ initialData, mode = "create", trigger }: Cat
                   toast.error(res.error as string);
                     if (res.details) {
                       Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                        form.setError(key as keyof TCategoryPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
                       });
                     }
                 }
