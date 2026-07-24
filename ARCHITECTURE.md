@@ -167,6 +167,19 @@ Thư mục `shared/` chứa những tài nguyên dùng chung cho **TOÀN BỘ �
 
 Để đảm bảo hệ thống Admin đạt chuẩn Production, hiệu năng cao và bảo mật, tất cả các Form phức tạp (Product, Campaign, FlashSale, Blog,...) bắt buộc tuân thủ kiến trúc sau:
 
+### ⚖️ So sánh Kiến trúc Form: Cũ vs Mới
+
+#### ❌ Vấn đề của Kiến trúc Cũ (Sử dụng React thuần)
+- **Lạm dụng `useState`:** Mỗi trường như `name`, `price`, `description`... phải khai báo một biến state riêng biệt. Form càng lớn, code càng dài và rối.
+- **Trải nghiệm giật lag:** Khi gõ một phím, `useState` thay đổi, kéo theo **toàn bộ giao diện của form phải re-render**. Đặc biệt nếu Form chứa `RichTextEditor`, tình trạng giật lag rất rõ rệt.
+- **Xử lý Submit thủ công:** Gọi trực tiếp `fetch('/api/...')` trong Component buộc Developer phải tự viết thêm state `isLoading`, tự viết code bắt lỗi kiểu `if (!title) setErr("Lỗi")`. Rất mệt mỏi và dễ dính bug.
+- **Lộ Logic:** Khách truy cập (hoặc hacker) mở F12 (Network) là thấy rõ Form đang gọi qua API nào, dữ liệu gửi đi có cấu trúc ra sao.
+
+#### ✅ Lợi ích của Kiến trúc Mới (RHF + Zod + Server Actions)
+- **Siêu Mượt (Uncontrolled Components):** `React Hook Form` không cần dùng `useState` cho từng input. Thẻ input nào thay đổi thì chỉ bản thân thẻ đó cập nhật, form không bị re-render, triệt tiêu hoàn toàn giật lag.
+- **Bắt Lỗi Tự Động (Single Source of Truth):** Chỉ định nghĩa luật 1 lần duy nhất ở file `*.schema.ts` qua **Zod**. Lỗi sẽ tự động hiển thị màu đỏ ngay dưới input lập tức nếu sai (ví dụ: title phải dài hơn 5 ký tự), không cần bất kỳ lệnh `if/else` nào trong UI.
+- **Bảo mật Tối đa & Dễ dàng hiển thị Loading:** Toàn bộ dữ liệu của form được ném về một **Server Action** (chạy ở Node.js backend). Client gọi hàm thông qua `useTransition`, Next.js sẽ tự động quản lý trạng thái `isPending` (loading) để làm mờ nút Save mà không cần code state bằng tay. Logic gọi Database được ẩn hoàn toàn khỏi trình duyệt.
+
 ### 9.1. Form State & Validation (React Hook Form + Zod)
 - **Tại sao phải làm? (Vấn đề kiến trúc cũ):** Việc dùng `useState` thuần túy cho Form sinh ra rất nhiều boilerplate code. React sẽ re-render lại toàn bộ component mỗi khi user gõ một ký tự vào input, làm giật lag đối với Form lớn có nhiều component phức tạp như RichTextEditor. Hơn nữa, việc tự viết code check lỗi (validation) bằng `if/else` rất dễ rò rỉ lỗi và không đồng nhất.
 - **Giải pháp (Kiến trúc mới):** 
