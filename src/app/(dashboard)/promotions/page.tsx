@@ -4,10 +4,11 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { CampaignTable } from "@/features/promotions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function PromotionsPage() {
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Chương trình Khuyến mãi</h2>
@@ -20,7 +21,18 @@ export default function PromotionsPage() {
         </Link>
       </div>
 
-      <CampaignTable />
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="active">Đang hoạt động (3)</TabsTrigger>
+          <TabsTrigger value="trash">Thùng rác (2)</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active" className="m-0">
+          <CampaignTable />
+        </TabsContent>
+        <TabsContent value="trash" className="m-0">
+          <CampaignTable isTrashView />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

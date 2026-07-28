@@ -6,4 +6,6 @@ export interface FlashSale {
   productsCount: number;
   status: string;
   revenue: string;
+  usageCount?: number;
+  deletedAt?: string;
 }

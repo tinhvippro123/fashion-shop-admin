@@ -9,6 +9,7 @@ export const mockCampaigns: Campaign[] = [
     target: "Toàn bộ cửa hàng",
     audience: "Tất cả khách hàng",
     status: "Đang diễn ra",
+    usageCount: 1250,
   },
   {
     id: "PROMO-002",
@@ -18,6 +19,7 @@ export const mockCampaigns: Campaign[] = [
     target: "Danh mục: Áo khoác nữ",
     audience: "Hạng: Vàng, Kim Cương",
     status: "Sắp diễn ra",
+    usageCount: 0,
   },
   {
     id: "PROMO-003",
@@ -27,6 +29,29 @@ export const mockCampaigns: Campaign[] = [
     target: "Sản phẩm chọn lọc",
     audience: "Tất cả khách hàng",
     status: "Đã kết thúc",
+    usageCount: 840,
+  },
+  {
+    id: "PROMO-004",
+    name: "Sale Cuối Tuần 1",
+    discount: "10%",
+    duration: "01/01/2026 - 02/01/2026",
+    target: "Danh mục: Áo thun",
+    audience: "Tất cả khách hàng",
+    status: "Tạm dừng",
+    usageCount: 0,
+    deletedAt: "2026-05-15T10:00:00Z"
+  },
+  {
+    id: "PROMO-005",
+    name: "Khuyến mãi dùng thử",
+    discount: "VND 20,000",
+    duration: "15/02/2026 - 20/02/2026",
+    target: "Toàn bộ cửa hàng",
+    audience: "Tất cả khách hàng",
+    status: "Tạm dừng",
+    usageCount: 45,
+    deletedAt: "2026-06-20T08:30:00Z"
   },
 ];
 

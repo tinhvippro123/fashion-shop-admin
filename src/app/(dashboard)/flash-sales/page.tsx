@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/shared/ui/button";
 import { PlusCircle } from "lucide-react";
 import { FlashSaleTable } from "@/features/marketing";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function FlashSalesPage() {
   return (
@@ -20,7 +21,18 @@ export default function FlashSalesPage() {
         </Link>
       </div>
 
-      <FlashSaleTable />
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="active">Đang hoạt động (4)</TabsTrigger>
+          <TabsTrigger value="trash">Thùng rác (2)</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active" className="m-0">
+          <FlashSaleTable />
+        </TabsContent>
+        <TabsContent value="trash" className="m-0">
+          <FlashSaleTable isTrashView />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

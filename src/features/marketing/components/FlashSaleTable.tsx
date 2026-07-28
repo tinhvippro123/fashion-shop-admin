@@ -27,17 +27,107 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { Search, PlusCircle, Filter, MoreHorizontal, Clock } from "lucide-react";
 
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { toast } from "sonner";
+import { ArchiveRestore, Trash2, X } from "lucide-react";
+import { FlashSale } from "@/features/marketing/types/flash-sale.admin";
+import { Checkbox } from "@/shared/ui/checkbox";
+
 import { useFlashSales } from "@/features/marketing/hooks/useFlashSales";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
-export function FlashSaleTable() {
+export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { flashSales, isLoading } = useFlashSales();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const filteredSales = flashSales.filter(fs => isTrashView ? fs.deletedAt : !fs.deletedAt);
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredSales.length && filteredSales.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredSales.map((fs) => fs.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (isTrashView) {
+      const unremovable = filteredSales.filter(
+        fs => selectedIds.includes(fs.id) && ((fs.usageCount && fs.usageCount > 0) || fs.status === "Đang diễn ra" || fs.status === "Đã kết thúc")
+      );
+      
+      if (unremovable.length > 0) {
+        if (unremovable.length === selectedIds.length) {
+          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng hoặc đã diễn ra!");
+          return;
+        } else {
+          toast.warning(`Đã bỏ qua ${unremovable.length} chiến dịch không thể xóa vĩnh viễn.`);
+        }
+      }
+      
+      const removableCount = selectedIds.length - unremovable.length;
+      if (removableCount > 0) {
+        toast.success(`Đã xóa vĩnh viễn ${removableCount} chiến dịch thành công!`);
+        setSelectedIds([]);
+      }
+    } else {
+      toast.success(`Đã chuyển ${selectedIds.length} chiến dịch vào thùng rác!`);
+      setSelectedIds([]);
+    }
+  };
+
+  const handleBulkRestore = () => {
+    toast.success(`Đã khôi phục ${selectedIds.length} chiến dịch thành công!`);
+    setSelectedIds([]);
+  };
+
+  const handlePermanentDelete = (fs: FlashSale) => {
+    if ((fs.usageCount && fs.usageCount > 0) || fs.status === "Đang diễn ra" || fs.status === "Đã kết thúc") {
+      toast.error(`Không thể xóa vĩnh viễn "${fs.name}" vì đã có dữ liệu sử dụng hoặc đã diễn ra!`);
+      return;
+    }
+    toast.success(`Đã xóa vĩnh viễn chiến dịch "${fs.name}"!`);
+  };
+
+  const handleEmptyTrash = () => {
+    const unremovable = filteredSales.filter(
+      fs => (fs.usageCount && fs.usageCount > 0) || fs.status === "Đang diễn ra" || fs.status === "Đã kết thúc"
+    );
+    
+    if (unremovable.length === filteredSales.length && filteredSales.length > 0) {
+      toast.error("Không có chiến dịch nào có thể xóa vĩnh viễn!");
+      return;
+    }
+    
+    const removableCount = filteredSales.length - unremovable.length;
+    if (removableCount > 0) {
+      toast.success(`Đã dọn sạch ${removableCount} chiến dịch khỏi thùng rác!`);
+    }
+    
+    if (unremovable.length > 0) {
+      toast.warning(`Giữ lại ${unremovable.length} chiến dịch có dữ liệu quan trọng.`);
+    }
+    setSelectedIds([]);
+  };
 
   return (
     <>
-      {/* Overview Cards */}
+      {/* Overview Cards (Hide in Trash View) */}
+      {!isTrashView && (
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="bg-primary text-primary-foreground">
           <CardHeader className="pb-2">
@@ -69,6 +159,7 @@ export function FlashSaleTable() {
           </CardContent>
         </Card>
       </div>
+      )}
 
       <Card>
         <CardHeader>
@@ -94,6 +185,11 @@ export function FlashSaleTable() {
               <Filter className="mr-2 h-4 w-4" /> Lọc
             </Button>
           </div>
+          {isTrashView && (
+            <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
+              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
+            </Button>
+          )}
         </div>
         <CardContent>
         {/* Desktop View: Table */}
@@ -101,6 +197,13 @@ export function FlashSaleTable() {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
+                  <TableHead className="w-12 text-center">
+                    <Checkbox 
+                      checked={filteredSales.length > 0 && selectedIds.length === filteredSales.length} 
+                      onCheckedChange={toggleSelectAll} 
+                      aria-label="Select all"
+                    />
+                  </TableHead>
                   <TableHead className="w-[100px]">Mã FS</TableHead>
                   <TableHead>Tên khung giờ</TableHead>
                   <TableHead>Khung thời gian</TableHead>
@@ -111,9 +214,16 @@ export function FlashSaleTable() {
                 </TableRow>
               </TableHeader>
               <TableBody className="bg-card">
-                {isLoading ? <TableSkeleton columns={7} /> : (
-                  flashSales.map((fs) => (
-                  <TableRow key={fs.id}>
+                {isLoading ? <TableSkeleton columns={8} /> : (
+                  filteredSales.map((fs) => (
+                  <TableRow key={fs.id} className={selectedIds.includes(fs.id) ? "bg-muted/50" : ""}>
+                    <TableCell className="text-center">
+                      <Checkbox 
+                        checked={selectedIds.includes(fs.id)}
+                        onCheckedChange={() => toggleSelect(fs.id)}
+                        aria-label={`Select ${fs.name}`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{fs.id}</TableCell>
                     <TableCell className="font-semibold">{fs.name}</TableCell>
                     <TableCell>
@@ -141,11 +251,20 @@ export function FlashSaleTable() {
                             <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
-                              Chỉnh sửa
-                            </DropdownMenuItem>
-                          <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                          {isTrashView ? (
+                            <>
+                              <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${fs.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handlePermanentDelete(fs)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                            </>
+                          ) : (
+                            <>
+                              <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
+                                Chỉnh sửa
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600" onClick={() => { toast.success(`Đã xóa ${fs.name}`); }}>Xóa</DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -158,9 +277,16 @@ export function FlashSaleTable() {
 
         {/* Mobile View: List */}
         <div className="md:hidden flex flex-col gap-3 mt-4">
-          {flashSales.map((fs) => (
+          {filteredSales.map((fs) => (
             <div key={fs.id} className="flex flex-col p-4 border rounded-lg bg-card shadow-sm relative">
-              <div className="flex justify-between items-start mb-3 pr-8">
+              <div className="absolute top-4 left-4 z-10">
+                <Checkbox 
+                  checked={selectedIds.includes(fs.id)}
+                  onCheckedChange={() => toggleSelect(fs.id)}
+                  className="bg-card shadow-sm border-muted-foreground/30 data-[state=checked]:border-primary"
+                />
+              </div>
+              <div className="flex justify-between items-start mb-3 pl-8 pr-8">
                 <div>
                   <div className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-0.5">{fs.id}</div>
                   <div className="font-bold text-foreground text-base leading-tight">{fs.name}</div>
@@ -194,11 +320,20 @@ export function FlashSaleTable() {
                       <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
-                        Chỉnh sửa
-                      </DropdownMenuItem>
-                    <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                    {isTrashView ? (
+                      <>
+                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${fs.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePermanentDelete(fs)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
+                          Chỉnh sửa
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600" onClick={() => { toast.success(`Đã xóa ${fs.name}`); }}>Xóa</DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -207,6 +342,39 @@ export function FlashSaleTable() {
         </div>
         </CardContent>
       </Card>
+
+      {/* Floating Bulk Action Bar */}
+      {mounted && selectedIds.length > 0 && createPortal(
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+          <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
+            <span className="text-sm font-medium px-2 border-r border-background/20">
+              Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
+            </span>
+            <div className="flex items-center gap-2">
+              {isTrashView ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Xóa vĩnh viễn
+                  </Button>
+                </>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                  <Trash2 className="h-4 w-4 mr-2" /> Xóa
+                </Button>
+              )}
+            </div>
+            <div className="pl-2 border-l border-background/20">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

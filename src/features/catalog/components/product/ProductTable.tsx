@@ -59,7 +59,61 @@ export function ProductTable({ products, isLoading, isTrashView = false }: Produ
   };
 
   const handleBulkDelete = () => {
-    toast.success(`Đã xóa ${selectedIds.length} sản phẩm thành công!`);
+    if (isTrashView) {
+      const unremovableProducts = products.filter(
+        p => selectedIds.includes(p.id) && ((p.sold && p.sold > 0) || (p.reviewCount && p.reviewCount > 0))
+      );
+      
+      if (unremovableProducts.length > 0) {
+        if (unremovableProducts.length === selectedIds.length) {
+          toast.error("Không thể xóa vĩnh viễn các sản phẩm đã chọn vì đều có dữ liệu bán hàng hoặc đánh giá!");
+          return;
+        } else {
+          toast.warning(`Đã bỏ qua ${unremovableProducts.length} sản phẩm không thể xóa vĩnh viễn.`);
+        }
+      }
+      
+      const removableCount = selectedIds.length - unremovableProducts.length;
+      if (removableCount > 0) {
+        toast.success(`Đã xóa vĩnh viễn ${removableCount} sản phẩm thành công!`);
+        setSelectedIds([]);
+      }
+    } else {
+      toast.success(`Đã chuyển ${selectedIds.length} sản phẩm vào thùng rác!`);
+      setSelectedIds([]);
+    }
+  };
+
+  const handlePermanentDelete = (product: Product) => {
+    if (product.sold && product.sold > 0) {
+      toast.error(`Không thể xóa vĩnh viễn "${product.name}" vì đã có dữ liệu bán hàng!`);
+      return;
+    }
+    if (product.reviewCount && product.reviewCount > 0) {
+      toast.error(`Không thể xóa vĩnh viễn "${product.name}" vì đã có đánh giá!`);
+      return;
+    }
+    toast.success(`Đã xóa vĩnh viễn sản phẩm "${product.name}"!`);
+  };
+
+  const handleEmptyTrash = () => {
+    const unremovableProducts = products.filter(
+      p => (p.sold && p.sold > 0) || (p.reviewCount && p.reviewCount > 0)
+    );
+    
+    if (unremovableProducts.length === products.length && products.length > 0) {
+      toast.error("Không có sản phẩm nào có thể xóa vĩnh viễn (đều đã bán hoặc có đánh giá)!");
+      return;
+    }
+    
+    const removableCount = products.length - unremovableProducts.length;
+    if (removableCount > 0) {
+      toast.success(`Đã dọn sạch ${removableCount} sản phẩm khỏi thùng rác!`);
+    }
+    
+    if (unremovableProducts.length > 0) {
+      toast.warning(`Giữ lại ${unremovableProducts.length} sản phẩm có dữ liệu quan trọng.`);
+    }
     setSelectedIds([]);
   };
 
@@ -89,7 +143,7 @@ export function ProductTable({ products, isLoading, isTrashView = false }: Produ
             </Button>
           </div>
           {isTrashView && (
-            <Button variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
+            <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
               <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
             </Button>
           )}
@@ -162,7 +216,7 @@ export function ProductTable({ products, isLoading, isTrashView = false }: Produ
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePermanentDelete(product)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
                           </>
                         ) : (
                           <>
@@ -224,7 +278,7 @@ export function ProductTable({ products, isLoading, isTrashView = false }: Produ
                     {isTrashView ? (
                       <>
                         <DropdownMenuItem className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePermanentDelete(product)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
                       </>
                     ) : (
                       <>

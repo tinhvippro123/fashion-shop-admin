@@ -6,6 +6,8 @@ export interface Campaign {
   target: string;
   audience: string;
   status: string;
+  usageCount?: number;
+  deletedAt?: string;
 }
 
 export interface Voucher {

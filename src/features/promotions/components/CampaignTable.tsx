@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Plus, Search, MoreHorizontal, Filter, Megaphone, Calendar, X } from "lucide-react";
+import { Plus, Search, MoreHorizontal, Filter, Megaphone, Calendar } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,25 +22,104 @@ import {
 import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { useState } from "react";
-import { Checkbox } from "@/shared/ui/checkbox";
-import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/shared/ui/dialog";
-import { EmptyState } from "@/shared/ui/empty-state";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { ArchiveRestore, Trash2, X } from "lucide-react";
+import { Campaign } from "@/features/promotions/types/promotion.admin";
+import Link from "next/link";
+import { EmptyState } from "@/shared/ui/empty-state";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
 
-export function CampaignTable() {
+export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { campaigns, isLoading } = useCampaigns();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const filteredCampaigns = campaigns.filter(c => isTrashView ? c.deletedAt : !c.deletedAt);
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredCampaigns.length && filteredCampaigns.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredCampaigns.map((c) => c.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (isTrashView) {
+      const unremovable = filteredCampaigns.filter(
+        c => selectedIds.includes(c.id) && ((c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc")
+      );
+      
+      if (unremovable.length > 0) {
+        if (unremovable.length === selectedIds.length) {
+          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng hoặc đã diễn ra!");
+          return;
+        } else {
+          toast.warning(`Đã bỏ qua ${unremovable.length} chiến dịch không thể xóa vĩnh viễn.`);
+        }
+      }
+      
+      const removableCount = selectedIds.length - unremovable.length;
+      if (removableCount > 0) {
+        toast.success(`Đã xóa vĩnh viễn ${removableCount} chiến dịch thành công!`);
+        setSelectedIds([]);
+      }
+    } else {
+      toast.success(`Đã chuyển ${selectedIds.length} chiến dịch vào thùng rác!`);
+      setSelectedIds([]);
+    }
+  };
+
+  const handleBulkRestore = () => {
+    toast.success(`Đã khôi phục ${selectedIds.length} chiến dịch thành công!`);
+    setSelectedIds([]);
+  };
+
+  const handlePermanentDelete = (c: Campaign) => {
+    if ((c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc") {
+      toast.error(`Không thể xóa vĩnh viễn "${c.name}" vì đã có dữ liệu sử dụng hoặc đã diễn ra!`);
+      return;
+    }
+    toast.success(`Đã xóa vĩnh viễn chiến dịch "${c.name}"!`);
+  };
+
+  const handleEmptyTrash = () => {
+    const unremovable = filteredCampaigns.filter(
+      c => (c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc"
+    );
+    
+    if (unremovable.length === filteredCampaigns.length && filteredCampaigns.length > 0) {
+      toast.error("Không có chiến dịch nào có thể xóa vĩnh viễn!");
+      return;
+    }
+    
+    const removableCount = filteredCampaigns.length - unremovable.length;
+    if (removableCount > 0) {
+      toast.success(`Đã dọn sạch ${removableCount} chiến dịch khỏi thùng rác!`);
+    }
+    
+    if (unremovable.length > 0) {
+      toast.warning(`Giữ lại ${unremovable.length} chiến dịch có dữ liệu quan trọng.`);
+    }
+    setSelectedIds([]);
+  };
   const [discountType, setDiscountType] = useState("percent");
   const [audienceType, setAudienceType] = useState("all");
   const [targetType, setTargetType] = useState("all");
@@ -63,14 +142,19 @@ export function CampaignTable() {
               <Filter className="mr-2 h-4 w-4" /> Lọc
             </Button>
           </div>
+          {isTrashView && (
+            <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
+              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
+            </Button>
+          )}
         </div>
         
-        {(!isLoading && campaigns.length === 0) ? (
+        {(!isLoading && filteredCampaigns.length === 0) ? (
           <EmptyState
             icon={Megaphone}
-            title="Chưa có chiến dịch nào"
-            description="Hãy tạo chiến dịch khuyến mãi đầu tiên để thu hút khách hàng."
-            actionLabel="Tạo chiến dịch mới"
+            title={isTrashView ? "Thùng rác trống" : "Chưa có chiến dịch nào"}
+            description={isTrashView ? "Không có chiến dịch nào trong thùng rác." : "Hãy tạo chiến dịch khuyến mãi đầu tiên để thu hút khách hàng."}
+            actionLabel={isTrashView ? "" : "Tạo chiến dịch mới"}
             onAction={() => {}}
           />
         ) : (
@@ -80,6 +164,13 @@ export function CampaignTable() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12 text-center">
+                  <Checkbox 
+                    checked={filteredCampaigns.length > 0 && selectedIds.length === filteredCampaigns.length} 
+                    onCheckedChange={toggleSelectAll} 
+                    aria-label="Select all"
+                  />
+                </TableHead>
                 <TableHead className="min-w-[250px]">Tên chiến dịch</TableHead>
                 <TableHead>Mức giảm</TableHead>
                 <TableHead className="min-w-[200px]">Thời gian</TableHead>
@@ -89,9 +180,16 @@ export function CampaignTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? <TableSkeleton columns={7} /> : (
-campaigns.map((camp) => (
-                <TableRow key={camp.id}>
+              {isLoading ? <TableSkeleton columns={8} /> : (
+filteredCampaigns.map((camp) => (
+                <TableRow key={camp.id} className={selectedIds.includes(camp.id) ? "bg-muted/50" : ""}>
+                  <TableCell className="text-center">
+                    <Checkbox 
+                      checked={selectedIds.includes(camp.id)}
+                      onCheckedChange={() => toggleSelect(camp.id)}
+                      aria-label={`Select ${camp.name}`}
+                    />
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="bg-pink-100 p-2 rounded-lg text-pink-600">
@@ -135,25 +233,20 @@ campaigns.map((camp) => (
                         </Button>
                       } />
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
-                          Sửa chiến dịch
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Xác nhận xóa</DialogTitle>
-                            </DialogHeader>
-                            <div className="py-4">
-                              <p className="text-sm text-muted-foreground">Bạn có chắc chắn muốn xóa chiến dịch này không? Hành động này không thể hoàn tác.</p>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button variant="destructive" onClick={() => toast.success("Đã xóa chiến dịch thành công!")}>Xóa</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        {isTrashView ? (
+                          <>
+                            <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                          </>
+                        ) : (
+                          <>
+                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
+                              Sửa chiến dịch
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { toast.success(`Đã xóa chiến dịch ${camp.name}!`); }} className="text-red-600">Xóa</DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -166,9 +259,16 @@ campaigns.map((camp) => (
 
         {/* Mobile View */}
         <div className="lg:hidden flex flex-col">
-          {campaigns.map((camp) => (
+          {filteredCampaigns.map((camp) => (
             <div key={camp.id} className="flex flex-col gap-3 p-4 border-b last:border-0 relative">
-              <div className="flex items-start justify-between pr-8">
+              <div className="absolute top-4 left-4 z-10">
+                <Checkbox 
+                  checked={selectedIds.includes(camp.id)}
+                  onCheckedChange={() => toggleSelect(camp.id)}
+                  className="bg-card shadow-sm border-muted-foreground/30 data-[state=checked]:border-primary"
+                />
+              </div>
+              <div className="flex items-start justify-between pl-8 pr-8">
                 <div>
                   <h4 className="font-bold text-foreground leading-tight">{camp.name}</h4>
                   <p className="text-xs text-muted-foreground mt-1">ID: {camp.id}</p>
@@ -208,11 +308,20 @@ campaigns.map((camp) => (
                     </Button>
                   } />
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
-                      Sửa chiến dịch
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                    {isTrashView ? (
+                      <>
+                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
+                          Sửa chiến dịch
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { toast.success(`Đã xóa chiến dịch ${camp.name}!`); }} className="text-red-600">Xóa</DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -222,6 +331,39 @@ campaigns.map((camp) => (
         </>
         )}
       </div>
+
+      {/* Floating Bulk Action Bar */}
+      {mounted && selectedIds.length > 0 && createPortal(
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+          <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
+            <span className="text-sm font-medium px-2 border-r border-background/20">
+              Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
+            </span>
+            <div className="flex items-center gap-2">
+              {isTrashView ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Xóa vĩnh viễn
+                  </Button>
+                </>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                  <Trash2 className="h-4 w-4 mr-2" /> Xóa
+                </Button>
+              )}
+            </div>
+            <div className="pl-2 border-l border-background/20">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
