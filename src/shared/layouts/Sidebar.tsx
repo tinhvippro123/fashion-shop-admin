@@ -54,8 +54,6 @@ const navGroups = [
     title: "Thuộc tính",
     items: [
       { name: "Danh mục", href: "/categories", icon: Tag },
-      { name: "Màu sắc", href: "/colors", icon: Palette },
-      { name: "Kích thước", href: "/sizes", icon: Ruler },
     ]
   },
   {

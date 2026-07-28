@@ -9,6 +9,9 @@ export const initialProducts: Product[] = [
     stock: 45,
     status: "Đang bán",
     statusColor: "bg-green-600",
+    sold: 1250,
+    rating: 4.8,
+    reviewCount: 320,
   },
   {
     id: "PROD-002",
@@ -18,6 +21,9 @@ export const initialProducts: Product[] = [
     stock: 120,
     status: "Đang bán",
     statusColor: "bg-green-600",
+    sold: 840,
+    rating: 4.5,
+    reviewCount: 156,
   },
   {
     id: "PROD-003",
@@ -27,6 +33,9 @@ export const initialProducts: Product[] = [
     stock: 0,
     status: "Hết hàng",
     statusColor: "bg-red-600",
+    sold: 450,
+    rating: 4.2,
+    reviewCount: 89,
   },
   {
     id: "PROD-004",
@@ -36,7 +45,36 @@ export const initialProducts: Product[] = [
     stock: 12,
     status: "Sắp hết",
     statusColor: "bg-amber-500",
+    sold: 56,
+    rating: 5.0,
+    reviewCount: 12,
   },
+  {
+    id: "PROD-005",
+    name: "Áo len mùa đông phiên bản cũ",
+    category: "Áo nữ",
+    price: "550,000 đ",
+    stock: 0,
+    status: "Đã xóa",
+    statusColor: "bg-muted text-muted-foreground",
+    sold: 210,
+    rating: 3.5,
+    reviewCount: 45,
+    deletedAt: "2026-07-26T10:00:00Z",
+  },
+  {
+    id: "PROD-006",
+    name: "Quần đùi dạo biển 2025",
+    category: "Quần nữ",
+    price: "250,000 đ",
+    stock: 0,
+    status: "Đã xóa",
+    statusColor: "bg-muted text-muted-foreground",
+    sold: 15,
+    rating: 2.0,
+    reviewCount: 4,
+    deletedAt: "2026-07-25T14:30:00Z",
+  }
 ];
 
 export const MOCK_COLORS = [

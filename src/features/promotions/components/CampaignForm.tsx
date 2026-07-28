@@ -6,27 +6,10 @@ import { toast } from "sonner";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { cn } from "@/shared/utils/utils";
 import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Checkbox } from "@/shared/ui/checkbox";
 import { Switch } from "@/shared/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
-import { ArrowLeft, Calendar, Save, Plus, Search, Trash2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/shared/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
+import { ArrowLeft, Calendar, Save } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -48,55 +31,59 @@ interface CampaignFormProps {
 }
 
 export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps) {
-  const [audienceType, setAudienceType] = useState("all");
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TCampaignPayload>({
     resolver: zodResolver(CampaignSchema),
     defaultValues: initialData || {
       name: "",
-      description: "",
-      type: "discount",
+      code: "",
+      scope: "PLATFORM",
+      rewardType: "DISCOUNT_MONEY",
+      discountType: "FIXED_AMOUNT",
       discountValue: 0,
-      discountType: "percent",
+      maxDiscountAmount: undefined,
+      minOrderValue: 0,
+      isCollectible: true,
       startDate: "",
       endDate: "",
       status: "draft",
-      usageLimit: 0,
+      usageLimit: undefined,
     }
   });
 
-  const discountType = form.watch("discountType"); // eslint-disable-line
+  const discountType = form.watch("discountType");
+  const rewardType = form.watch("rewardType");
 
   function onSubmit(values: TCampaignPayload, status: "draft" | "active" = "active") {
     startTransition(async () => {
       try {
         const payload = { ...values, status };
-              if (mode === "create") {
-                const res = await createCampaignAction(payload);
-                if (res.success) {
-                  toast.success(status === "active" ? "Đã lưu và kích hoạt chiến dịch!" : "Đã lưu nháp chiến dịch!");
-                } else {
-                  toast.error(res.error as string);
-                    if (res.details) {
-                      Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
-                      });
-                    }
-                }
-              } else {
-                const res = await updateCampaignAction(initialData?.id || 1, payload);
-                if (res.success) {
-                  toast.success(status === "active" ? "Đã cập nhật chiến dịch!" : "Đã cập nhật bản nháp!");
-                } else {
-                  toast.error(res.error as string);
-                    if (res.details) {
-                      Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
-                      });
-                    }
-                }
-              }
+        if (mode === "create") {
+          const res = await createCampaignAction(payload);
+          if (res.success) {
+            toast.success(status === "active" ? "Đã lưu và kích hoạt Voucher!" : "Đã lưu nháp Voucher!");
+          } else {
+            toast.error(res.error as string);
+            if (res.details) {
+              Object.keys(res.details!).forEach((key) => {
+                form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+              });
+            }
+          }
+        } else {
+          const res = await updateCampaignAction(initialData?.id || 1, payload);
+          if (res.success) {
+            toast.success(status === "active" ? "Đã cập nhật Voucher!" : "Đã cập nhật bản nháp!");
+          } else {
+            toast.error(res.error as string);
+            if (res.details) {
+              Object.keys(res.details!).forEach((key) => {
+                form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+              });
+            }
+          }
+        }
       } catch (error) {
         toast.error("Lỗi kết nối đến máy chủ!");
       }
@@ -115,7 +102,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chiến dịch khuyến mãi</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Tạo Mã Giảm Giá (Voucher)</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
@@ -135,11 +122,12 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cột trái: Nội dung chính & Sản phẩm */}
+          {/* Cột trái: Nội dung chính */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Thông tin cơ bản</CardTitle>
+                <CardDescription>Thiết lập tên và mã Voucher hiển thị cho khách hàng</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -147,31 +135,48 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tên chiến dịch <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Tên chương trình (Nội bộ) <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Siêu Sale Hè 2026" {...field} />
+                        <Input placeholder="VD: Siêu Sale Tháng 7" {...field} />
                       </FormControl>
+                      <FormDescription>Tên này chỉ dùng để quản lý, khách hàng sẽ không thấy.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mã Voucher (Code) <span className="text-red-500">*</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder="VD: SUMMER2026" className="uppercase font-mono" {...field} onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                      </FormControl>
+                      <FormDescription>Khách hàng sẽ nhập mã này lúc thanh toán.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="discountType"
+                    name="scope"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Loại giảm giá</FormLabel>
+                        <FormLabel>Phạm vi áp dụng</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Chọn loại" />
+                              <SelectValue placeholder="Chọn phạm vi" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent align="start" alignItemWithTrigger={false}>
-                            <SelectItem value="percent">Giảm theo phần trăm (%)</SelectItem>
-                            <SelectItem value="amount">Giảm theo số tiền (VND)</SelectItem>
+                          <SelectContent>
+                            <SelectItem value="PLATFORM">Toàn Sàn (Platform)</SelectItem>
+                            <SelectItem value="SHOP">Toàn Shop (Shop)</SelectItem>
+                            <SelectItem value="FREESHIP">Phí Vận Chuyển</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -180,18 +185,22 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   />
                   <FormField
                     control={form.control}
-                    name="discountValue"
+                    name="rewardType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mức giảm <span className="text-red-500">*</span></FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder={discountType === "percent" ? "VD: 30" : "VD: 50000"} 
-                            {...field} 
-                            onChange={e => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
+                        <FormLabel>Loại thưởng</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Chọn loại thưởng" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="DISCOUNT_MONEY">Giảm Tiền</SelectItem>
+                            <SelectItem value="FREE_SHIPPING">Miễn phí Vận chuyển</SelectItem>
+                            <SelectItem value="FREE_GIFT">Tặng Quà</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -201,76 +210,95 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             </Card>
 
             <Card>
-              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <CardTitle>Danh sách Sản phẩm tham gia</CardTitle>
-                  <CardDescription>Chọn các sản phẩm cụ thể sẽ được áp dụng mức giảm giá này.</CardDescription>
-                </div>
-                <Dialog>
-                  <DialogTrigger className={cn(buttonVariants({ size: "sm", variant: "default" }), "w-full sm:w-auto")} type="button">
-                    <Plus className="mr-2 h-4 w-4" /> Chọn Sản Phẩm
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Thêm sản phẩm vào chiến dịch</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-4 py-4">
-                      {/* Lọc & Chọn sản phẩm mock UI */}
-                      <p className="text-sm text-muted-foreground italic">Phần chọn sản phẩm đang được thiết kế dạng UI Mockup.</p>
-                      <div className="flex justify-between items-center bg-muted/50 p-3 rounded-md border border-border">
-                        <span className="text-sm text-emerald-800 font-medium">Đã chọn: 3 phân loại</span>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="button">Xác nhận</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+              <CardHeader>
+                <CardTitle>Thiết lập Giảm giá</CardTitle>
+                <CardDescription>Cấu hình mức giảm và điều kiện áp dụng</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 w-full">
-                  <div className="relative flex-1 w-full sm:w-auto">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Tìm trong danh sách đã chọn..." className="pl-9" />
+              <CardContent className="grid gap-6">
+                {rewardType === "DISCOUNT_MONEY" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="discountType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Loại giảm giá</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Chọn loại" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent align="start">
+                              <SelectItem value="PERCENTAGE">Giảm theo phần trăm (%)</SelectItem>
+                              <SelectItem value="FIXED_AMOUNT">Giảm số tiền cố định (VND)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="discountValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mức giảm <span className="text-red-500">*</span></FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder={discountType === "PERCENTAGE" ? "VD: 30" : "VD: 50000"} 
+                              {...field} 
+                              onChange={e => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                  <Button variant="destructive" className="w-full sm:w-auto opacity-50 cursor-not-allowed" type="button">
-                    <Trash2 className="mr-2 h-4 w-4" /> Xóa hàng loạt (0)
-                  </Button>
-                </div>
+                )}
 
-                {/* Main table of selected items mock UI */}
-                <div className="border rounded-md overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead className="bg-muted/50 border-b">
-                      <tr>
-                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Sản phẩm / Phân loại</th>
-                        <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Kho</th>
-                        <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border bg-card">
-                      <tr className="hover:bg-muted/50 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
-                            <div className="flex flex-col">
-                              <span className="font-medium">Áo thun form rộng basic</span>
-                              <span className="text-xs text-foreground font-bold">Đen / Size S</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">25</td>
-                        <td className="px-4 py-3 text-right">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500" type="button">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div className="bg-muted/50 p-3 border-t text-sm text-muted-foreground font-medium">
-                    Tổng cộng: 1 phân loại
-                  </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {discountType === "PERCENTAGE" && rewardType === "DISCOUNT_MONEY" && (
+                    <FormField
+                      control={form.control}
+                      name="maxDiscountAmount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Giảm tối đa (VND) <span className="text-red-500">*</span></FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="VD: 100000" 
+                              {...field} 
+                              value={field.value || ""}
+                              onChange={e => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <FormField
+                    control={form.control}
+                    name="minOrderValue"
+                    render={({ field }) => (
+                      <FormItem className={cn(discountType !== "PERCENTAGE" ? "col-span-2" : "")}>
+                        <FormLabel>Giá trị đơn hàng tối thiểu (VND) <span className="text-red-500">*</span></FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="VD: 200000" 
+                            {...field} 
+                            onChange={e => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -320,23 +348,53 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
 
             <Card>
               <CardHeader>
-                <CardTitle>Đối tượng khách hàng</CardTitle>
+                <CardTitle>Giới hạn sử dụng</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                <Select value={audienceType} onValueChange={(val) => setAudienceType(val as string)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn đối tượng">
-                      {audienceType === "all" ? "Tất cả khách hàng" : "Chỉ áp dụng theo Hạng thành viên"}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent align="start" alignItemWithTrigger={false}>
-                    <SelectItem value="all">Tất cả khách hàng</SelectItem>
-                    <SelectItem value="tier">Hạng thành viên (Membership Tier)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormField
+                  control={form.control}
+                  name="usageLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tổng số lượt dùng tối đa</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="Không giới hạn" 
+                          {...field} 
+                          value={field.value || ""}
+                          onChange={e => field.onChange(Number(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormDescription>Để trống nếu không muốn giới hạn.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isCollectible"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between mt-2 pt-4 border-t">
+                      <div className="flex flex-col gap-1">
+                        <FormLabel className="cursor-pointer text-foreground font-semibold">Cho phép lưu Ví</FormLabel>
+                        <FormDescription className="text-xs">
+                          Khách hàng có thể "Lưu" mã này vào Ví Voucher của họ.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch 
+                          checked={field.value} 
+                          onCheckedChange={field.onChange} 
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardHeader>
                 <CardTitle>Trạng thái</CardTitle>
@@ -348,9 +406,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
-                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích hoạt chiến dịch</FormLabel>
+                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích hoạt</FormLabel>
                         <FormDescription>
-                          Chiến dịch sẽ tự động chạy khi đến ngày giờ bắt đầu
+                          Voucher sẽ tự hoạt động khi đến ngày bắt đầu.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -370,5 +428,3 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
     </Form>
   );
 }
-
-

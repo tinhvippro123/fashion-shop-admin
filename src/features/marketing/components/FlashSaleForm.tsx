@@ -24,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Badge } from "@/shared/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +35,7 @@ import {
 } from "@/shared/ui/dialog";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -50,9 +49,9 @@ import { FlashSaleSchema, TFlashSalePayload } from "../schemas/flashsale.schema"
 import { createFlashSaleAction, updateFlashSaleAction } from "../actions/flashsale.action";
 
 const CATALOG_PRODUCTS = [
-  { id: 101, name: "Áo so mi l?a to t?m", variant: "Tr?ng / Freesize", originalPrice: "450,000d", defaultPrice: "299,000", defaultStock: 50 },
-  { id: 102, name: "Qu?n jean ?ng r?ng vintage", variant: "Xanh nh?t / Size L", originalPrice: "550,000d", defaultPrice: "349,000", defaultStock: 30 },
-  { id: 103, name: "Set b? th? thao nang d?ng", variant: "Xám / Size M", originalPrice: "320,000d", defaultPrice: "199,000", defaultStock: 100 },
+  { id: 101, name: "Áo sơ mi lụa tơ tằm", variant: "Trắng / Freesize", originalPrice: 450000, defaultPrice: 299000, defaultStock: 50 },
+  { id: 102, name: "Quần jean ống rộng vintage", variant: "Xanh nhạt / Size L", originalPrice: 550000, defaultPrice: 349000, defaultStock: 30 },
+  { id: 103, name: "Set bộ thể thao năng động", variant: "Xám / Size M", originalPrice: 320000, defaultPrice: 199000, defaultStock: 100 },
 ];
 
 interface FlashSaleFormProps {
@@ -61,11 +60,6 @@ interface FlashSaleFormProps {
 }
 
 export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormProps) {
-  const [products, setProducts] = useState([
-    { id: 1, name: "Áo thun form r?ng basic", variant: "Ðen / Size S", originalPrice: "250,000d", flashSalePrice: "99,000", stock: 50 },
-    { id: 2, name: "Váy hoa cúc mùa hè", variant: "Ð? / Size M", originalPrice: "350,000d", flashSalePrice: "149,000", stock: 20 },
-  ]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -78,61 +72,68 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
       startTime: "",
       endTime: "",
       status: "draft",
+      items: [
+        { variantId: "1", name: "Áo thun form rộng basic", variant: "Đen / Size S", originalPrice: 250000, flashSalePrice: 99000, quantityLimit: 50, stock: 100 },
+        { variantId: "2", name: "Váy hoa cúc mùa hè", variant: "Đỏ / Size M", originalPrice: 350000, flashSalePrice: 149000, quantityLimit: 20, stock: 50 },
+      ]
     }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "items"
   });
 
   const handleConfirmAddProducts = () => {
     const newProducts = selectedProductIds.map(id => {
       const p = CATALOG_PRODUCTS.find(cp => cp.id === id);
       return {
-        id: p!.id,
+        variantId: String(p!.id),
         name: p!.name,
         variant: p!.variant,
         originalPrice: p!.originalPrice,
         flashSalePrice: p!.defaultPrice,
+        quantityLimit: p!.defaultStock,
         stock: p!.defaultStock
       };
     });
-    setProducts([...products, ...newProducts]);
+    
+    append(newProducts);
     setIsModalOpen(false);
-    setSelectedProductIds([]); // reset selection
-  };
-
-  const handleDeleteProduct = (id: number) => {
-    setProducts(products.filter(p => p.id !== id));
+    setSelectedProductIds([]);
   };
 
   function onSubmit(values: TFlashSalePayload, status: "draft" | "active" | "scheduled" | "ended" = "scheduled") {
     startTransition(async () => {
       try {
         const payload = { ...values, status };
-              if (mode === "create") {
-                const res = await createFlashSaleAction(payload);
-                if (res.success) {
-                  toast.success(status === "draft" ? "Ðã luu nháp!" : "Ðã kích ho?t Flash Sale!");
-                } else {
-                  toast.error(res.error as string);
-                    if (res.details) {
-                      Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
-                      });
-                    }
-                }
-              } else {
-                const res = await updateFlashSaleAction(initialData?.id || 1, payload);
-                if (res.success) {
-                  toast.success(status === "draft" ? "Ðã c?p nh?t b?n nháp!" : "Ðã c?p nh?t Flash Sale!");
-                } else {
-                  toast.error(res.error as string);
-                    if (res.details) {
-                      Object.keys(res.details!).forEach((key) => {
-                        form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
-                      });
-                    }
-                }
-              }
+        if (mode === "create") {
+          const res = await createFlashSaleAction(payload);
+          if (res.success) {
+            toast.success(status === "draft" ? "Đã lưu nháp!" : "Đã kích hoạt Flash Sale!");
+          } else {
+            toast.error(res.error as string);
+            if (res.details) {
+              Object.keys(res.details!).forEach((key) => {
+                form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+              });
+            }
+          }
+        } else {
+          const res = await updateFlashSaleAction(initialData?.id || 1, payload);
+          if (res.success) {
+            toast.success(status === "draft" ? "Đã cập nhật bản nháp!" : "Đã cập nhật Flash Sale!");
+          } else {
+            toast.error(res.error as string);
+            if (res.details) {
+              Object.keys(res.details!).forEach((key) => {
+                form.setError(key as keyof TFlashSalePayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+              });
+            }
+          }
+        }
       } catch (error) {
-        toast.error("L?i k?t n?i d?n m�y ch?!");
+        toast.error("Lỗi kết nối đến máy chủ!");
       }
     });
   }
@@ -149,24 +150,28 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
             <Link href="/flash-sales" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chi?n d?ch Flash Sale</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Chiến dịch Flash Sale</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/flash-sales" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
-              H?y b?
+              Hủy bỏ
             </Link>
             <Button type="button" variant="secondary" className="flex-1 sm:flex-none" onClick={onDraft} disabled={isPending}>
-              Luu nháp
+              Lưu nháp
             </Button>
             <Button 
               type="submit"
               className="flex-1 sm:flex-none gap-2"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Luu & Lên l?ch
+              <Save className="h-4 w-4" /> Lưu & Lên lịch
             </Button>
           </div>
         </div>
+
+        {form.formState.errors.items?.root && (
+          <div className="text-red-500 font-medium">{form.formState.errors.items.root.message}</div>
+        )}
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Left Column: Basic Info */}
@@ -181,9 +186,9 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tên chuong trình <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Tên chương trình <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Siêu Sale N?a Ðêm" {...field} />
+                        <Input placeholder="VD: Siêu Sale Nửa Đêm" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -196,7 +201,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   render={({ field }) => (
                     <FormItem className="mt-4">
                       <FormLabel className="text-red-600 flex items-center gap-2">
-                        <Clock className="h-4 w-4" /> B?t d?u lúc
+                        <Clock className="h-4 w-4" /> Bắt đầu lúc
                       </FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} />
@@ -211,12 +216,12 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   name="endTime"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>K?t thúc lúc</FormLabel>
+                      <FormLabel>Kết thúc lúc</FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Khuyên dùng: Khung gi? Flash Sale không nên kéo dài quá 4 ti?ng d? t?o c?m giác khan hi?m.
+                        Khuyên dùng: Khung giờ Flash Sale không nên kéo dài quá 4 tiếng để tạo cảm giác khan hiếm.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -227,25 +232,15 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
 
             <Card>
               <CardHeader>
-                <CardTitle>Cài d?t nâng cao</CardTitle>
+                <CardTitle>Cài đặt nâng cao</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col gap-1">
-                    <Label className="cursor-pointer text-foreground font-semibold">Hi?n th? d?m ngu?c</Label>
-                    <span className="text-xs text-muted-foreground">Hi?n th? d?ng h? d?m ngu?c trên trang ch?.</span>
+                    <Label className="cursor-pointer text-foreground font-semibold">Hiển thị đếm ngược</Label>
+                    <span className="text-xs text-muted-foreground">Hiển thị đồng hồ đếm ngược trên trang chủ.</span>
                   </div>
                   <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-1">
-                    <Label className="cursor-pointer text-foreground font-semibold">Gi?i h?n mua m?i user</Label>
-                    <span className="text-xs text-muted-foreground">Tránh b? gom hàng bán l?i.</span>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="grid gap-2">
-                  <Input type="number" placeholder="S? lu?ng t?i da / user" defaultValue="2" />
                 </div>
                 
                 <FormField
@@ -254,7 +249,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between mt-2 pt-4 border-t">
                       <div className="flex flex-col gap-1">
-                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích ho?t chuong trình</FormLabel>
+                        <FormLabel className="cursor-pointer text-foreground font-semibold">Kích hoạt chương trình</FormLabel>
                       </div>
                       <FormControl>
                         <Switch 
@@ -274,34 +269,34 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
             <Card className="h-full">
               <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>S?n ph?m Flash Sale</CardTitle>
-                  <CardDescription>Ch?n các s?n ph?m và thi?t l?p giá s?c + s? lu?ng gi?i h?n.</CardDescription>
+                  <CardTitle>Sản phẩm Flash Sale</CardTitle>
+                  <CardDescription>Chọn các sản phẩm và thiết lập giá sốc + số lượng giới hạn.</CardDescription>
                 </div>
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger render={
-                    <Button size="sm" className="gap-2 w-full sm:w-auto mt-2 sm:mt-0" type="button">
-                      <Plus className="h-4 w-4" /> Thêm sản phẩm
-                    </Button>
-                  } />
+                  <DialogTrigger 
+                    render={<Button size="sm" className="gap-2 w-full sm:w-auto mt-2 sm:mt-0" type="button" />}
+                  >
+                    <Plus className="h-4 w-4" /> Thêm sản phẩm
+                  </DialogTrigger>
                   <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
                     <DialogHeader className="px-6 py-4 border-b">
-                      <DialogTitle>Ch?n s?n ph?m tham gia Flash Sale</DialogTitle>
+                      <DialogTitle>Chọn sản phẩm tham gia Flash Sale</DialogTitle>
                       <DialogDescription>
-                        Tìm ki?m và ch?n các s?n ph?m b?n mu?n thêm vào chuong trình Flash Sale này.
+                        Tìm kiếm và chọn các sản phẩm bạn muốn thêm vào chương trình Flash Sale này.
                       </DialogDescription>
                     </DialogHeader>
                     
                     <div className="px-6 py-2">
                       <div className="relative w-full">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Tìm theo tên ho?c mã SKU..." className="pl-9 bg-muted/50 border-border" />
+                        <Input placeholder="Tìm theo tên hoặc mã SKU..." className="pl-9 bg-muted/50 border-border" />
                       </div>
                     </div>
                     
                     <div className="max-h-[350px] overflow-y-auto overflow-x-auto px-2">
                       <Table>
                         <TableBody>
-                          {CATALOG_PRODUCTS.filter(cp => !products.find(p => p.id === cp.id)).map(cp => {
+                          {CATALOG_PRODUCTS.filter(cp => !fields.find(p => p.variantId === String(cp.id))).map(cp => {
                             const isSelected = selectedProductIds.includes(cp.id);
                             return (
                               <TableRow key={cp.id} className={isSelected ? "bg-muted/50 border-transparent" : "border-transparent hover:bg-muted/50 cursor-pointer"} onClick={() => {
@@ -321,14 +316,14 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                                 </TableCell>
                                 <TableCell className="py-3">
                                   <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">?nh</div>
+                                    <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                                     <div className="flex flex-col">
                                       <span className="font-medium text-sm line-clamp-1">{cp.name}</span>
                                       <span className="text-xs text-muted-foreground">{cp.variant}</span>
                                     </div>
                                   </div>
                                 </TableCell>
-                                <TableCell className="text-right text-sm text-muted-foreground pr-4">{cp.originalPrice}</TableCell>
+                                <TableCell className="text-right text-sm text-muted-foreground pr-4">{cp.originalPrice.toLocaleString()}đ</TableCell>
                               </TableRow>
                             )
                           })}
@@ -337,11 +332,11 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                     </div>
                     
                     <DialogFooter className="px-6 py-4 border-t bg-muted/50 flex items-center justify-between sm:justify-between">
-                      <span className="text-sm text-muted-foreground">Ðã ch?n <b>{selectedProductIds.length}</b> s?n ph?m</span>
+                      <span className="text-sm text-muted-foreground">Đã chọn <b>{selectedProductIds.length}</b> sản phẩm</span>
                       <div className="flex gap-2">
-                        <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>H?y</Button>
+                        <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Hủy</Button>
                         <Button type="button" onClick={handleConfirmAddProducts} className="bg-primary" disabled={selectedProductIds.length === 0}>
-                          Xác nh?n thêm
+                          Xác nhận thêm
                         </Button>
                       </div>
                     </DialogFooter>
@@ -354,38 +349,70 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   <Table>
                     <TableHeader className="bg-muted/50">
                       <TableRow>
-                        <TableHead className="w-1/2">S?n ph?m</TableHead>
-                        <TableHead>Giá g?c</TableHead>
+                        <TableHead className="w-1/2">Sản phẩm</TableHead>
+                        <TableHead>Giá gốc</TableHead>
                         <TableHead>Giá Flash Sale</TableHead>
-                        <TableHead>SL M? bán</TableHead>
+                        <TableHead>SL Mở bán</TableHead>
                         <TableHead className="text-right">Thao tác</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody className="bg-card">
-                      {products.length === 0 ? (
+                      {fields.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                            Chua có s?n ph?m nào. Hãy thêm s?n ph?m!
+                            Chưa có sản phẩm nào. Hãy thêm sản phẩm!
                           </TableCell>
                         </TableRow>
                       ) : (
-                        products.map((product) => (
-                          <TableRow key={product.id}>
+                        fields.map((field, index) => (
+                          <TableRow key={field.id}>
                             <TableCell>
                               <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">?nh</div>
+                                <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">Ảnh</div>
                                 <div className="flex flex-col">
-                                  <span className="font-medium line-clamp-1">{product.name}</span>
-                                  <span className="text-xs text-muted-foreground">{product.variant}</span>
+                                  <span className="font-medium line-clamp-1">{field.name}</span>
+                                  <span className="text-xs text-muted-foreground">{field.variant}</span>
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell className="text-muted-foreground line-through text-xs">{product.originalPrice}</TableCell>
-                            <TableCell>
-                              <Input type="text" defaultValue={product.flashSalePrice} className="h-8 w-24 text-red-600 font-bold" />
+                            <TableCell className="text-muted-foreground line-through text-xs">
+                              {field.originalPrice.toLocaleString()}đ
                             </TableCell>
                             <TableCell>
-                              <Input type="number" defaultValue={product.stock} className="h-8 w-16" />
+                              <FormField
+                                control={form.control}
+                                name={`items.${index}.flashSalePrice`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        className="h-8 w-28 text-red-600 font-bold" 
+                                        {...field}
+                                        onChange={e => field.onChange(Number(e.target.value))}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <FormField
+                                control={form.control}
+                                name={`items.${index}.quantityLimit`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input 
+                                        type="number" 
+                                        className="h-8 w-20" 
+                                        {...field}
+                                        onChange={e => field.onChange(Number(e.target.value))}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
                             </TableCell>
                             <TableCell className="text-right">
                               <Button 
@@ -393,7 +420,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                                 variant="ghost" 
                                 size="icon" 
                                 className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                                onClick={() => handleDeleteProduct(product.id)}
+                                onClick={() => remove(index)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -407,31 +434,57 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
   
                 {/* Mobile View */}
                 <div className="md:hidden flex flex-col gap-3">
-                  {products.length === 0 ? (
+                  {fields.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground border rounded-md border-dashed">
-                      Chua có s?n ph?m nào. Hãy thêm s?n ph?m!
+                      Chưa có sản phẩm nào. Hãy thêm sản phẩm!
                     </div>
                   ) : (
-                    products.map((product) => (
-                      <div key={product.id} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm">
+                    fields.map((field, index) => (
+                      <div key={field.id} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm">
                         <div className="flex items-start gap-3 pr-8 mb-4">
-                          <div className="h-12 w-12 shrink-0 bg-muted rounded-md flex items-center justify-center text-[10px] text-muted-foreground border">?nh</div>
+                          <div className="h-12 w-12 shrink-0 bg-muted rounded-md flex items-center justify-center text-[10px] text-muted-foreground border">Ảnh</div>
                           <div className="flex flex-col flex-1">
-                            <span className="font-bold text-foreground text-sm leading-tight mb-1">{product.name}</span>
-                            <span className="text-xs text-muted-foreground">{product.variant}</span>
-                            <span className="text-xs text-muted-foreground line-through mt-1">{product.originalPrice}</span>
+                            <span className="font-bold text-foreground text-sm leading-tight mb-1">{field.name}</span>
+                            <span className="text-xs text-muted-foreground">{field.variant}</span>
+                            <span className="text-xs text-muted-foreground line-through mt-1">{field.originalPrice.toLocaleString()}đ</span>
                           </div>
                         </div>
   
                         <div className="grid grid-cols-2 gap-4 border-t border-border/50 pt-4">
-                          <div className="flex flex-col gap-1.5">
-                            <Label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Giá Flash Sale</Label>
-                            <Input type="text" defaultValue={product.flashSalePrice} className="h-9 text-red-600 font-bold text-sm" />
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <Label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">SL M? bán</Label>
-                            <Input type="number" defaultValue={product.stock} className="h-9 text-sm" />
-                          </div>
+                          <FormField
+                            control={form.control}
+                            name={`items.${index}.flashSalePrice`}
+                            render={({ field }) => (
+                              <FormItem className="flex flex-col gap-1.5">
+                                <FormLabel className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Giá Flash Sale</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    className="h-9 text-red-600 font-bold text-sm" 
+                                    {...field}
+                                    onChange={e => field.onChange(Number(e.target.value))}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`items.${index}.quantityLimit`}
+                            render={({ field }) => (
+                              <FormItem className="flex flex-col gap-1.5">
+                                <FormLabel className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">SL Mở bán</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    className="h-9 text-sm" 
+                                    {...field}
+                                    onChange={e => field.onChange(Number(e.target.value))}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
                         </div>
   
                         <div className="absolute top-3 right-2">
@@ -440,7 +493,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                             variant="ghost" 
                             size="icon" 
                             className="h-8 w-8 text-muted-foreground hover:bg-red-50 hover:text-red-600"
-                            onClick={() => handleDeleteProduct(product.id)}
+                            onClick={() => remove(index)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -451,11 +504,10 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                 </div>
   
                 <div className="mt-4 bg-orange-50 border border-orange-200 rounded-md p-4 flex flex-col gap-2">
-                  <h4 className="font-semibold text-orange-800 text-sm">Luu ý khi c?u hình Flash Sale:</h4>
+                  <h4 className="font-semibold text-orange-800 text-sm">Lưu ý khi cấu hình Flash Sale:</h4>
                   <ul className="text-xs text-orange-700 list-disc list-inside space-y-1">
-                    <li>S?n ph?m trong Flash Sale s? b? khóa ch?nh s?a giá tr? khi th?i gian b?t d?u d?m ngu?c.</li>
-                    <li>N?u s? lu?ng (SL M? bán) bán h?t tru?c h?n, s?n ph?m s? hi?n th? tr?ng thái "Cháy hàng" thay vì bi?n m?t.</li>
-                    <li>Giá Flash Sale b?t bu?c ph?i th?p hon Giá g?c t?i thi?u 10%.</li>
+                    <li>Sản phẩm trong Flash Sale sẽ bị khóa chỉnh sửa giá trị khi thời gian bắt đầu đếm ngược.</li>
+                    <li>Nếu số lượng (SL Mở bán) bán hết trước hạn, sản phẩm sẽ hiển thị trạng thái "Cháy hàng" thay vì biến mất.</li>
                   </ul>
                 </div>
               </CardContent>
@@ -466,4 +518,3 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
     </Form>
   );
 }
-

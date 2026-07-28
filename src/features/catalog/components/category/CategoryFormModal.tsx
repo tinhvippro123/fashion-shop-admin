@@ -95,13 +95,16 @@ export function CategoryFormModal({ initialData, mode = "create", trigger }: Cat
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={
-        trigger || (
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Thêm danh mục
-          </Button>
-        )
-      } />
+      <DialogTrigger 
+        nativeButton={!trigger}
+        render={
+          trigger || (
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Thêm danh mục
+            </Button>
+          )
+        } 
+      />
       <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>{mode === "create" ? "Thêm danh mục mới" : "Chỉnh sửa danh mục"}</DialogTitle>

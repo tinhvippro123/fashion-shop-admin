@@ -90,13 +90,13 @@ export function Header() {
             </div>
             <div className="max-h-[400px] overflow-y-auto">
               {notifications.map((notif) => (
-                <div key={notif.id} className={`flex items-start gap-3 p-4 border-b last:border-0 hover:bg-muted/50 cursor-pointer transition-colors ${!notif.isRead ? 'bg-blue-50/50' : ''}`}>
+                <div key={notif.id} className={`flex items-start gap-3 p-4 border-b last:border-0 hover:bg-muted/50 cursor-pointer transition-colors ${!notif.isRead ? 'bg-blue-50/50 dark:bg-slate-800/40' : ''}`}>
                   <div className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${!notif.isRead ? 'bg-card shadow-sm' : 'bg-muted'}`}>
                     {getIcon(notif.type)}
                   </div>
                   <div className="flex-1 space-y-1">
                     <p className={`text-sm ${!notif.isRead ? 'font-semibold text-foreground' : 'text-foreground'}`}>{notif.title}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{notif.message}</p>
+                    <p className={`text-xs line-clamp-2 ${!notif.isRead ? 'text-zinc-600 dark:text-zinc-300' : 'text-muted-foreground'}`}>{notif.message}</p>
                     <p className="text-[10px] text-muted-foreground mt-1">{notif.time}</p>
                   </div>
                   {!notif.isRead && (

@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+export const ProductOptionSchema = z.object({
+  name: z.string().min(1, "Tên thuộc tính không được trống"),
+  values: z.array(z.string()).min(1, "Phải có ít nhất 1 giá trị")
+});
+
+export const ProductVariantSchema = z.object({
+  sku: z.string().min(1, "SKU không được trống"),
+  price: z.number().min(0, "Giá không hợp lệ"),
+  stock: z.number().min(0, "Tồn kho không hợp lệ"),
+  // mapping for which option values this variant represents
+  options: z.record(z.string(), z.string()), // e.g. { "Màu sắc": "Đỏ", "Kích thước": "S" }
+  image: z.string().optional()
+});
+
 export const ProductSchema = z.object({
   name: z.string().min(1, "Tên sản phẩm không được để trống").max(255),
   description: z.string().optional(),
@@ -9,10 +23,13 @@ export const ProductSchema = z.object({
   category: z.string().min(1, "Vui lòng chọn danh mục"),
   brand: z.string().optional(),
   images: z.array(z.string()).optional(),
-  colors: z.array(z.string()).optional(),
-  sizes: z.array(z.string()).optional(),
-  variants: z.array(z.any()).optional(),
+  
+  options: z.array(ProductOptionSchema).optional(),
+  variants: z.array(ProductVariantSchema).optional(),
+  
   status: z.enum(["draft", "published"])
 });
 
 export type TProductPayload = z.infer<typeof ProductSchema>;
+export type TProductOption = z.infer<typeof ProductOptionSchema>;
+export type TProductVariant = z.infer<typeof ProductVariantSchema>;

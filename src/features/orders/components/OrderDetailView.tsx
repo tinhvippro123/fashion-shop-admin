@@ -96,10 +96,21 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
                   <span className="text-muted-foreground">Phí vận chuyển:</span>
                   <span className="font-medium">{order.shippingFee?.toLocaleString('vi-VN')}đ</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Giảm giá:</span>
-                  <span className="font-medium text-foreground">-{order.discount?.toLocaleString('vi-VN')}đ</span>
-                </div>
+                {order.appliedPromotions && order.appliedPromotions.length > 0 ? (
+                  order.appliedPromotions.map(promo => (
+                    <div key={promo.id} className="flex justify-between text-sm items-center">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        Giảm giá <Badge variant="outline" className="h-5 px-1.5 text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">{promo.code}</Badge>
+                      </span>
+                      <span className="font-medium text-emerald-600">-{promo.discountAmount.toLocaleString('vi-VN')}đ</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Giảm giá:</span>
+                    <span className="font-medium text-foreground">-{order.discount?.toLocaleString('vi-VN') || 0}đ</span>
+                  </div>
+                )}
                 <Separator className="my-1" />
                 <div className="flex justify-between">
                   <span className="font-bold text-base">Tổng cộng:</span>

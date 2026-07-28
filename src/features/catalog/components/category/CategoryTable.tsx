@@ -1,7 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
+import { Checkbox } from "@/shared/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -11,7 +15,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, Filter, MoreHorizontal } from "lucide-react";
+import { Search, Filter, MoreHorizontal, Trash2, ArchiveRestore, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,12 +34,47 @@ import { CategoryFormModal } from "./CategoryFormModal";
 interface CategoryTableProps {
   categories: Category[];
   isLoading?: boolean;
+  isTrashView?: boolean;
 }
 
-export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
+export function CategoryTable({ categories, isLoading, isTrashView = false }: CategoryTableProps) {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === categories.length && categories.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(categories.map((c) => c.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    toast.success(`Đã xóa ${selectedIds.length} danh mục thành công!`);
+    setSelectedIds([]);
+  };
+
+  const handleBulkRestore = () => {
+    toast.success(`Đã khôi phục ${selectedIds.length} danh mục thành công!`);
+    setSelectedIds([]);
+  };
+
   return (
-    <div className="rounded-md border bg-card overflow-hidden">
-        <div className="flex items-center gap-4 p-4 border-b">
+    <>
+      <div className="rounded-md border bg-card overflow-hidden">
+        <div className="flex items-center justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -52,6 +91,11 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
               <Filter className="h-4 w-4" />
             </Button>
           </div>
+          {isTrashView && (
+            <Button variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
+              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
+            </Button>
+          )}
         </div>
         
         {/* Desktop Table */}
@@ -59,6 +103,13 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12 text-center">
+                  <Checkbox 
+                    checked={categories.length > 0 && selectedIds.length === categories.length} 
+                    onCheckedChange={toggleSelectAll} 
+                    aria-label="Select all"
+                  />
+                </TableHead>
                 <TableHead>Mã</TableHead>
                 <TableHead>Tên danh mục</TableHead>
                 <TableHead>Đường dẫn (Slug)</TableHead>
@@ -68,9 +119,16 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? <TableSkeleton columns={6} /> : (
+              {isLoading ? <TableSkeleton columns={7} /> : (
               categories.map((cat) => (
-                <TableRow key={cat.id}>
+                <TableRow key={cat.id} className={selectedIds.includes(cat.id) ? "bg-muted/50" : ""}>
+                  <TableCell className="text-center">
+                    <Checkbox 
+                      checked={selectedIds.includes(cat.id)}
+                      onCheckedChange={() => toggleSelect(cat.id)}
+                      aria-label={`Select ${cat.name}`}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{cat.id}</TableCell>
                   <TableCell className="font-bold">{cat.name}</TableCell>
                   <TableCell className="text-muted-foreground">{cat.slug}</TableCell>
@@ -86,12 +144,21 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <CategoryFormModal 
-                          mode="edit" 
-                          initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
-                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
-                        />
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                        {isTrashView ? (
+                          <>
+                            <DropdownMenuItem className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                          </>
+                        ) : (
+                          <>
+                            <CategoryFormModal 
+                              mode="edit" 
+                              initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
+                              trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
+                            />
+                            <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -138,6 +205,43 @@ export function CategoryTable({ categories, isLoading }: CategoryTableProps) {
           ))
           )}
         </div>
+        <div className="md:hidden flex flex-col">
+          {/* Mobile view logic can be added here similar to products, omitting for brevity or wait, I should add mobile bulk select too if needed. Since categories don't have a mobile view built out with cards yet, we'll just keep it simple or empty. Ah, wait, there is no mobile card view for Categories in this file! It just ends after Desktop Table. Oh wait, I see `</div>` */}
+        </div>
       </div>
+
+      {/* Floating Bulk Action Bar */}
+      {mounted && selectedIds.length > 0 && createPortal(
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+          <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
+            <span className="text-sm font-medium px-2 border-r border-background/20">
+              Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
+            </span>
+            <div className="flex items-center gap-2">
+              {isTrashView ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Xóa
+                  </Button>
+                </>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                  <Trash2 className="h-4 w-4 mr-2" /> Xóa
+                </Button>
+              )}
+            </div>
+            <div className="pl-2 border-l border-background/20">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

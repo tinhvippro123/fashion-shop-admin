@@ -31,7 +31,16 @@ export async function updateProductAction(id: string | number, data: TProductPay
     revalidatePath('/products');
     return { success: true, data: res };
   } catch (error) {
-    return { success: false, error: "L?i h? th?ng khi c?p nh?t product" };
+    return { success: false, error: "Lỗi hệ thống khi cập nhật product" };
+  }
+}
+
+export async function getOptionSuggestionsAction() {
+  try {
+    const suggestions = await productService.getOptionSuggestions();
+    return { success: true, data: suggestions };
+  } catch (error) {
+    return { success: false, error: "Lỗi khi lấy gợi ý thuộc tính" };
   }
 }
 

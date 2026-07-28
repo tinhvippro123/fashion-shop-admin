@@ -4,4 +4,5 @@ export interface Category {
   slug: string;
   productCount: number;
   status: string;
+  deletedAt?: string;
 }

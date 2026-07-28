@@ -195,6 +195,9 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
     subtotal: 1250000,
     shippingFee: 30000,
     discount: 30000,
+    appliedPromotions: [
+      { id: "PROM-1", name: "Freeship Đơn Hàng Nhanh", code: "FS30K", discountAmount: 30000 }
+    ],
     customer: {
       name: "Trần Thị B",
       type: "Khách hàng VIP",
@@ -221,6 +224,9 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
     subtotal: 350000,
     shippingFee: 20000,
     discount: 20000,
+    appliedPromotions: [
+      { id: "PROM-2", name: "Giảm Giá Tân Binh", code: "NEWBIE20", discountAmount: 20000 }
+    ],
     customer: {
       name: "Lê Văn C",
       type: "Khách hàng thành viên",

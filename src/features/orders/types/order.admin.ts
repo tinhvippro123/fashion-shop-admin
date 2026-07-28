@@ -38,6 +38,7 @@ export interface Order {
   subtotal?: number;
   shippingFee?: number;
   discount?: number;
+  appliedPromotions?: { id: string; name: string; code: string; discountAmount: number }[];
   customer?: CustomerInfo;
   shipping?: ShippingInfo;
 }
