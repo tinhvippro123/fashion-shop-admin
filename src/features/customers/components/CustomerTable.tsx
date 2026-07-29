@@ -118,7 +118,7 @@ export function CustomerTable({ isTrashView = false }: { isTrashView?: boolean }
   return (
     <>
       <div className="rounded-md border bg-card overflow-hidden">
-        <div className="flex items-center gap-4 p-4 border-b">
+        <div className="flex items-center justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -137,7 +137,7 @@ export function CustomerTable({ isTrashView = false }: { isTrashView?: boolean }
           </div>
           {isTrashView && (
             <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
-              <Trash2 className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Dọn sạch thùng rác</span>
+              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
             </Button>
           )}
         </div>

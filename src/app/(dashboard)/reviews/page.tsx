@@ -1,6 +1,7 @@
 "use client";
 
 import { ReviewTable } from "@/features/reviews";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function ReviewsPage() {
   return (
@@ -12,7 +13,18 @@ export default function ReviewsPage() {
         </div>
       </div>
 
-      <ReviewTable />
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="active">Đang hoạt động (1)</TabsTrigger>
+          <TabsTrigger value="trash">Thùng rác (2)</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active" className="m-0">
+          <ReviewTable />
+        </TabsContent>
+        <TabsContent value="trash" className="m-0">
+          <ReviewTable isTrashView />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

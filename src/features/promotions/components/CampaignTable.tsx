@@ -128,7 +128,7 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
 
   return (
     <>      <div className="rounded-md border bg-card overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border-b">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
