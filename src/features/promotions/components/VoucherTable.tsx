@@ -199,57 +199,69 @@ filteredVouchers.map((voucher) => (
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          {!isTrashView && (
-                            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          )}
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-code-${voucher.id}`}>Mã Code</Label>
-                                <Input id={`edit-code-${voucher.id}`} defaultValue={voucher.code} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label>Loại giảm giá</Label>
-                                <Select defaultValue="vnd">
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Chọn loại giảm giá" />
-                                  </SelectTrigger>
-                                  <SelectContent align="start" alignItemWithTrigger={false}>
-                                    <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>
-                                    <SelectItem value="percent" label="Giảm theo phần trăm (%)">Giảm theo phần trăm (%)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-discount-${voucher.id}`}>Mức giảm</Label>
-                                <Input id={`edit-discount-${voucher.id}`} defaultValue={voucher.discountAmount} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-max-${voucher.id}`}>Giảm tối đa (VND) - Nếu có</Label>
-                                <Input id={`edit-max-${voucher.id}`} placeholder="Không giới hạn" />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-expiry-${voucher.id}`}>Ngày hết hạn</Label>
-                                <Input id={`edit-expiry-${voucher.id}`} defaultValue={voucher.expiry} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem onClick={() => { toast.success(`Khôi phục mã ${voucher.code}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                          <>
+                            {voucher.status === "Hoạt động" && (
+                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                            )}
+                            
+                            {voucher.status === "Tạm dừng" && (
+                              <>
+                                <Dialog>
+                                  <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`edit-code-${voucher.id}`}>Mã Code</Label>
+                                        <Input id={`edit-code-${voucher.id}`} defaultValue={voucher.code} />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label>Loại giảm giá</Label>
+                                        <Select defaultValue="vnd">
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn loại giảm giá" />
+                                          </SelectTrigger>
+                                          <SelectContent align="start" alignItemWithTrigger={false}>
+                                            <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>
+                                            <SelectItem value="percent" label="Giảm theo phần trăm (%)">Giảm theo phần trăm (%)</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`edit-discount-${voucher.id}`}>Mức giảm</Label>
+                                        <Input id={`edit-discount-${voucher.id}`} defaultValue={voucher.discountAmount} />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`edit-max-${voucher.id}`}>Giảm tối đa (VND) - Nếu có</Label>
+                                        <Input id={`edit-max-${voucher.id}`} placeholder="Không giới hạn" />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`edit-expiry-${voucher.id}`}>Ngày hết hạn</Label>
+                                        <Input id={`edit-expiry-${voucher.id}`} defaultValue={voucher.expiry} />
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <Button variant="outline">Hủy</Button>
+                                      <Button className="">Lưu thay đổi</Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                                <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                              </>
+                            )}
+
+                            {voucher.status === "Hết lượt" && (
+                              <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                            )}
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -299,57 +311,69 @@ filteredVouchers.map((voucher) => (
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Dialog>
-                          {!isTrashView && (
-                            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          )}
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-code-${voucher.id}`}>Mã Code</Label>
-                                <Input id={`m-edit-code-${voucher.id}`} defaultValue={voucher.code} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label>Loại giảm giá</Label>
-                                <Select defaultValue="vnd">
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Chọn loại giảm giá" />
-                                  </SelectTrigger>
-                                  <SelectContent align="start" alignItemWithTrigger={false}>
-                                    <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>
-                                    <SelectItem value="percent" label="Giảm theo phần trăm (%)">Giảm theo phần trăm (%)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-discount-${voucher.id}`}>Mức giảm</Label>
-                                <Input id={`m-edit-discount-${voucher.id}`} defaultValue={voucher.discountAmount} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-max-${voucher.id}`}>Giảm tối đa (VND) - Nếu có</Label>
-                                <Input id={`m-edit-max-${voucher.id}`} placeholder="Không giới hạn" />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-expiry-${voucher.id}`}>Ngày hết hạn</Label>
-                                <Input id={`m-edit-expiry-${voucher.id}`} defaultValue={voucher.expiry} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem onClick={() => { toast.success(`Khôi phục mã ${voucher.code}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                          <>
+                            {voucher.status === "Hoạt động" && (
+                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                            )}
+                            
+                            {voucher.status === "Tạm dừng" && (
+                              <>
+                                <Dialog>
+                                  <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Chỉnh sửa mã giảm giá</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`m-edit-code-${voucher.id}`}>Mã Code</Label>
+                                        <Input id={`m-edit-code-${voucher.id}`} defaultValue={voucher.code} />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label>Loại giảm giá</Label>
+                                        <Select defaultValue="vnd">
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn loại giảm giá" />
+                                          </SelectTrigger>
+                                          <SelectContent align="start" alignItemWithTrigger={false}>
+                                            <SelectItem value="vnd" label="Giảm theo số tiền (VND)">Giảm theo số tiền (VND)</SelectItem>
+                                            <SelectItem value="percent" label="Giảm theo phần trăm (%)">Giảm theo phần trăm (%)</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`m-edit-discount-${voucher.id}`}>Mức giảm</Label>
+                                        <Input id={`m-edit-discount-${voucher.id}`} defaultValue={voucher.discountAmount} />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`m-edit-max-${voucher.id}`}>Giảm tối đa (VND) - Nếu có</Label>
+                                        <Input id={`m-edit-max-${voucher.id}`} placeholder="Không giới hạn" />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor={`m-edit-expiry-${voucher.id}`}>Ngày hết hạn</Label>
+                                        <Input id={`m-edit-expiry-${voucher.id}`} defaultValue={voucher.expiry} />
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <Button variant="outline">Hủy</Button>
+                                      <Button className="">Lưu thay đổi</Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                                <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                              </>
+                            )}
+
+                            {voucher.status === "Hết lượt" && (
+                              <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                            )}
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>

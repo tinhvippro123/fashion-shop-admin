@@ -240,11 +240,22 @@ filteredCampaigns.map((camp) => (
                           </>
                         ) : (
                           <>
-                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                              Sửa chiến dịch
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                            {camp.status === "Đang diễn ra" && (
+                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm chiến dịch ${camp.name}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                            )}
+
+                            {camp.status === "Sắp diễn ra" && (
+                              <>
+                                <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+                                  Sửa chiến dịch
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                              </>
+                            )}
+
+                            {(camp.status === "Đã kết thúc" || camp.status === "Tạm dừng") && (
+                              <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                            )}
                           </>
                         )}
                       </DropdownMenuContent>
@@ -315,11 +326,22 @@ filteredCampaigns.map((camp) => (
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                          Sửa chiến dịch
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                        {camp.status === "Đang diễn ra" && (
+                          <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm chiến dịch ${camp.name}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                        )}
+
+                        {camp.status === "Sắp diễn ra" && (
+                          <>
+                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+                              Sửa chiến dịch
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                          </>
+                        )}
+
+                        {(camp.status === "Đã kết thúc" || camp.status === "Tạm dừng") && (
+                          <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+                        )}
                       </>
                     )}
                   </DropdownMenuContent>
