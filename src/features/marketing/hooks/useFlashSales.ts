@@ -13,5 +13,5 @@ export function useFlashSales() {
     }
     fetchFlashSales();
   }, []);
-  return { flashSales, isLoading };
+  return { flashSales, isLoading, setFlashSales };
 }
