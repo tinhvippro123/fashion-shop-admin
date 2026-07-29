@@ -78,12 +78,12 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
   const handleBulkDelete = () => {
     if (isTrashView) {
       const unremovable = filteredCampaigns.filter(
-        c => selectedIds.includes(c.id) && ((c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc")
+        c => selectedIds.includes(c.id) && c.usageCount && c.usageCount > 0
       );
       
       if (unremovable.length > 0) {
         if (unremovable.length === selectedIds.length) {
-          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng hoặc đã diễn ra!");
+          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng!");
           return;
         } else {
           toast.warning(`Đã bỏ qua ${unremovable.length} chiến dịch không thể xóa vĩnh viễn.`);
@@ -116,7 +116,7 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
 
   const handleEmptyTrash = () => {
     const unremovable = filteredCampaigns.filter(
-      c => (c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc"
+      c => c.usageCount && c.usageCount > 0
     );
     
     if (unremovable.length === filteredCampaigns.length && filteredCampaigns.length > 0) {
@@ -250,7 +250,9 @@ filteredCampaigns.map((camp) => (
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            {(!camp.usageCount || camp.usageCount === 0) && (
+                              <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            )}
                           </>
                         ) : (
                           <>
@@ -263,7 +265,9 @@ filteredCampaigns.map((camp) => (
                                 <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                                   Sửa chiến dịch
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                {(!camp.usageCount || camp.usageCount === 0) && (
+                                  <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                )}
                               </>
                             )}
 
@@ -336,7 +340,9 @@ filteredCampaigns.map((camp) => (
                     {isTrashView ? (
                       <>
                         <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                        {(!camp.usageCount || camp.usageCount === 0) && (
+                          <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                        )}
                       </>
                     ) : (
                       <>
@@ -349,7 +355,9 @@ filteredCampaigns.map((camp) => (
                             <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                               Sửa chiến dịch
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            {(!camp.usageCount || camp.usageCount === 0) && (
+                              <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            )}
                           </>
                         )}
 

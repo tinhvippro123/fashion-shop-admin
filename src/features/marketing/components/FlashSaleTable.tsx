@@ -78,12 +78,12 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
   const handleBulkDelete = () => {
     if (isTrashView) {
       const unremovable = filteredSales.filter(
-        fs => selectedIds.includes(fs.id) && ((fs.usageCount && fs.usageCount > 0) || fs.status === "Đang diễn ra" || fs.status === "Đã kết thúc")
+        fs => selectedIds.includes(fs.id) && fs.usageCount && fs.usageCount > 0
       );
       
       if (unremovable.length > 0) {
         if (unremovable.length === selectedIds.length) {
-          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng hoặc đã diễn ra!");
+          toast.error("Không thể xóa vĩnh viễn các chiến dịch đã chọn vì đã có lượt sử dụng!");
           return;
         } else {
           toast.warning(`Đã bỏ qua ${unremovable.length} chiến dịch không thể xóa vĩnh viễn.`);
@@ -116,7 +116,7 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
 
   const handleEmptyTrash = () => {
     const unremovable = filteredSales.filter(
-      fs => (fs.usageCount && fs.usageCount > 0) || fs.status === "Đang diễn ra" || fs.status === "Đã kết thúc"
+      fs => fs.usageCount && fs.usageCount > 0
     );
     
     if (unremovable.length === filteredSales.length && filteredSales.length > 0) {
@@ -265,7 +265,9 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                           {isTrashView ? (
                             <>
                               <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                              {(!fs.usageCount || fs.usageCount === 0) && (
+                                <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                              )}
                             </>
                           ) : (
                             <>
@@ -278,7 +280,9 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                                   <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                                     Sửa chương trình
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                                  {(!fs.usageCount || fs.usageCount === 0) && (
+                                    <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                                  )}
                                 </>
                               )}
 
@@ -345,7 +349,9 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                     {isTrashView ? (
                       <>
                         <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                        {(!fs.usageCount || fs.usageCount === 0) && (
+                          <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                        )}
                       </>
                     ) : (
                       <>
@@ -358,7 +364,9 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                             <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                               Sửa chương trình
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                            {(!fs.usageCount || fs.usageCount === 0) && (
+                              <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
+                            )}
                           </>
                         )}
 

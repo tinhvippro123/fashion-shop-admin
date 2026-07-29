@@ -87,16 +87,29 @@ export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean })
 
   const handleBulkDelete = () => {
     if (isTrashView) {
-      const undeletable = checkDeletable(selectedIds);
-      if (undeletable.length > 0) {
-        toast.error(`Không thể xóa vĩnh viễn ${undeletable.length} mã giảm giá đã có người sử dụng!`);
-        return;
+      const unremovable = filteredVouchers.filter(v => {
+        const usedCount = parseInt(v.quantity.split(" / ")[0]);
+        return selectedIds.includes(v.id) && usedCount > 0;
+      });
+      
+      if (unremovable.length > 0) {
+        if (unremovable.length === selectedIds.length) {
+          toast.error("Không thể xóa vĩnh viễn các mã đã chọn vì đã có lượt sử dụng!");
+          return;
+        } else {
+          toast.warning(`Đã bỏ qua ${unremovable.length} mã không thể xóa vĩnh viễn.`);
+        }
       }
-      toast.success(`Đã xóa vĩnh viễn ${selectedIds.length} mã giảm giá!`);
+      
+      const removableCount = selectedIds.length - unremovable.length;
+      if (removableCount > 0) {
+        toast.success(`Đã xóa vĩnh viễn ${removableCount} mã giảm giá thành công!`);
+        setSelectedIds([]);
+      }
     } else {
       toast.success(`Đã chuyển ${selectedIds.length} mã giảm giá vào thùng rác!`);
+      setSelectedIds([]);
     }
-    setSelectedIds([]);
   };
 
   const handleBulkRestore = () => {
@@ -213,7 +226,9 @@ filteredVouchers.map((voucher) => (
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem onClick={() => { toast.success(`Khôi phục mã ${voucher.code}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            {parseInt(voucher.quantity.split(" / ")[0]) === 0 && (
+                              <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            )}
                           </>
                         ) : (
                           <>
@@ -265,7 +280,9 @@ filteredVouchers.map((voucher) => (
                                     </DialogFooter>
                                   </DialogContent>
                                 </Dialog>
-                                <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                {parseInt(voucher.quantity.split(" / ")[0]) === 0 && (
+                                  <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                )}
                               </>
                             )}
 
@@ -325,7 +342,9 @@ filteredVouchers.map((voucher) => (
                         {isTrashView ? (
                           <>
                             <DropdownMenuItem onClick={() => { toast.success(`Khôi phục mã ${voucher.code}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            {parseInt(voucher.quantity.split(" / ")[0]) === 0 && (
+                              <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                            )}
                           </>
                         ) : (
                           <>
@@ -377,7 +396,9 @@ filteredVouchers.map((voucher) => (
                                     </DialogFooter>
                                   </DialogContent>
                                 </Dialog>
-                                <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                {parseInt(voucher.quantity.split(" / ")[0]) === 0 && (
+                                  <DropdownMenuItem onClick={() => handlePermanentDelete(voucher)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+                                )}
                               </>
                             )}
 
