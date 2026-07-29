@@ -38,7 +38,7 @@ export const mockCampaigns: Campaign[] = [
     duration: "01/01/2026 - 02/01/2026",
     target: "Danh mục: Áo thun",
     audience: "Tất cả khách hàng",
-    status: "Tạm dừng",
+    status: "Đã kết thúc",
     usageCount: 0,
     deletedAt: "2026-05-15T10:00:00Z"
   },
@@ -49,7 +49,7 @@ export const mockCampaigns: Campaign[] = [
     duration: "15/02/2026 - 20/02/2026",
     target: "Toàn bộ cửa hàng",
     audience: "Tất cả khách hàng",
-    status: "Tạm dừng",
+    status: "Đã kết thúc",
     usageCount: 45,
     deletedAt: "2026-06-20T08:30:00Z"
   },
@@ -62,7 +62,7 @@ export const mockVouchers: Voucher[] = [
     discountAmount: "50,000đ",
     minOrderValue: "500,000đ",
     quantity: "100 / 1000",
-    status: "Hoạt động",
+    status: "Đang diễn ra",
     expiry: "30/08/2026",
   },
   {
@@ -71,7 +71,7 @@ export const mockVouchers: Voucher[] = [
     discountAmount: "30,000đ",
     minOrderValue: "1,000,000đ",
     quantity: "450 / 500",
-    status: "Hoạt động",
+    status: "Đang diễn ra",
     expiry: "15/09/2026",
   },
   {
@@ -80,7 +80,7 @@ export const mockVouchers: Voucher[] = [
     discountAmount: "100,000đ",
     minOrderValue: "2,000,000đ",
     quantity: "50 / 50",
-    status: "Hết lượt",
+    status: "Đã kết thúc",
     expiry: "31/12/2026",
   },
   {
@@ -89,7 +89,7 @@ export const mockVouchers: Voucher[] = [
     discountAmount: "10,000đ",
     minOrderValue: "0đ",
     quantity: "0 / 100",
-    status: "Tạm dừng",
+    status: "Đã kết thúc",
     expiry: "01/01/2026",
     deletedAt: "2026-07-28T10:00:00Z",
   },
@@ -99,7 +99,7 @@ export const mockVouchers: Voucher[] = [
     discountAmount: "20,000đ",
     minOrderValue: "200,000đ",
     quantity: "15 / 100",
-    status: "Hết lượt",
+    status: "Đã kết thúc",
     expiry: "01/01/2025",
     deletedAt: "2026-07-25T14:30:00Z",
   },

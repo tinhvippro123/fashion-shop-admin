@@ -189,7 +189,7 @@ filteredVouchers.map((voucher) => (
                   <TableCell className="text-muted-foreground">{voucher.minOrderValue}</TableCell>
                   <TableCell>{voucher.quantity}</TableCell>
                   <TableCell>
-                    <Badge variant={voucher.status === "Hoạt động" ? "default" : "secondary"} className={voucher.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-muted text-foreground hover:bg-muted border-none"}>
+                    <Badge variant={voucher.status === "Đang diễn ra" ? "default" : "secondary"} className={voucher.status === "Đang diễn ra" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-muted text-foreground hover:bg-muted border-none"}>
                       {voucher.status}
                     </Badge>
                   </TableCell>
@@ -206,11 +206,11 @@ filteredVouchers.map((voucher) => (
                           </>
                         ) : (
                           <>
-                            {voucher.status === "Hoạt động" && (
+                            {voucher.status === "Đang diễn ra" && (
                               <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                             )}
                             
-                            {voucher.status === "Tạm dừng" && (
+                            {voucher.status === "Sắp diễn ra" && (
                               <>
                                 <Dialog>
                                   <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
@@ -258,7 +258,7 @@ filteredVouchers.map((voucher) => (
                               </>
                             )}
 
-                            {voucher.status === "Hết lượt" && (
+                            {voucher.status === "Đã kết thúc" && (
                               <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
                             )}
                           </>
@@ -301,7 +301,7 @@ filteredVouchers.map((voucher) => (
                 <span>Đã dùng: <strong>{voucher.quantity}</strong></span>
               </div>
               <div className="mt-2">
-                <Badge variant={voucher.status === "Hoạt động" ? "default" : "secondary"} className={voucher.status === "Hoạt động" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "bg-muted text-foreground hover:bg-muted border-none text-[10px] px-2 py-0"}>
+                <Badge variant={voucher.status === "Đang diễn ra" ? "default" : "secondary"} className={voucher.status === "Đang diễn ra" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "bg-muted text-foreground hover:bg-muted border-none text-[10px] px-2 py-0"}>
                   {voucher.status}
                 </Badge>
               </div>
@@ -318,11 +318,11 @@ filteredVouchers.map((voucher) => (
                           </>
                         ) : (
                           <>
-                            {voucher.status === "Hoạt động" && (
+                            {voucher.status === "Đang diễn ra" && (
                               <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                             )}
                             
-                            {voucher.status === "Tạm dừng" && (
+                            {voucher.status === "Sắp diễn ra" && (
                               <>
                                 <Dialog>
                                   <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
@@ -370,7 +370,7 @@ filteredVouchers.map((voucher) => (
                               </>
                             )}
 
-                            {voucher.status === "Hết lượt" && (
+                            {voucher.status === "Đã kết thúc" && (
                               <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển mã ${voucher.code} vào thùng rác!`); }} className="text-red-600 cursor-pointer whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
                             )}
                           </>
