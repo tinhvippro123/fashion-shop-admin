@@ -38,13 +38,24 @@ import { useVouchers } from "@/features/promotions/hooks/useVouchers";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean }) {
-  const { vouchers, isLoading } = useVouchers();
+  const { vouchers, isLoading, setVouchers } = useVouchers();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleEndEarly = (voucher: any) => {
+    const today = new Date();
+    const formattedToday = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+    
+    setVouchers(prev => prev.map(v => 
+      v.id === voucher.id ? { ...v, status: "Đã kết thúc", expiry: formattedToday } : v
+    ));
+    
+    toast.success(`Đã kết thúc sớm mã ${voucher.code}`);
+  };
 
   const filteredVouchers = vouchers.filter(v => isTrashView ? v.deletedAt : !v.deletedAt);
 
@@ -207,7 +218,7 @@ filteredVouchers.map((voucher) => (
                         ) : (
                           <>
                             {voucher.status === "Đang diễn ra" && (
-                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEndEarly(voucher)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                             )}
                             
                             {voucher.status === "Sắp diễn ra" && (
@@ -319,7 +330,7 @@ filteredVouchers.map((voucher) => (
                         ) : (
                           <>
                             {voucher.status === "Đang diễn ra" && (
-                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm mã ${voucher.code}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEndEarly(voucher)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                             )}
                             
                             {voucher.status === "Sắp diễn ra" && (

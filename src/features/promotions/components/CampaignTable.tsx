@@ -35,13 +35,27 @@ import { TableSkeleton } from "@/shared/ui/table-skeleton";
 import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
 
 export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }) {
-  const { campaigns, isLoading } = useCampaigns();
+  const { campaigns, isLoading, setCampaigns } = useCampaigns();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleEndEarly = (camp: Campaign) => {
+    const today = new Date();
+    const formattedToday = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+    
+    const parts = camp.duration.split(" - ");
+    const newDuration = parts.length === 2 ? `${parts[0]} - ${formattedToday}` : camp.duration;
+
+    setCampaigns(prev => prev.map(c => 
+      c.id === camp.id ? { ...c, status: "Đã kết thúc", duration: newDuration } : c
+    ));
+    
+    toast.success(`Đã kết thúc sớm chiến dịch ${camp.name}`);
+  };
 
   const filteredCampaigns = campaigns.filter(c => isTrashView ? c.deletedAt : !c.deletedAt);
 
@@ -241,7 +255,7 @@ filteredCampaigns.map((camp) => (
                         ) : (
                           <>
                             {camp.status === "Đang diễn ra" && (
-                              <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm chiến dịch ${camp.name}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEndEarly(camp)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                             )}
 
                             {camp.status === "Sắp diễn ra" && (
@@ -327,7 +341,7 @@ filteredCampaigns.map((camp) => (
                     ) : (
                       <>
                         {camp.status === "Đang diễn ra" && (
-                          <DropdownMenuItem onClick={() => toast.success(`Đã kết thúc sớm chiến dịch ${camp.name}`)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEndEarly(camp)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
                         )}
 
                         {camp.status === "Sắp diễn ra" && (
