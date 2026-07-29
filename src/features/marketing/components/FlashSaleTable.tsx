@@ -250,19 +250,19 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                         <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                             <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="w-48">
                           {isTrashView ? (
                             <>
-                              <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${fs.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handlePermanentDelete(fs)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                              <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
                             </>
                           ) : (
                             <>
-                              <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
-                                Chỉnh sửa
+                              <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+                                Sửa chương trình
                               </DropdownMenuItem>
-                              <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600" onClick={() => { toast.success(`Đã xóa ${fs.name}`); }}>Xóa</DropdownMenuItem>
+                              <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600 whitespace-nowrap" onClick={() => { toast.success(`Đã chuyển ${fs.name} vào thùng rác`); }}>Chuyển vào thùng rác</DropdownMenuItem>
                             </>
                           )}
                         </DropdownMenuContent>
@@ -319,19 +319,19 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                   <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                       <MoreHorizontal className="h-4 w-4" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="end" className="w-48">
                     {isTrashView ? (
                       <>
-                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${fs.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handlePermanentDelete(fs)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                        <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer" />}>
-                          Chỉnh sửa
+                        <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+                          Sửa chương trình
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Dừng chương trình</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600" onClick={() => { toast.success(`Đã xóa ${fs.name}`); }}>Xóa</DropdownMenuItem>
+                        <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600 whitespace-nowrap" onClick={() => { toast.success(`Đã chuyển ${fs.name} vào thùng rác`); }}>Chuyển vào thùng rác</DropdownMenuItem>
                       </>
                     )}
                   </DropdownMenuContent>

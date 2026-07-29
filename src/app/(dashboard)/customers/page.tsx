@@ -3,10 +3,11 @@
 ﻿import { Button } from "@/shared/ui/button";
 import { Download } from "lucide-react";
 import { CustomerTable } from "@/features/customers";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function CustomersPage() {
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full pb-10">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Khách hàng</h2>
@@ -22,7 +23,18 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <CustomerTable />
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="active">Đang hoạt động (4)</TabsTrigger>
+          <TabsTrigger value="trash">Thùng rác (2)</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active" className="m-0">
+          <CustomerTable />
+        </TabsContent>
+        <TabsContent value="trash" className="m-0">
+          <CustomerTable isTrashView />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

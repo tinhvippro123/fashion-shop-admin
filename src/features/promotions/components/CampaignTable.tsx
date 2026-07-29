@@ -232,19 +232,19 @@ filteredCampaigns.map((camp) => (
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       } />
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="w-48">
                         {isTrashView ? (
                           <>
-                            <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
                           </>
                         ) : (
                           <>
-                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
+                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                               Sửa chiến dịch
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => { toast.success(`Đã xóa chiến dịch ${camp.name}!`); }} className="text-red-600">Xóa</DropdownMenuItem>
+                            <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
                           </>
                         )}
                       </DropdownMenuContent>
@@ -307,19 +307,19 @@ filteredCampaigns.map((camp) => (
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   } />
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="end" className="w-48">
                     {isTrashView ? (
                       <>
-                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer" />}>
+                        <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
                           Sửa chiến dịch
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Tạm dừng</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { toast.success(`Đã xóa chiến dịch ${camp.name}!`); }} className="text-red-600">Xóa</DropdownMenuItem>
+                        <DropdownMenuItem className="whitespace-nowrap">Tạm dừng</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
                       </>
                     )}
                   </DropdownMenuContent>

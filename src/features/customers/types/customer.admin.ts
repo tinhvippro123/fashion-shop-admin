@@ -21,6 +21,7 @@ export interface Customer {
   orders: number;
   totalSpent: string;
   status: string;
+  deletedAt?: string;
   
   // Optional detail fields
   joinedDate?: string;

@@ -37,6 +37,26 @@ export const mockCustomers: Customer[] = [
     totalSpent: "6,200,000 đ",
     status: "Thành viên",
   },
+  {
+    id: "CUS-005",
+    name: "Tài Khoản Rác 1",
+    email: "spam123@gmail.com",
+    phone: "0123 456 789",
+    orders: 0,
+    totalSpent: "0 đ",
+    status: "Mới",
+    deletedAt: "2026-07-28T10:00:00Z"
+  },
+  {
+    id: "CUS-006",
+    name: "Trương Văn E",
+    email: "truongvane@gmail.com",
+    phone: "0911 222 333",
+    orders: 2,
+    totalSpent: "1,500,000 đ",
+    status: "Thành viên",
+    deletedAt: "2026-07-25T08:30:00Z" // Có đơn hàng nhưng bị xóa mềm
+  },
 ];
 
 export const mockCustomerDetails: Record<string, Partial<Customer>> = {
