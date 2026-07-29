@@ -18,4 +18,5 @@ export interface Voucher {
   quantity: string;
   status: string;
   expiry: string;
+  deletedAt?: string;
 }

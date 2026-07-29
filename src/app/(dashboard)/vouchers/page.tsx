@@ -16,6 +16,7 @@ import {
   DialogFooter,
 } from "@/shared/ui/dialog";
 import { VoucherTable } from "@/features/promotions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function VouchersPage() {
   const [discountType, setDiscountType] = useState("vnd");
@@ -93,7 +94,18 @@ export default function VouchersPage() {
         </Dialog>
       </div>
 
-      <VoucherTable />
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="active">Đang hoạt động</TabsTrigger>
+          <TabsTrigger value="trash">Thùng rác</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active">
+          <VoucherTable />
+        </TabsContent>
+        <TabsContent value="trash">
+          <VoucherTable isTrashView={true} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
