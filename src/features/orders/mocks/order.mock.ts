@@ -241,7 +241,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-6",
         name: "Áo Polo Ralph Lauren Fake",
-        image: "https://images.unsplash.com/photo-1625910513413-5fc5e82d0e91?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500&q=80",
         variantInfo: "Màu: Đỏ đô, Size: M",
         price: 350000,
         quantity: 1
@@ -257,7 +257,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-8",
         name: "Nón Bucket Unisex",
-        image: "https://images.unsplash.com/photo-1588850561407-ed78c334e67a?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=500&q=80",
         variantInfo: "Màu: Đen, Free Size",
         price: 120000,
         quantity: 1
@@ -302,7 +302,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-11",
         name: "Thắt Lưng Da Bò Thật",
-        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80",
         variantInfo: "Màu: Nâu, Free Size",
         price: 280000,
         quantity: 1
@@ -339,7 +339,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-13",
         name: "Tất Cổ Cao (Set 3 đôi)",
-        image: "https://images.unsplash.com/photo-1586350977771-b3b0ed6f4a37?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&q=80",
         variantInfo: "Màu: Mix, Free Size",
         price: 85000,
         quantity: 2
@@ -376,7 +376,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-15",
         name: "Quần Jogger Thể Thao",
-        image: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80",
         variantInfo: "Màu: Đen, Size: L",
         price: 380000,
         quantity: 2
@@ -384,7 +384,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-16",
         name: "Balo Laptop Chống Nước",
-        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80",
         variantInfo: "Màu: Đen, 15.6 inch",
         price: 890000,
         quantity: 1
@@ -392,7 +392,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-17",
         name: "Mũ Lưỡi Trai NY",
-        image: "https://images.unsplash.com/photo-1588850561407-ed78c334e67a?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=500&q=80",
         variantInfo: "Màu: Đen, Free Size",
         price: 220000,
         quantity: 1
@@ -422,7 +422,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-18",
         name: "Đầm Maxi Hoa Nhí",
-        image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80",
         variantInfo: "Màu: Hồng pastel, Size: S",
         price: 520000,
         quantity: 1
@@ -430,7 +430,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-19",
         name: "Túi Xách Tote Nữ",
-        image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80",
         variantInfo: "Màu: Kem, Free Size",
         price: 450000,
         quantity: 1
@@ -438,7 +438,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-20",
         name: "Sandal Quai Ngang",
-        image: "https://images.unsplash.com/photo-1603487742131-4160ec999306?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
         variantInfo: "Màu: Nâu, Size: 37",
         price: 280000,
         quantity: 1
@@ -446,7 +446,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-21",
         name: "Kính Mát Thời Trang",
-        image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&q=80",
         variantInfo: "Màu: Đen, Free Size",
         price: 300000,
         quantity: 1
@@ -491,7 +491,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-24",
         name: "Cà Vạt Lụa Hoa Văn",
-        image: "https://images.unsplash.com/photo-1589756823695-278bc923a348?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80",
         variantInfo: "Màu: Đỏ rượu, Free Size",
         price: 250000,
         quantity: 1
@@ -499,7 +499,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-25",
         name: "Giày Tây Da Bò",
-        image: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
         variantInfo: "Màu: Đen bóng, Size: 42",
         price: 990000,
         quantity: 1
@@ -565,7 +565,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-28",
         name: "Áo Khoác Jean Nữ Vintage",
-        image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&q=80",
         variantInfo: "Màu: Xanh wash, Size: M",
         price: 520000,
         quantity: 1
@@ -573,7 +573,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-29",
         name: "Chân Váy Xếp Ly Tennis",
-        image: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80",
         variantInfo: "Màu: Trắng, Size: S",
         price: 280000,
         quantity: 1
@@ -581,7 +581,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-30",
         name: "Áo Croptop Thun Co Giãn",
-        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80",
         variantInfo: "Màu: Đen, Size: S",
         price: 150000,
         quantity: 1
@@ -589,7 +589,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-31",
         name: "Bông Tai Ngọc Trai",
-        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&q=80",
         variantInfo: "Màu: Trắng, Free Size",
         price: 120000,
         quantity: 1
@@ -597,7 +597,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-32",
         name: "Ví Cầm Tay Mini",
-        image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80",
         variantInfo: "Màu: Hồng, Free Size",
         price: 130000,
         quantity: 1
@@ -626,7 +626,7 @@ export const mockOrderDetails: Record<string, Partial<Order>> = {
       {
         id: "ITEM-33",
         name: "Áo Thun Polo Nam",
-        image: "https://images.unsplash.com/photo-1625910513413-5fc5e82d0e91?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500&q=80",
         variantInfo: "Màu: Xanh lá, Size: L",
         price: 320000,
         quantity: 1
