@@ -1,18 +1,43 @@
 import Link from "next/link";
 import { BackButton } from "@/shared/ui/back-button";
-import { Button, buttonVariants } from "@/shared/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
-import { ArrowLeft, Printer, MapPin, User, Mail, Phone, Clock, CreditCard } from "lucide-react";
+import { ArrowLeft, Printer, MapPin, User, Mail, Phone, Clock, CreditCard, AlertTriangle, CheckCircle2, Truck, Package, PackageCheck, XCircle, RefreshCcw, Banknote } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 import Image from "next/image";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-
+import { OrderStatus } from "@/features/orders/types/order.admin";
 import { useOrderDetail } from "@/features/orders/hooks/useOrderDetail";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Input } from "@/shared/ui/input";
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
   const { order, isLoading } = useOrderDetail(orderId);
+  const [cancelDialog, setCancelDialog] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [returnDialog, setReturnDialog] = useState(false);
+
+  const handleApprove = () => { toast.success(`Đã duyệt đơn hàng ${orderId}! Đã chuyển sang Đang chuẩn bị.`); };
+  const handleHandover = () => { toast.success(`Đã bàn giao đơn hàng ${orderId} cho Shipper! Đã chuyển sang Đang giao.`); };
+  const handleComplete = () => { toast.success(`Đã giao đơn hàng ${orderId} thành công!`); };
+  const handleFail = () => { toast.error(`Đơn hàng ${orderId} giao thất bại. Tiến hành hoàn kho!`); };
+  const handleRefund = () => { toast.success(`Đã xác nhận hoàn tiền cho đơn hàng ${orderId}!`); };
+  
+  const handleCancel = () => {
+    if (!cancelReason.trim()) { toast.error("Vui lòng chọn hoặc nhập lý do hủy đơn!"); return; }
+    toast.success(`Đã hủy đơn hàng ${orderId}. Lý do: ${cancelReason}`);
+    setCancelDialog(false);
+    setCancelReason("");
+  };
+  
+  const handleReturn = () => {
+    toast.success(`Đã tạo yêu cầu Đổi/Trả cho đơn hàng ${orderId} thành công! Dữ liệu đã chuyển sang Module Đổi trả.`);
+    setReturnDialog(false);
+  };
 
   if (isLoading) {
     return <div className="flex justify-center p-8 text-muted-foreground">Đang tải chi tiết đơn hàng...</div>;
@@ -22,16 +47,39 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     return <div className="flex justify-center p-8 text-muted-foreground">Không tìm thấy đơn hàng</div>;
   }
 
+  const getStatusColor = (status: OrderStatus) => {
+    switch (status) {
+      case 'PENDING': return 'bg-amber-100 text-amber-700 hover:bg-amber-200';
+      case 'PROCESSING': return 'bg-blue-100 text-blue-700 hover:bg-blue-200';
+      case 'SHIPPING': return 'bg-purple-100 text-purple-700 hover:bg-purple-200';
+      case 'COMPLETED': return 'bg-green-100 text-green-700 hover:bg-green-200';
+      case 'CANCELLED': return 'bg-red-100 text-red-700 hover:bg-red-200';
+      default: return 'bg-muted text-foreground';
+    }
+  };
+  
+  const getStatusText = (status: OrderStatus) => {
+    switch (status) {
+      case 'PENDING': return 'Chờ xác nhận';
+      case 'PROCESSING': return 'Đang chuẩn bị';
+      case 'SHIPPING': return 'Đang giao hàng';
+      case 'COMPLETED': return 'Đã hoàn thành';
+      case 'CANCELLED': return 'Đã hủy';
+      default: return status;
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
+    <>
+      <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <BackButton />
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold tracking-tight">Đơn hàng #{order.id}</h2>
-              <Badge variant="default" className={cn(order.statusBg, order.statusText, order.statusHover, "border-none ml-2")}>
-                {order.status}
+              <Badge variant="default" className={cn(getStatusColor(order.status), "border-none ml-2")}>
+                {getStatusText(order.status)}
               </Badge>
             </div>
             <p className="text-muted-foreground text-sm mt-1 flex items-center gap-1">
@@ -40,23 +88,25 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => window.print()}>
             <Printer className="mr-2 h-4 w-4" /> In hóa đơn
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger render={<Button className="" />}>
-              Cập nhật trạng thái
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Chờ xác nhận</DropdownMenuItem>
-              <DropdownMenuItem>Đang xử lý</DropdownMenuItem>
-              <DropdownMenuItem>Đang giao hàng</DropdownMenuItem>
-              <DropdownMenuItem>Đã giao thành công</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Hủy đơn hàng</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Note: Không có nút Xóa đơn hàng! Admin chỉ có thể Hủy đơn ở trang Danh sách. */}
         </div>
       </div>
+
+      {order.status === 'CANCELLED' && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 flex gap-3 items-start">
+          <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
+          <div>
+            <h4 className="text-red-800 font-medium">Đơn hàng đã bị hủy bởi {order.cancelBy || 'Admin'}</h4>
+            <div className="flex flex-col gap-0.5 mt-1">
+              <p className="text-red-600 text-sm">Lý do: {order.cancelReason || 'Phát hiện Spam/Phá hoại'}</p>
+              <p className="text-red-600 text-sm">Thời gian: Hôm nay 14:00</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Cột trái: Chi tiết sản phẩm và tổng tiền */}
@@ -128,24 +178,29 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
               <CardTitle>Khách hàng</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-muted h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <User className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-muted h-10 w-10 rounded-full flex items-center justify-center shrink-0">
+                    <User className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{order.customer?.name || order.customerName}</p>
+                    <p className="text-sm text-muted-foreground">{order.customer?.type || 'Thành viên'}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">{order.customer?.name}</p>
-                  <p className="text-sm text-muted-foreground">{order.customer?.type}</p>
-                </div>
+                <Link href="/customers/CUS-001">
+                  <Button variant="outline" size="sm">Xem Profile</Button>
+                </Link>
               </div>
               <Separator />
               <div className="grid gap-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{order.customer?.email}</span>
+                  <span className="truncate">{order.customer?.email || order.customerEmail}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4 shrink-0" />
-                  <span>{order.customer?.phone}</span>
+                  <span>{order.customer?.phone || '0987654321'}</span>
                 </div>
               </div>
             </CardContent>
@@ -158,7 +213,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             <CardContent className="grid gap-4 text-sm text-muted-foreground">
               <div className="flex gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                <span>{order.shipping?.address}</span>
+                <span>{order.shipping?.address || '123 Đường Số 1, Quận 1, TP.HCM'}</span>
               </div>
               <div className="flex gap-2">
                 <CreditCard className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
@@ -167,16 +222,217 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
               <Separator />
               <div className="flex flex-col gap-1">
                 <span className="font-medium text-foreground">Đơn vị vận chuyển</span>
-                <span>{order.shipping?.method}</span>
-                <span className="text-muted-foreground">Mã vận đơn: {order.shipping?.code}</span>
+                <span>{order.shipping?.method || 'Giao Hàng Tiết Kiệm'}</span>
+                <span className="text-muted-foreground">Mã vận đơn: {order.shipping?.code || 'GHTK123456789'}</span>
               </div>
-              <Badge variant="outline" className="w-fit text-amber-700 bg-amber-50 border-amber-200">
-                Chưa thanh toán
-              </Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Lịch sử hành trình</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-6 mt-2 relative">
+                {/* Vertical Line */}
+                <div className="absolute top-2 bottom-2 left-2.75 w-0.5 bg-muted z-0"></div>
+                
+                {/* Luôn có sự kiện Đặt hàng */}
+                <div className="flex gap-4 relative z-10">
+                  <div className="bg-background py-0.5">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <div className="pt-1 flex-1">
+                    <h4 className="font-medium text-sm">Đơn hàng đã được tạo</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">{order.date} 08:00</p>
+                  </div>
+                </div>
+
+                {order.status !== 'PENDING' && order.status !== 'CANCELLED' && (
+                  <div className="flex gap-4 relative z-10">
+                    <div className="bg-background py-0.5">
+                      <Package className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div className="pt-1 flex-1">
+                      <h4 className="font-medium text-sm">Đang chuẩn bị hàng</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">{order.date} 09:30 - Kho đã nhận thông tin</p>
+                    </div>
+                  </div>
+                )}
+
+                {(order.status === 'SHIPPING' || order.status === 'COMPLETED') && (
+                  <div className="flex gap-4 relative z-10">
+                    <div className="bg-background py-0.5">
+                      <Truck className="h-6 w-6 text-amber-500" />
+                    </div>
+                    <div className="pt-1 flex-1">
+                      <h4 className="font-medium text-sm">Đã giao cho Đơn vị vận chuyển</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Hôm qua 14:00 - Bưu cục Củ Chi</p>
+                    </div>
+                  </div>
+                )}
+
+                {order.status === 'COMPLETED' && (
+                  <div className="flex gap-4 relative z-10">
+                    <div className="bg-background py-0.5">
+                      <PackageCheck className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <div className="pt-1 flex-1">
+                      <h4 className="font-medium text-sm">Giao hàng thành công</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Hôm nay 10:15 - Khách đã nhận hàng</p>
+                    </div>
+                  </div>
+                )}
+
+                {order.status === 'CANCELLED' && (
+                  <div className="flex gap-4 relative z-10">
+                    <div className="bg-background py-0.5">
+                      <AlertTriangle className="h-6 w-6 text-red-500" />
+                    </div>
+                    <div className="pt-1 flex-1">
+                      <h4 className="font-medium text-sm text-red-600">Đơn hàng đã bị hủy</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Hôm nay - Lý do: {order.cancelReason || 'Không xác định'}</p>
+                    </div>
+                  </div>
+                )}
+                
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+
+      {/* Sticky Footer: Dual Placement Action Buttons */}
+      <div className="sticky bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-t p-4 flex justify-end gap-3 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+        {order.status === 'PENDING' && (
+          <>
+            <Button variant="destructive" onClick={() => { setCancelReason(""); setCancelDialog(true); }}>
+              <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+            </Button>
+            <Button onClick={handleApprove} disabled={order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng'}>
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Duyệt đơn
+              {order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng' && <span className="ml-2 text-[10px] opacity-70">(Chờ Webhook)</span>}
+            </Button>
+          </>
+        )}
+        {order.status === 'PROCESSING' && (
+          <>
+            <Button variant="destructive" onClick={() => { setCancelReason(""); setCancelDialog(true); }}>
+              <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+            </Button>
+            <Button variant="outline" className="text-blue-600 border-blue-200" onClick={() => { toast.info('Đang tạo phiếu in...'); setTimeout(() => window.print(), 500); }}>
+              <Printer className="mr-2 h-4 w-4" /> In phiếu giao hàng
+            </Button>
+            <Button onClick={handleHandover}>
+              <Truck className="mr-2 h-4 w-4" /> Bàn giao Shipper
+            </Button>
+          </>
+        )}
+        {order.status === 'SHIPPING' && (
+          <>
+            <Button variant="outline" className="text-amber-600 border-amber-200 hover:bg-amber-50" onClick={handleFail}>
+              <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
+            </Button>
+            <Button onClick={handleComplete} className="bg-emerald-600 hover:bg-emerald-700">
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Xác nhận Đã giao
+            </Button>
+          </>
+        )}
+        {order.status === 'COMPLETED' && (
+          <>
+            <Button variant="outline" className="text-purple-600 border-purple-200 hover:bg-purple-50" onClick={() => setReturnDialog(true)}>
+              <RefreshCcw className="mr-2 h-4 w-4" /> Tạo Yêu cầu Đổi/Trả
+            </Button>
+            <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => { toast.info('Đang tạo hóa đơn...'); setTimeout(() => window.print(), 500); }}>
+              <Printer className="mr-2 h-4 w-4" /> In hóa đơn
+            </Button>
+          </>
+        )}
+        {order.status === 'CANCELLED' && order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng' && (
+          <Button onClick={handleRefund} className="bg-blue-600 hover:bg-blue-700">
+            <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền
+          </Button>
+        )}
+      </div>
+
+      {/* Dialogs */}
+      <Dialog open={cancelDialog} onOpenChange={setCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hủy đơn hàng #{order.id}</DialogTitle>
+            <DialogDescription>Hành động này không thể hoàn tác. Vui lòng ghi rõ lý do để lưu vào Audit Log.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4 flex flex-col gap-3">
+            <label className="text-sm font-medium">Chọn lý do hủy đơn *</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              <Badge 
+                variant={cancelReason === "Khách yêu cầu hủy" ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setCancelReason("Khách yêu cầu hủy")}
+              >Khách yêu cầu hủy</Badge>
+              <Badge 
+                variant={cancelReason === "Hết hàng / Lỗi giá" ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setCancelReason("Hết hàng / Lỗi giá")}
+              >Hết hàng / Lỗi giá</Badge>
+              <Badge 
+                variant={cancelReason === "Nghi ngờ gian lận / Spam" ? "default" : "destructive"}
+                className="cursor-pointer"
+                onClick={() => setCancelReason("Nghi ngờ gian lận / Spam")}
+              >Nghi ngờ gian lận / Spam</Badge>
+            </div>
+            <Input 
+              placeholder="Hoặc nhập lý do khác..." 
+              value={cancelReason} 
+              onChange={(e) => setCancelReason(e.target.value)} 
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelDialog(false)}>Đóng</Button>
+            <Button variant="destructive" onClick={handleCancel}>Xác nhận hủy</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={returnDialog} onOpenChange={setReturnDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tạo Yêu cầu Đổi/Trả hàng</DialogTitle>
+            <DialogDescription>
+              Đơn hàng gốc <span className="font-bold text-primary">#{order.id}</span> sẽ không bị thay đổi dữ liệu. Một hồ sơ khiếu nại mới sẽ được tạo trong Module Đổi/Trả.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 flex flex-col gap-4">
+            <div>
+              <label className="text-sm font-medium">Chọn sản phẩm cần Đổi/Trả</label>
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-muted/30 rounded-md border">
+                {order.items?.map(item => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <Checkbox id={`item-${item.id}`} />
+                    <label htmlFor={`item-${item.id}`} className="text-sm">{item.name} - {item.variantInfo}</label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Lý do khiếu nại</label>
+              <Input placeholder="VD: Sản phẩm bị lỗi rách nách..." />
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Số tiền hoàn lại (Dự kiến)</label>
+              <Input type="number" placeholder="250000" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReturnDialog(false)}>Hủy</Button>
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={handleReturn}>
+              Tạo Yêu cầu
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -20,18 +20,21 @@ export interface ShippingInfo {
   code: string;
 }
 
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPING' | 'COMPLETED' | 'CANCELLED';
+
 export interface Order {
   id: string;
   customerName: string;
   customerEmail: string;
   date: string;
-  status: string;
-  statusBg: string;
-  statusText: string;
-  statusHover: string;
+  status: OrderStatus;
   payment: string;
-  paymentBg: string;
+  paymentBg: string; // Tạm giữ lại phần payment UI (hoặc nếu muốn có thể bỏ luôn)
   total: string; 
+  
+  // Trạng thái hủy đơn
+  cancelReason?: string;
+  cancelBy?: string;
   
   // Optional detailed fields when fetching specific order
   items?: OrderItem[];

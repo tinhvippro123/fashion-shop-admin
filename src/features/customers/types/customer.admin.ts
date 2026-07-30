@@ -20,8 +20,14 @@ export interface Customer {
   phone: string;
   orders: number;
   totalSpent: string;
-  status: string;
+  tier: string;
+  accountStatus: 'ACTIVE' | 'BANNED' | 'UNVERIFIED';
   deletedAt?: string;
+  deletedBy?: 'USER' | 'ADMIN';
+  
+  // Security / Anti-fraud fields
+  ipAddress?: string;
+  deviceId?: string;
   
   // Optional detail fields
   joinedDate?: string;
