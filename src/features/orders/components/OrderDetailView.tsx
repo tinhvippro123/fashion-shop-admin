@@ -95,12 +95,6 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => window.print()}>
-            <Printer className="mr-2 h-4 w-4" /> In hóa đơn
-          </Button>
-          {/* Note: Không có nút Xóa đơn hàng! Admin chỉ có thể Hủy đơn ở trang Danh sách. */}
-        </div>
       </div>
 
       {order.status === 'CANCELLED' && (
