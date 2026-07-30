@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Filter, PackageX, Eye, CheckCircle, XCircle, Package, RefreshCcw } from "lucide-react";
+import { Search, MoreHorizontal, Filter, PackageX, Eye, CheckCircle, XCircle, Package, RefreshCcw, AlertTriangle, UploadCloud } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,6 +74,10 @@ export function ReturnTable() {
   const [rejectReason, setRejectReason] = useState("");
   const [rejectId, setRejectId] = useState<string | null>(null);
 
+  const [fraudDialog, setFraudDialog] = useState(false);
+  const [fraudReason, setFraudReason] = useState("");
+  const [fraudId, setFraudId] = useState<string | null>(null);
+
   const filteredReturns = viewStatus === 'ALL' ? returns : returns.filter(r => r.status === viewStatus);
 
   const getStatusColor = (status: ReturnStatus) => {
@@ -122,6 +126,24 @@ export function ReturnTable() {
     setRejectId(id);
     setRejectReason("");
     setRejectDialog(true);
+  };
+
+  const handleFraud = () => {
+    if (!fraudReason.trim()) {
+      toast.error("Vui lòng nhập chi tiết tình trạng gian lận!");
+      return;
+    }
+    toast.error(`Đã báo cáo gian lận cho yêu cầu ${fraudId}. Hồ sơ chuyển sang Đã từ chối.`);
+    setReturns(returns.map(r => r.id === fraudId ? { ...r, status: 'REJECTED' } : r));
+    setFraudDialog(false);
+    setFraudReason("");
+    setFraudId(null);
+  };
+
+  const openFraudDialog = (id: string) => {
+    setFraudId(id);
+    setFraudReason("");
+    setFraudDialog(true);
   };
 
   return (
@@ -229,6 +251,9 @@ export function ReturnTable() {
                               <DropdownMenuItem className="text-blue-600 cursor-pointer flex items-center" onClick={() => handleReceive(req.id)}>
                                 <Package className="h-4 w-4 mr-2" /> Đã nhận lại hàng
                               </DropdownMenuItem>
+                              <DropdownMenuItem className="text-amber-600 cursor-pointer flex items-center" onClick={() => openFraudDialog(req.id)}>
+                                <AlertTriangle className="h-4 w-4 mr-2" /> Báo cáo gian lận
+                              </DropdownMenuItem>
                             </>
                           )}
                         </DropdownMenuContent>
@@ -278,6 +303,52 @@ export function ReturnTable() {
       <DialogFooter>
         <Button variant="outline" onClick={() => setRejectDialog(false)}>Hủy</Button>
         <Button variant="destructive" onClick={handleReject}>Xác nhận từ chối</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <Dialog open={fraudDialog} onOpenChange={setFraudDialog}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle className="text-amber-600 flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5" /> Báo cáo gian lận {fraudId}
+        </DialogTitle>
+        <DialogDescription>Hành động này sẽ đóng băng hồ sơ hoàn tiền. Vui lòng ghi rõ tình trạng hàng hóa nhận được.</DialogDescription>
+      </DialogHeader>
+      <div className="py-4 flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
+          <label className="text-sm font-medium">Bằng chứng (Hình ảnh) *</label>
+          <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-muted-foreground bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
+            <UploadCloud className="h-8 w-8 mb-2 text-muted-foreground/70" />
+            <p className="text-sm font-medium">Tải ảnh tình trạng thực tế lên</p>
+            <p className="text-xs mt-1">(Bắt buộc tải ít nhất 1 ảnh làm bằng chứng)</p>
+          </div>
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          <label className="text-sm font-medium">Lý do gian lận *</label>
+          <div className="flex flex-wrap gap-2 mb-1">
+            <Badge 
+              variant={fraudReason === "Khách trả áo rách/hãng khác" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => setFraudReason("Khách trả áo rách/hãng khác")}
+            >Khác sản phẩm gốc</Badge>
+            <Badge 
+              variant={fraudReason === "Hộp rỗng / Khách gửi cục gạch" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => setFraudReason("Hộp rỗng / Khách gửi cục gạch")}
+            >Khách gửi gạch / rác</Badge>
+          </div>
+          <Input 
+            placeholder="Mô tả chi tiết tình trạng hàng hóa..." 
+            value={fraudReason} 
+            onChange={(e) => setFraudReason(e.target.value)} 
+          />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={() => setFraudDialog(false)}>Hủy</Button>
+        <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={handleFraud}>Xác nhận báo cáo</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

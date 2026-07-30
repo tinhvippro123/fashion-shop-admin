@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
+import { UploadCloud } from "lucide-react";
 
 // Fake data fetching hook for UI demonstration
 function useReturnDetail(returnId: string) {
@@ -53,6 +54,9 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
   const { returnReq, isLoading } = useReturnDetail(returnId);
   const [rejectDialog, setRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+
+  const [fraudDialog, setFraudDialog] = useState(false);
+  const [fraudReason, setFraudReason] = useState("");
 
   const [currentStatus, setCurrentStatus] = useState<ReturnStatus>(returnReq?.status || "PENDING");
 
@@ -101,6 +105,16 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
     }
     toast.error(`Đã từ chối yêu cầu ${returnReq.id}. Lý do: ${rejectReason}`);
     setRejectDialog(false);
+    setCurrentStatus("REJECTED");
+  };
+
+  const handleFraud = () => {
+    if (!fraudReason.trim()) {
+      toast.error("Vui lòng nhập chi tiết tình trạng gian lận!");
+      return;
+    }
+    toast.error(`Đã báo cáo gian lận cho yêu cầu ${returnReq.id}. Hồ sơ chuyển sang Đã từ chối.`);
+    setFraudDialog(false);
     setCurrentStatus("REJECTED");
   };
 
@@ -308,6 +322,13 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
           {currentStatus === 'RETURNING' && (
             <>
               <Button 
+                variant="outline"
+                onClick={() => { setFraudReason(""); setFraudDialog(true); }}
+                className="text-amber-600 border-amber-200 hover:bg-amber-50 shadow-sm"
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" /> Báo cáo gian lận
+              </Button>
+              <Button 
                 onClick={handleReceive}
                 className="bg-blue-600! hover:bg-blue-700! text-white shadow-sm"
               >
@@ -365,6 +386,53 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectDialog(false)}>Đóng</Button>
             <Button variant="destructive" onClick={handleReject}>Xác nhận từ chối</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Fraud */}
+      <Dialog open={fraudDialog} onOpenChange={setFraudDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-amber-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" /> Báo cáo gian lận {returnReq.id}
+            </DialogTitle>
+            <DialogDescription>Ghi rõ tình trạng hàng hóa nhận được. Hành động này sẽ đóng băng hồ sơ hoàn tiền.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4 flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <label className="text-sm font-medium">Bằng chứng (Hình ảnh) *</label>
+              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-muted-foreground bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
+                <UploadCloud className="h-8 w-8 mb-2 text-muted-foreground/70" />
+                <p className="text-sm font-medium">Tải ảnh tình trạng thực tế lên</p>
+                <p className="text-xs mt-1">(Bắt buộc tải ít nhất 1 ảnh làm bằng chứng)</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <label className="text-sm font-medium">Lý do gian lận *</label>
+              <div className="flex flex-wrap gap-2 mb-1">
+                <Badge 
+                  variant={fraudReason === "Khách trả áo rách/hãng khác" ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => setFraudReason("Khách trả áo rách/hãng khác")}
+                >Khác sản phẩm gốc</Badge>
+                <Badge 
+                  variant={fraudReason === "Hộp rỗng / Khách gửi cục gạch" ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => setFraudReason("Hộp rỗng / Khách gửi cục gạch")}
+                >Khách gửi gạch / rác</Badge>
+              </div>
+              <Input 
+                placeholder="Mô tả chi tiết tình trạng hàng hóa..." 
+                value={fraudReason} 
+                onChange={(e) => setFraudReason(e.target.value)} 
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFraudDialog(false)}>Hủy</Button>
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={handleFraud}>Xác nhận báo cáo</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
