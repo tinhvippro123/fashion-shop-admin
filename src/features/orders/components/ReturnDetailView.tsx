@@ -16,13 +16,19 @@ import { UploadCloud } from "lucide-react";
 
 // Fake data fetching hook for UI demonstration
 function useReturnDetail(returnId: string) {
+  // Map returnId to a fake status for testing purposes
+  let fakeStatus: ReturnStatus = "PENDING";
+  if (returnId === "RET-002") fakeStatus = "RETURNING";
+  if (returnId === "RET-003") fakeStatus = "COMPLETED";
+  if (returnId === "RET-004") fakeStatus = "REJECTED";
+
   // In a real app, this would fetch from an API.
   return {
     returnReq: {
       id: returnId,
-      orderId: "ORD-045",
+      orderId: returnId === "RET-002" ? "ORD-021" : returnId === "RET-003" ? "ORD-089" : "ORD-045",
       date: "18/07/2026 14:30",
-      status: "PENDING" as ReturnStatus,
+      status: fakeStatus,
       reason: "Sản phẩm không vừa size",
       description: "Tôi mua size M nhưng mặc bị chật nách, muốn đổi sang size L hoặc hoàn tiền nếu hết hàng.",
       refundAmount: "450,000đ",
