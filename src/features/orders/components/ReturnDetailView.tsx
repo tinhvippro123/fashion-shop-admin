@@ -12,7 +12,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Printer } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Fake data fetching hook for UI demonstration
 function useReturnDetail(returnId: string) {
@@ -57,6 +58,7 @@ function useReturnDetail(returnId: string) {
 }
 
 export function ReturnDetailView({ returnId }: { returnId: string }) {
+  const router = useRouter();
   const { returnReq, isLoading } = useReturnDetail(returnId);
   const [rejectDialog, setRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -344,9 +346,24 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
           )}
 
           {currentStatus === 'COMPLETED' && (
-            <div className="text-sm text-muted-foreground italic flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2 text-emerald-500" /> Dữ liệu đã đóng băng vĩnh viễn
-            </div>
+            <>
+              <div className="text-sm text-muted-foreground italic flex items-center mr-auto">
+                <CheckCircle className="h-4 w-4 mr-2 text-emerald-500" /> Dữ liệu đã đóng băng vĩnh viễn
+              </div>
+              <Button 
+                variant="outline"
+                className="text-emerald-600 border-emerald-200 hover:bg-emerald-50 shadow-sm"
+                onClick={() => {
+                  toast.info(`Đang in biên lai hoàn tiền cho ${returnReq.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+              >
+                <Printer className="mr-2 h-4 w-4" /> In biên lai hoàn tiền
+              </Button>
+              <Button variant="outline" onClick={() => router.back()}>
+                ✖️ Đóng
+              </Button>
+            </>
           )}
 
           {currentStatus === 'REJECTED' && (

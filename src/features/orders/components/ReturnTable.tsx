@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Filter, PackageX, Eye, CheckCircle, XCircle, Package, RefreshCcw, AlertTriangle, UploadCloud } from "lucide-react";
+import { Search, MoreHorizontal, Filter, PackageX, Eye, CheckCircle, XCircle, Package, RefreshCcw, AlertTriangle, UploadCloud, Printer } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -267,6 +267,21 @@ export function ReturnTable() {
                               </DropdownMenuItem>
                               <DropdownMenuItem className="text-amber-600 cursor-pointer flex items-center" onClick={() => openFraudDialog(req.id)}>
                                 <AlertTriangle className="h-4 w-4 mr-2" /> Báo cáo gian lận
+                              </DropdownMenuItem>
+                            </>
+                          )}
+
+                          {req.status === 'COMPLETED' && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                className="text-emerald-600 cursor-pointer flex items-center" 
+                                onClick={() => {
+                                  toast.info(`Đang tạo biên lai hoàn tiền cho ${req.id}...`);
+                                  setTimeout(() => window.print(), 500);
+                                }}
+                              >
+                                <Printer className="h-4 w-4 mr-2" /> In biên lai hoàn tiền
                               </DropdownMenuItem>
                             </>
                           )}
