@@ -367,9 +367,14 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
           )}
 
           {currentStatus === 'REJECTED' && (
-            <div className="text-sm text-muted-foreground italic flex items-center">
-              <XCircle className="h-4 w-4 mr-2 text-red-500" /> Dữ liệu đã đóng băng vĩnh viễn
-            </div>
+            <>
+              <div className="text-sm text-muted-foreground italic flex items-center mr-auto">
+                <XCircle className="h-4 w-4 mr-2 text-red-500" /> Dữ liệu đã đóng băng vĩnh viễn
+              </div>
+              <Button variant="outline" onClick={() => router.back()}>
+                ✖️ Đóng
+              </Button>
+            </>
           )}
         </div>
       </div>
