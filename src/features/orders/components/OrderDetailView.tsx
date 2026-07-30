@@ -4,16 +4,18 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
-import { ArrowLeft, Printer, MapPin, User, Mail, Phone, Clock, CreditCard, AlertTriangle, CheckCircle2, Truck, Package, PackageCheck, XCircle, RefreshCcw, Banknote } from "lucide-react";
+import { ArrowLeft, Printer, MapPin, User, Mail, Phone, Clock, CreditCard, AlertTriangle, CheckCircle2, Truck, Package, PackageCheck } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 import Image from "next/image";
 import { OrderStatus } from "@/features/orders/types/order.admin";
+
 import { useOrderDetail } from "@/features/orders/hooks/useOrderDetail";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
-import { Checkbox } from "@/shared/ui/checkbox";
 import { Input } from "@/shared/ui/input";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Banknote, CheckCircle, RefreshCcw, XCircle } from "lucide-react";
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
   const { order, isLoading } = useOrderDetail(orderId);
@@ -21,23 +23,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
   const [cancelReason, setCancelReason] = useState("");
   const [returnDialog, setReturnDialog] = useState(false);
 
-  const handleApprove = () => { toast.success(`Đã duyệt đơn hàng ${orderId}! Đã chuyển sang Đang chuẩn bị.`); };
-  const handleHandover = () => { toast.success(`Đã bàn giao đơn hàng ${orderId} cho Shipper! Đã chuyển sang Đang giao.`); };
-  const handleComplete = () => { toast.success(`Đã giao đơn hàng ${orderId} thành công!`); };
-  const handleFail = () => { toast.error(`Đơn hàng ${orderId} giao thất bại. Tiến hành hoàn kho!`); };
-  const handleRefund = () => { toast.success(`Đã xác nhận hoàn tiền cho đơn hàng ${orderId}!`); };
-  
-  const handleCancel = () => {
-    if (!cancelReason.trim()) { toast.error("Vui lòng chọn hoặc nhập lý do hủy đơn!"); return; }
-    toast.success(`Đã hủy đơn hàng ${orderId}. Lý do: ${cancelReason}`);
-    setCancelDialog(false);
-    setCancelReason("");
-  };
-  
-  const handleReturn = () => {
-    toast.success(`Đã tạo yêu cầu Đổi/Trả cho đơn hàng ${orderId} thành công! Dữ liệu đã chuyển sang Module Đổi trả.`);
-    setReturnDialog(false);
-  };
+  const isOnlinePayment = (payment: string) => !payment.includes("COD") && !payment.includes("Thanh toán khi nhận hàng");
 
   if (isLoading) {
     return <div className="flex justify-center p-8 text-muted-foreground">Đang tải chi tiết đơn hàng...</div>;
@@ -69,9 +55,31 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     }
   };
 
+  const handleApprove = () => {
+    toast.success(`Đã xác nhận đơn hàng #${order.id}! Đã chuyển sang Đang chuẩn bị.`);
+  };
+
+  const handleHandover = () => {
+    toast.success(`Đã bàn giao đơn hàng #${order.id} cho Shipper! Đã chuyển sang Đang giao.`);
+  };
+
+  const handleCancel = () => {
+    if (!cancelReason.trim()) {
+      toast.error("Vui lòng chọn hoặc nhập lý do hủy đơn!");
+      return;
+    }
+    toast.success(`Đã hủy đơn hàng #${order.id}. Lý do: ${cancelReason}`);
+    setCancelDialog(false);
+    setCancelReason("");
+  };
+
+  const handleReturn = () => {
+    toast.success(`Đã tạo yêu cầu Đổi/Trả cho đơn hàng #${order.id} thành công! Dữ liệu đã chuyển sang Module Đổi trả.`);
+    setReturnDialog(false);
+  };
+
   return (
-    <>
-      <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <BackButton />
@@ -302,57 +310,112 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
         </div>
       </div>
 
-      {/* Sticky Footer: Dual Placement Action Buttons */}
-      <div className="sticky bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-t p-4 flex justify-end gap-3 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
-        {order.status === 'PENDING' && (
-          <>
-            <Button variant="destructive" onClick={() => { setCancelReason(""); setCancelDialog(true); }}>
-              <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+      {/* Sticky Action Footer - Dual Placement Concept */}
+      <div className="sticky bottom-4 mx-auto w-full border bg-card p-4 rounded-xl shadow-lg flex flex-wrap items-center justify-between gap-4 z-50">
+        <div>
+          <span className="text-sm font-medium text-muted-foreground mr-2">Thao tác xử lý:</span>
+          <Badge variant="outline" className={cn(getStatusColor(order.status), "border-none shadow-sm")}>
+            {getStatusText(order.status)}
+          </Badge>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {order.status === 'PENDING' && (
+            <>
+              <Button 
+                variant="destructive" 
+                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
+                className="shadow-sm"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+              </Button>
+              <Button 
+                onClick={handleApprove} 
+                disabled={isOnlinePayment(order.payment)}
+                className="shadow-sm"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Duyệt đơn
+                {isOnlinePayment(order.payment) && <span className="ml-2 text-xs opacity-80">(Chờ Webhook)</span>}
+              </Button>
+            </>
+          )}
+
+          {order.status === 'PROCESSING' && (
+            <>
+              <Button 
+                variant="destructive" 
+                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
+                className="shadow-sm"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+              </Button>
+              <Button 
+                variant="secondary"
+                onClick={() => {
+                  toast.info(`Đang tạo phiếu in cho đơn hàng ${order.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+                className="shadow-sm text-blue-700 bg-blue-50 hover:bg-blue-100"
+              >
+                <Printer className="mr-2 h-4 w-4" /> In phiếu giao hàng
+              </Button>
+              <Button 
+                onClick={handleHandover}
+                className="shadow-sm"
+              >
+                <Truck className="mr-2 h-4 w-4" /> Bàn giao Shipper
+              </Button>
+            </>
+          )}
+
+          {order.status === 'SHIPPING' && (
+            <>
+              <Button 
+                variant="outline" 
+                className="text-amber-600 border-amber-200 hover:bg-amber-50 shadow-sm"
+                onClick={() => toast.error(`Đơn ${order.id} giao thất bại. Tiến hành hoàn kho!`)}
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
+              </Button>
+              <Button 
+                className="bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                onClick={() => toast.success(`Đã cập nhật trạng thái Hoàn Thành cho đơn ${order.id}`)}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Xác nhận Đã giao
+              </Button>
+            </>
+          )}
+
+          {order.status === 'COMPLETED' && (
+            <>
+              <Button 
+                variant="outline"
+                className="text-purple-600 border-purple-200 hover:bg-purple-50 shadow-sm"
+                onClick={() => setReturnDialog(true)}
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" /> Tạo Yêu cầu Đổi/Trả
+              </Button>
+              <Button 
+                variant="secondary"
+                onClick={() => {
+                  toast.info(`Đang tạo hóa đơn cho đơn hàng ${order.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+                className="shadow-sm text-blue-700 bg-blue-50 hover:bg-blue-100"
+              >
+                <Printer className="mr-2 h-4 w-4" /> In hóa đơn
+              </Button>
+            </>
+          )}
+
+          {order.status === 'CANCELLED' && !order.payment.includes('COD') && (
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 shadow-sm"
+              onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
+            >
+              <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền
             </Button>
-            <Button onClick={handleApprove} disabled={order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng'}>
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Duyệt đơn
-              {order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng' && <span className="ml-2 text-[10px] opacity-70">(Chờ Webhook)</span>}
-            </Button>
-          </>
-        )}
-        {order.status === 'PROCESSING' && (
-          <>
-            <Button variant="destructive" onClick={() => { setCancelReason(""); setCancelDialog(true); }}>
-              <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
-            </Button>
-            <Button variant="outline" className="text-blue-600 border-blue-200" onClick={() => { toast.info('Đang tạo phiếu in...'); setTimeout(() => window.print(), 500); }}>
-              <Printer className="mr-2 h-4 w-4" /> In phiếu giao hàng
-            </Button>
-            <Button onClick={handleHandover}>
-              <Truck className="mr-2 h-4 w-4" /> Bàn giao Shipper
-            </Button>
-          </>
-        )}
-        {order.status === 'SHIPPING' && (
-          <>
-            <Button variant="outline" className="text-amber-600 border-amber-200 hover:bg-amber-50" onClick={handleFail}>
-              <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
-            </Button>
-            <Button onClick={handleComplete} className="bg-emerald-600 hover:bg-emerald-700">
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Xác nhận Đã giao
-            </Button>
-          </>
-        )}
-        {order.status === 'COMPLETED' && (
-          <>
-            <Button variant="outline" className="text-purple-600 border-purple-200 hover:bg-purple-50" onClick={() => setReturnDialog(true)}>
-              <RefreshCcw className="mr-2 h-4 w-4" /> Tạo Yêu cầu Đổi/Trả
-            </Button>
-            <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => { toast.info('Đang tạo hóa đơn...'); setTimeout(() => window.print(), 500); }}>
-              <Printer className="mr-2 h-4 w-4" /> In hóa đơn
-            </Button>
-          </>
-        )}
-        {order.status === 'CANCELLED' && order.payment !== 'COD' && order.payment !== 'Thanh toán khi nhận hàng' && (
-          <Button onClick={handleRefund} className="bg-blue-600 hover:bg-blue-700">
-            <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền
-          </Button>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Dialogs */}
@@ -405,11 +468,14 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           <div className="py-4 flex flex-col gap-4">
             <div>
               <label className="text-sm font-medium">Chọn sản phẩm cần Đổi/Trả</label>
-              <div className="mt-2 flex flex-col gap-2 p-3 bg-muted/30 rounded-md border">
-                {order.items?.map(item => (
-                  <div key={item.id} className="flex items-center gap-2">
-                    <Checkbox id={`item-${item.id}`} />
-                    <label htmlFor={`item-${item.id}`} className="text-sm">{item.name} - {item.variantInfo}</label>
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-muted/30 rounded-md border max-h-50 overflow-y-auto">
+                {order.items?.map((item) => (
+                  <div key={item.id} className="flex items-start gap-3 p-2 bg-card rounded-md border">
+                    <Checkbox id={`ret-item-${item.id}`} className="mt-1" />
+                    <label htmlFor={`ret-item-${item.id}`} className="text-sm leading-tight cursor-pointer flex-1">
+                      <span className="font-medium block">{item.name}</span>
+                      <span className="text-muted-foreground text-xs mt-0.5">{item.variantInfo} (SL: {item.quantity})</span>
+                    </label>
                   </div>
                 ))}
               </div>
@@ -422,7 +488,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Số tiền hoàn lại (Dự kiến)</label>
-              <Input type="number" placeholder="250000" />
+              <Input type="number" placeholder={order.total.replace(/\D/g, '')} />
             </div>
           </div>
           <DialogFooter>
@@ -433,6 +499,6 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

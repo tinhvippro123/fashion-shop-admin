@@ -151,17 +151,9 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
               </>
             )}
             {viewStatus === 'PROCESSING' && selectedIds.length > 0 && (
-              <>
-                <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => {
-                  toast.info(`Đang tạo phiếu in cho ${selectedIds.length} đơn hàng...`);
-                  setTimeout(() => window.print(), 500);
-                }}>
-                  <Printer className="mr-2 h-4 w-4" /> In phiếu ({selectedIds.length})
-                </Button>
-                <Button onClick={() => handleHandover()}>
-                  <Truck className="mr-2 h-4 w-4" /> Giao Shipper ({selectedIds.length})
-                </Button>
-              </>
+              <Button onClick={() => handleHandover()}>
+                <Truck className="mr-2 h-4 w-4" /> Giao Shipper {selectedIds.length} đơn
+              </Button>
             )}
           </div>
         </div>
