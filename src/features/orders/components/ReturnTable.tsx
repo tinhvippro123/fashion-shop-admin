@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -23,6 +25,7 @@ import { toast } from "sonner";
 import { cn } from "@/shared/utils/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 // Define the exact statuses based on the documentation
 export type ReturnStatus = 'PENDING' | 'RETURNING' | 'COMPLETED' | 'REJECTED';
@@ -68,7 +71,12 @@ const mockReturnRequests = [
 ];
 
 export function ReturnTable() {
-  const [viewStatus, setViewStatus] = useState<ViewStatus>('ALL');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  
+  const currentTab = (searchParams.get("tab") as ViewStatus) || "ALL";
+
   const [returns, setReturns] = useState(mockReturnRequests);
   const [rejectDialog, setRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -78,7 +86,13 @@ export function ReturnTable() {
   const [fraudReason, setFraudReason] = useState("");
   const [fraudId, setFraudId] = useState<string | null>(null);
 
-  const filteredReturns = viewStatus === 'ALL' ? returns : returns.filter(r => r.status === viewStatus);
+  const filteredReturns = currentTab === 'ALL' ? returns : returns.filter(r => r.status === currentTab);
+
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", value);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const getStatusColor = (status: ReturnStatus) => {
     switch (status) {
@@ -154,7 +168,7 @@ export function ReturnTable() {
           <p className="text-muted-foreground hidden sm:block">Quản lý vòng đời yêu cầu đổi trả và hoàn tiền của khách hàng.</p>
         </div>
       </div>
-      <Tabs value={viewStatus} onValueChange={(v) => setViewStatus(v as ViewStatus)} className="w-full">
+      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="ALL">Tất cả ({returns.length})</TabsTrigger>
           <TabsTrigger value="PENDING">Chờ duyệt ({returns.filter(r => r.status === 'PENDING').length})</TabsTrigger>
@@ -163,7 +177,7 @@ export function ReturnTable() {
           <TabsTrigger value="REJECTED">Đã từ chối ({returns.filter(r => r.status === 'REJECTED').length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value={viewStatus} className="m-0">
+        <TabsContent value={currentTab} className="m-0">
           <div className="rounded-md border bg-card overflow-hidden">
             <div className="flex flex-col sm:flex-row gap-4 p-4 border-b sm:items-center">
               <div className="relative flex-1 max-w-sm">
