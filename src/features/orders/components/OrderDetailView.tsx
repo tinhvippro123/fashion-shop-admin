@@ -371,7 +371,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
                 <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
               </Button>
               <Button 
-                className="bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                className="bg-emerald-600! hover:bg-emerald-700! text-white shadow-sm"
                 onClick={() => toast.success(`Đã cập nhật trạng thái Hoàn Thành cho đơn ${order.id}`)}
               >
                 <CheckCircle className="mr-2 h-4 w-4" /> Xác nhận Đã giao
@@ -403,7 +403,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
 
           {order.status === 'CANCELLED' && !order.payment.includes('COD') && (
             <Button 
-              className="bg-blue-600 hover:bg-blue-700 shadow-sm"
+              className="bg-blue-600! hover:bg-blue-700! text-white shadow-sm"
               onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
             >
               <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền

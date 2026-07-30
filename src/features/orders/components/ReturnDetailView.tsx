@@ -298,7 +298,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
               </Button>
               <Button 
                 onClick={handleApprove} 
-                className="bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                className="bg-emerald-600! hover:bg-emerald-700! text-white shadow-sm"
               >
                 <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
               </Button>
@@ -309,7 +309,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
             <>
               <Button 
                 onClick={handleReceive}
-                className="bg-blue-600 hover:bg-blue-700 shadow-sm"
+                className="bg-blue-600! hover:bg-blue-700! text-white shadow-sm"
               >
                 <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
               </Button>
