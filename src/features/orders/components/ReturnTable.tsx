@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/shared/utils/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 // Define the exact statuses based on the documentation
@@ -69,6 +70,9 @@ const mockReturnRequests = [
 export function ReturnTable() {
   const [viewStatus, setViewStatus] = useState<ViewStatus>('ALL');
   const [returns, setReturns] = useState(mockReturnRequests);
+  const [rejectDialog, setRejectDialog] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectId, setRejectId] = useState<string | null>(null);
 
   const filteredReturns = viewStatus === 'ALL' ? returns : returns.filter(r => r.status === viewStatus);
 
@@ -102,9 +106,22 @@ export function ReturnTable() {
     setReturns(returns.map(r => r.id === id ? { ...r, status: 'COMPLETED' } : r));
   };
 
-  const handleReject = (id: string) => {
-    toast.error(`Đã từ chối yêu cầu ${id}.`);
-    setReturns(returns.map(r => r.id === id ? { ...r, status: 'REJECTED' } : r));
+  const handleReject = () => {
+    if (!rejectReason.trim()) {
+      toast.error("Vui lòng nhập lý do từ chối!");
+      return;
+    }
+    toast.error(`Đã từ chối yêu cầu ${rejectId}. Lý do: ${rejectReason}`);
+    setReturns(returns.map(r => r.id === rejectId ? { ...r, status: 'REJECTED' } : r));
+    setRejectDialog(false);
+    setRejectReason("");
+    setRejectId(null);
+  };
+
+  const openRejectDialog = (id: string) => {
+    setRejectId(id);
+    setRejectReason("");
+    setRejectDialog(true);
   };
 
   return (
@@ -200,7 +217,7 @@ export function ReturnTable() {
                               <DropdownMenuItem className="text-emerald-600 cursor-pointer flex items-center" onClick={() => handleApprove(req.id)}>
                                 <CheckCircle className="h-4 w-4 mr-2" /> Đồng ý hoàn trả
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive cursor-pointer flex items-center" onClick={() => handleReject(req.id)}>
+                              <DropdownMenuItem className="text-destructive cursor-pointer flex items-center" onClick={() => openRejectDialog(req.id)}>
                                 <XCircle className="h-4 w-4 mr-2" /> Từ chối
                               </DropdownMenuItem>
                             </>
@@ -226,6 +243,44 @@ export function ReturnTable() {
       </div>
     </TabsContent>
   </Tabs>
+
+  <Dialog open={rejectDialog} onOpenChange={setRejectDialog}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Từ chối Yêu cầu {rejectId}</DialogTitle>
+        <DialogDescription>Hành động này không thể hoàn tác. Khách hàng sẽ nhìn thấy lý do này.</DialogDescription>
+      </DialogHeader>
+      <div className="py-4 flex flex-col gap-3">
+        <label className="text-sm font-medium">Nhập lý do từ chối *</label>
+        <div className="flex flex-wrap gap-2 mb-2">
+          <Badge 
+            variant={rejectReason === "Quá thời hạn đổi trả 7 ngày" ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => setRejectReason("Quá thời hạn đổi trả 7 ngày")}
+          >Quá thời hạn 7 ngày</Badge>
+          <Badge 
+            variant={rejectReason === "Sản phẩm đã bị giặt máy/sử dụng" ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => setRejectReason("Sản phẩm đã bị giặt máy/sử dụng")}
+          >Đã qua sử dụng</Badge>
+          <Badge 
+            variant={rejectReason === "Không phát hiện lỗi như báo cáo" ? "default" : "destructive"}
+            className="cursor-pointer"
+            onClick={() => setRejectReason("Không phát hiện lỗi như báo cáo")}
+          >Không phát hiện lỗi</Badge>
+        </div>
+        <Input 
+          placeholder="Hoặc nhập lý do khác chi tiết hơn..." 
+          value={rejectReason} 
+          onChange={(e) => setRejectReason(e.target.value)} 
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={() => setRejectDialog(false)}>Hủy</Button>
+        <Button variant="destructive" onClick={handleReject}>Xác nhận từ chối</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </div>
   );
 }
