@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/shared/utils/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 // Define the exact statuses based on the documentation
 export type ReturnStatus = 'PENDING' | 'RETURNING' | 'COMPLETED' | 'REJECTED';
@@ -114,27 +115,27 @@ export function ReturnTable() {
           <p className="text-muted-foreground hidden sm:block">Quản lý vòng đời yêu cầu đổi trả và hoàn tiền của khách hàng.</p>
         </div>
       </div>
-      
-      <div className="rounded-md border bg-card overflow-hidden">
-        <div className="flex flex-col sm:flex-row gap-4 p-4 border-b sm:items-center">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Tìm kiếm mã yêu cầu, mã đơn..."
-              className="pl-8"
-            />
-          </div>
-          <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-            <div className="flex items-center gap-4 text-sm overflow-x-auto pb-1 sm:pb-0">
-              <span onClick={() => setViewStatus('ALL')} className={cn("font-medium cursor-pointer shrink-0 transition-colors", viewStatus === 'ALL' ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>Tất cả</span>
-              <span onClick={() => setViewStatus('PENDING')} className={cn("font-medium cursor-pointer shrink-0 transition-colors", viewStatus === 'PENDING' ? "text-amber-600" : "text-muted-foreground hover:text-foreground")}>🟡 Chờ duyệt</span>
-              <span onClick={() => setViewStatus('RETURNING')} className={cn("font-medium cursor-pointer shrink-0 transition-colors", viewStatus === 'RETURNING' ? "text-blue-600" : "text-muted-foreground hover:text-foreground")}>🚚 Hoàn về kho</span>
-              <span onClick={() => setViewStatus('COMPLETED')} className={cn("font-medium cursor-pointer shrink-0 transition-colors", viewStatus === 'COMPLETED' ? "text-emerald-600" : "text-muted-foreground hover:text-foreground")}>🟢 Đã hoàn tiền</span>
-              <span onClick={() => setViewStatus('REJECTED')} className={cn("font-medium cursor-pointer shrink-0 transition-colors", viewStatus === 'REJECTED' ? "text-red-600" : "text-muted-foreground hover:text-foreground")}>🔴 Đã từ chối</span>
+      <Tabs value={viewStatus} onValueChange={(v) => setViewStatus(v as ViewStatus)} className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="ALL">Tất cả ({returns.length})</TabsTrigger>
+          <TabsTrigger value="PENDING">Chờ duyệt ({returns.filter(r => r.status === 'PENDING').length})</TabsTrigger>
+          <TabsTrigger value="RETURNING">Hoàn về kho ({returns.filter(r => r.status === 'RETURNING').length})</TabsTrigger>
+          <TabsTrigger value="COMPLETED">Đã hoàn tiền ({returns.filter(r => r.status === 'COMPLETED').length})</TabsTrigger>
+          <TabsTrigger value="REJECTED">Đã từ chối ({returns.filter(r => r.status === 'REJECTED').length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={viewStatus} className="m-0">
+          <div className="rounded-md border bg-card overflow-hidden">
+            <div className="flex flex-col sm:flex-row gap-4 p-4 border-b sm:items-center">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Tìm kiếm mã yêu cầu, mã đơn..."
+                  className="pl-8"
+                />
+              </div>
             </div>
-          </div>
-        </div>
 
         {/* Desktop View: Table */}
         <div className="hidden md:block">
@@ -223,6 +224,8 @@ export function ReturnTable() {
           </Table>
         </div>
       </div>
-    </div>
+    </TabsContent>
+  </Tabs>
+</div>
   );
 }
