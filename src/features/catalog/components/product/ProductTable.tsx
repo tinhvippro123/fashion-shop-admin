@@ -243,6 +243,10 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                           <span>{product.stock}</span>
                           <AlertTriangle className="h-4 w-4" />
                         </div>
+                      ) : product.stock === 0 ? (
+                        <div className="flex items-center gap-1.5 text-red-500 font-bold" title="Hết hàng">
+                          <span>0</span>
+                        </div>
                       ) : (
                         product.stock
                       )}
@@ -305,6 +309,11 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                   {product.stock > 0 && product.stock < 5 && (
                     <div className="flex items-center gap-1 text-orange-500 text-xs font-medium mb-1">
                       <AlertTriangle className="h-3 w-3" /> Sắp hết hàng ({product.stock})
+                    </div>
+                  )}
+                  {product.stock === 0 && (
+                    <div className="flex items-center gap-1 text-red-500 text-xs font-bold mb-1">
+                      <AlertTriangle className="h-3 w-3" /> Hết hàng (0)
                     </div>
                   )}
                   {product.rating && product.sold && (
