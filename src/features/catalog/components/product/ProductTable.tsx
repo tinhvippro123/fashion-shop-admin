@@ -134,8 +134,8 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
 
   const renderActions = (product: Product) => (
     <>
-      <DropdownMenuItem asChild>
-        <Link href={`/products/${product.id}/edit`} className="w-full cursor-pointer">Chỉnh sửa</Link>
+      <DropdownMenuItem>
+        <Link href={`/products/${product.id}/edit`} className="w-full h-full cursor-pointer">Chỉnh sửa</Link>
       </DropdownMenuItem>
       
       {product.isActive ? (
