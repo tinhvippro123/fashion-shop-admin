@@ -35,16 +35,16 @@ export default function ProductsPage() {
         <div className="flex items-center justify-between mb-4">
           <TabsList className="bg-muted/50 border">
             <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              📦 Tất cả ({allProducts.length})
+              Tất cả ({allProducts.length})
             </TabsTrigger>
             <TabsTrigger value="active" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-emerald-700">
-              🟢 Đang bán ({activeProducts.length})
+              Đang bán ({activeProducts.length})
             </TabsTrigger>
             <TabsTrigger value="out_of_stock" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-amber-700">
-              🟡 Hết hàng ({outOfStockProducts.length})
+              Hết hàng ({outOfStockProducts.length})
             </TabsTrigger>
             <TabsTrigger value="hidden" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-muted-foreground">
-              🔴 Đã ẩn ({hiddenProducts.length})
+              Đã ẩn ({hiddenProducts.length})
             </TabsTrigger>
           </TabsList>
         </div>
