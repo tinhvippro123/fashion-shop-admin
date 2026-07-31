@@ -4,12 +4,10 @@ export interface Product {
   category: string;
   price: string;
   stock: number;
-  status: string;
-  statusColor: string;
+  isActive: boolean;
   sold?: number;
   rating?: number;
   reviewCount?: number;
-  deletedAt?: string | null;
 }
 
 export interface IOptionSuggestions {

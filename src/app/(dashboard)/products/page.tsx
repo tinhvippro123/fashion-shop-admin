@@ -8,10 +8,13 @@ import { ProductTable, useProducts } from "@/features/catalog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function ProductsPage() {
-  const { products, isLoading } = useProducts();
+  const { products, isLoading, setProducts } = useProducts();
   
-  const activeProducts = products.filter(p => !p.deletedAt);
-  const deletedProducts = products.filter(p => p.deletedAt);
+  // Status Filters
+  const allProducts = products;
+  const activeProducts = products.filter(p => p.isActive && p.stock > 0);
+  const outOfStockProducts = products.filter(p => p.isActive && p.stock === 0);
+  const hiddenProducts = products.filter(p => !p.isActive);
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -28,20 +31,38 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      <Tabs defaultValue="active" className="w-full">
+      <Tabs defaultValue="all" className="w-full">
         <div className="flex items-center justify-between mb-4">
-          <TabsList>
-            <TabsTrigger value="active">Đang hoạt động ({activeProducts.length})</TabsTrigger>
-            <TabsTrigger value="trash">Thùng rác ({deletedProducts.length})</TabsTrigger>
+          <TabsList className="bg-muted/50 border">
+            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              📦 Tất cả ({allProducts.length})
+            </TabsTrigger>
+            <TabsTrigger value="active" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-emerald-700">
+              🟢 Đang bán ({activeProducts.length})
+            </TabsTrigger>
+            <TabsTrigger value="out_of_stock" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-amber-700">
+              🟡 Hết hàng ({outOfStockProducts.length})
+            </TabsTrigger>
+            <TabsTrigger value="hidden" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-muted-foreground">
+              🔴 Đã ẩn ({hiddenProducts.length})
+            </TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="active" className="mt-0">
-          <ProductTable products={activeProducts} isLoading={isLoading} />
+        <TabsContent value="all" className="mt-0">
+          <ProductTable products={allProducts} setProducts={setProducts} isLoading={isLoading} />
         </TabsContent>
 
-        <TabsContent value="trash" className="mt-0">
-          <ProductTable products={deletedProducts} isLoading={isLoading} isTrashView={true} />
+        <TabsContent value="active" className="mt-0">
+          <ProductTable products={activeProducts} setProducts={setProducts} isLoading={isLoading} />
+        </TabsContent>
+        
+        <TabsContent value="out_of_stock" className="mt-0">
+          <ProductTable products={outOfStockProducts} setProducts={setProducts} isLoading={isLoading} />
+        </TabsContent>
+
+        <TabsContent value="hidden" className="mt-0">
+          <ProductTable products={hiddenProducts} setProducts={setProducts} isLoading={isLoading} />
         </TabsContent>
       </Tabs>
     </div>
