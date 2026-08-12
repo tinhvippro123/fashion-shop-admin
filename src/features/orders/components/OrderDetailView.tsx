@@ -95,6 +95,109 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </p>
           </div>
         </div>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {order.status === 'PENDING' && (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
+                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+              </Button>
+              <Button 
+                variant="default"
+                onClick={handleApprove} 
+                disabled={isOnlinePayment(order.payment)}
+                className="shadow-sm"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Duyệt đơn
+                {isOnlinePayment(order.payment) && <span className="ml-2 text-xs opacity-80">(Chờ Webhook)</span>}
+              </Button>
+            </>
+          )}
+
+          {order.status === 'PROCESSING' && (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
+                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  toast.info(`Đang tạo phiếu in cho đơn hàng ${order.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+                className="shadow-sm"
+              >
+                <Printer className="mr-2 h-4 w-4" /> In phiếu giao hàng
+              </Button>
+              <Button 
+                variant="default"
+                onClick={handleHandover}
+                className="shadow-sm"
+              >
+                <Truck className="mr-2 h-4 w-4" /> Bàn giao Shipper
+              </Button>
+            </>
+          )}
+
+          {order.status === 'SHIPPING' && (
+            <>
+              <Button 
+                variant="outline" 
+                className="shadow-sm"
+                onClick={() => toast.error(`Đơn ${order.id} giao thất bại. Tiến hành hoàn kho!`)}
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
+              </Button>
+              <Button 
+                variant="default"
+                className="shadow-sm"
+                onClick={() => toast.success(`Đã cập nhật trạng thái Hoàn Thành cho đơn ${order.id}`)}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Xác nhận Đã giao
+              </Button>
+            </>
+          )}
+
+          {order.status === 'COMPLETED' && (
+            <>
+              <Button 
+                variant="outline"
+                className="shadow-sm"
+                onClick={() => setReturnDialog(true)}
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" /> Tạo Yêu cầu Đổi/Trả
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  toast.info(`Đang tạo hóa đơn cho đơn hàng ${order.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+                className="shadow-sm"
+              >
+                <Printer className="mr-2 h-4 w-4" /> In hóa đơn
+              </Button>
+            </>
+          )}
+
+          {order.status === 'CANCELLED' && !order.payment.includes('COD') && (
+            <Button 
+              variant="default"
+              className="shadow-sm"
+              onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
+            >
+              <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền
+            </Button>
+          )}
+        </div>
       </div>
 
       {order.status === 'CANCELLED' && (
@@ -301,114 +404,6 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Sticky Action Footer - Dual Placement Concept */}
-      <div className="sticky bottom-4 mx-auto w-full border bg-card p-4 rounded-xl shadow-lg flex flex-wrap items-center justify-between gap-4 z-50">
-        <div>
-          <span className="text-sm font-medium text-muted-foreground mr-2">Thao tác xử lý:</span>
-          <Badge variant="outline" className={cn(getStatusColor(order.status), "border-none shadow-sm")}>
-            {getStatusText(order.status)}
-          </Badge>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {order.status === 'PENDING' && (
-            <>
-              <Button 
-                variant="destructive" 
-                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
-                className="shadow-sm"
-              >
-                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
-              </Button>
-              <Button 
-                onClick={handleApprove} 
-                disabled={isOnlinePayment(order.payment)}
-                className="shadow-sm"
-              >
-                <CheckCircle className="mr-2 h-4 w-4" /> Duyệt đơn
-                {isOnlinePayment(order.payment) && <span className="ml-2 text-xs opacity-80">(Chờ Webhook)</span>}
-              </Button>
-            </>
-          )}
-
-          {order.status === 'PROCESSING' && (
-            <>
-              <Button 
-                variant="destructive" 
-                onClick={() => { setCancelReason(""); setCancelDialog(true); }}
-                className="shadow-sm"
-              >
-                <XCircle className="mr-2 h-4 w-4" /> Hủy đơn
-              </Button>
-              <Button 
-                variant="secondary"
-                onClick={() => {
-                  toast.info(`Đang tạo phiếu in cho đơn hàng ${order.id}...`);
-                  setTimeout(() => window.print(), 500);
-                }}
-                className="shadow-sm text-blue-700 bg-blue-50 hover:bg-blue-100"
-              >
-                <Printer className="mr-2 h-4 w-4" /> In phiếu giao hàng
-              </Button>
-              <Button 
-                onClick={handleHandover}
-                className="shadow-sm"
-              >
-                <Truck className="mr-2 h-4 w-4" /> Bàn giao Shipper
-              </Button>
-            </>
-          )}
-
-          {order.status === 'SHIPPING' && (
-            <>
-              <Button 
-                variant="outline" 
-                className="text-amber-600 border-amber-200 hover:bg-amber-50 shadow-sm"
-                onClick={() => toast.error(`Đơn ${order.id} giao thất bại. Tiến hành hoàn kho!`)}
-              >
-                <AlertTriangle className="mr-2 h-4 w-4" /> Giao thất bại
-              </Button>
-              <Button 
-                className="bg-emerald-600! hover:bg-emerald-700! text-white shadow-sm"
-                onClick={() => toast.success(`Đã cập nhật trạng thái Hoàn Thành cho đơn ${order.id}`)}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" /> Xác nhận Đã giao
-              </Button>
-            </>
-          )}
-
-          {order.status === 'COMPLETED' && (
-            <>
-              <Button 
-                variant="outline"
-                className="text-purple-600 border-purple-200 hover:bg-purple-50 shadow-sm"
-                onClick={() => setReturnDialog(true)}
-              >
-                <RefreshCcw className="mr-2 h-4 w-4" /> Tạo Yêu cầu Đổi/Trả
-              </Button>
-              <Button 
-                variant="secondary"
-                onClick={() => {
-                  toast.info(`Đang tạo hóa đơn cho đơn hàng ${order.id}...`);
-                  setTimeout(() => window.print(), 500);
-                }}
-                className="shadow-sm text-blue-700 bg-blue-50 hover:bg-blue-100"
-              >
-                <Printer className="mr-2 h-4 w-4" /> In hóa đơn
-              </Button>
-            </>
-          )}
-
-          {order.status === 'CANCELLED' && !order.payment.includes('COD') && (
-            <Button 
-              className="bg-blue-600! hover:bg-blue-700! text-white shadow-sm"
-              onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
-            >
-              <Banknote className="mr-2 h-4 w-4" /> Xác nhận Hoàn tiền
-            </Button>
-          )}
         </div>
       </div>
 

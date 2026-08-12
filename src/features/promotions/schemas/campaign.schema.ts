@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const CampaignSchema = z.object({
   name: z.string().min(1, "Tên chương trình không được để trống").max(150),
-  code: z.string().min(3, "Mã Voucher phải có ít nhất 3 ký tự").max(50).regex(/^[A-Z0-9_]+$/, "Mã Voucher chỉ chứa chữ in hoa, số và dấu gạch dưới"),
+  code: z.string().min(3, "Mã khuyến mãi phải có ít nhất 3 ký tự").max(50).regex(/^[A-Z0-9_]+$/, "Mã khuyến mãi chỉ chứa chữ in hoa, số và dấu gạch dưới"),
   scope: z.enum(["PLATFORM", "SHOP", "FREESHIP"]),
   rewardType: z.enum(["DISCOUNT_MONEY", "FREE_SHIPPING", "FREE_GIFT"]),
   discountType: z.enum(["FIXED_AMOUNT", "PERCENTAGE"]),

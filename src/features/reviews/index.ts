@@ -1,11 +1,3 @@
-// Components
-export * from "./components/ReviewTable";
-
-// Hooks
+export * from "./types/review.types";
 export * from "./hooks/useReviews";
-
-// Types
-export * from "./types/review.admin";
-
-// Services
-export * from "./services/review.service";
+export * from "./components/review/ReviewTable";

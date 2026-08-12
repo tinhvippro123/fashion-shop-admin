@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, PackagePlus, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, PackagePlus, AlertTriangle, Megaphone } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,10 +125,40 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
     setSelectedIds([]);
   };
 
+  const handleBulkActivate = () => {
+    if (!confirm(`Bạn có chắc chắn muốn mở bán lại ${selectedIds.length} sản phẩm đã chọn?`)) return;
+    
+    let hasOutOfStock = false;
+    
+    setProducts(prev => prev.map(p => {
+      if (selectedIds.includes(p.id)) {
+        if (p.stock === 0) hasOutOfStock = true;
+        return { ...p, isActive: true };
+      }
+      return p;
+    }));
+    
+    if (hasOutOfStock) {
+      toast.warning(`Đã mở bán ${selectedIds.length} sản phẩm. Một số sản phẩm đang hết hàng, vui lòng kiểm tra lại!`, {
+        duration: 5000,
+      });
+    } else {
+      toast.success(`Đã mở bán ${selectedIds.length} sản phẩm thành công!`);
+    }
+    setSelectedIds([]);
+  };
+
   const handleToggleActive = (product: Product) => {
-    const action = product.isActive ? "Ẩn" : "Hiện";
-    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, isActive: !p.isActive } : p));
-    toast.success(`Đã ${action.toLowerCase()} sản phẩm "${product.name}"!`);
+    const isActivating = !product.isActive;
+    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, isActive: isActivating } : p));
+    
+    if (isActivating && product.stock === 0) {
+      toast.warning(`Sản phẩm "${product.name}" đã được mở bán lại nhưng đang hết hàng. Vui lòng nhập thêm kho!`, {
+        duration: 5000,
+      });
+    } else {
+      toast.success(`Đã ${isActivating ? "mở bán lại" : "ẩn"} sản phẩm "${product.name}"!`);
+    }
   };
 
   const handleRestock = (product: Product) => {
@@ -168,6 +198,10 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
       </DropdownMenuItem>
     </>
   );
+
+  const selectedProducts = products.filter(p => selectedIds.includes(p.id));
+  const hasActive = selectedProducts.some(p => p.isActive);
+  const hasInactive = selectedProducts.some(p => !p.isActive);
 
   return (
     <>
@@ -356,9 +390,16 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
             </span>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-muted-foreground hover:text-foreground hover:bg-background/10">
-                <EyeOff className="h-4 w-4 mr-2" /> Ẩn hàng loạt
-              </Button>
+              {hasInactive && (
+                <Button variant="ghost" size="sm" onClick={handleBulkActivate} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                  <Megaphone className="h-4 w-4 mr-2" /> Mở bán hàng loạt
+                </Button>
+              )}
+              {hasActive && (
+                <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-muted-foreground hover:text-foreground hover:bg-background/10">
+                  <EyeOff className="h-4 w-4 mr-2" /> Ẩn hàng loạt
+                </Button>
+              )}
               <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
                 <Trash2 className="h-4 w-4 mr-2" /> Xóa
               </Button>

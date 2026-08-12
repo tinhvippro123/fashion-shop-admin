@@ -34,7 +34,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TCampaignPayload>({
-    resolver: zodResolver(CampaignSchema),
+    resolver: zodResolver(CampaignSchema) as any,
     defaultValues: initialData || {
       name: "",
       code: "",
@@ -62,7 +62,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
         if (mode === "create") {
           const res = await createCampaignAction(payload);
           if (res.success) {
-            toast.success(status === "active" ? "Đã lưu và kích hoạt Voucher!" : "Đã lưu nháp Voucher!");
+            toast.success(status === "active" ? "Đã lưu và kích hoạt Khuyến mãi!" : "Đã lưu nháp Khuyến mãi!");
           } else {
             toast.error(res.error as string);
             if (res.details) {
@@ -74,7 +74,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
         } else {
           const res = await updateCampaignAction(initialData?.id || 1, payload);
           if (res.success) {
-            toast.success(status === "active" ? "Đã cập nhật Voucher!" : "Đã cập nhật bản nháp!");
+            toast.success(status === "active" ? "Đã cập nhật Khuyến mãi!" : "Đã cập nhật bản nháp!");
           } else {
             toast.error(res.error as string);
             if (res.details) {
@@ -102,7 +102,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Tạo Mã Giảm Giá (Voucher)</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+              {mode === "create" ? "Tạo Chương Trình Khuyến Mãi" : "Cập Nhật Khuyến Mãi"}
+            </h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
             <Link href="/promotions" className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none hidden sm:flex")}>
@@ -116,7 +118,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
               className="flex-1 sm:flex-none gap-2"
               disabled={isPending}
             >
-              <Save className="h-4 w-4" /> Lưu & Kích hoạt
+              <Save className="h-4 w-4" /> {mode === "create" ? "Lưu & Kích hoạt" : "Lưu Thay Đổi"}
             </Button>
           </div>
         </div>
@@ -127,7 +129,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             <Card>
               <CardHeader>
                 <CardTitle>Thông tin cơ bản</CardTitle>
-                <CardDescription>Thiết lập tên và mã Voucher hiển thị cho khách hàng</CardDescription>
+                <CardDescription>Thiết lập tên và mã khuyến mãi hiển thị cho khách hàng</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6">
                 <FormField
@@ -150,9 +152,9 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                   name="code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mã Voucher (Code) <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>Mã Khuyến Mãi (Code) <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: SUMMER2026" className="uppercase font-mono" {...field} onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                        <Input placeholder="VD: SUMMER2026" className="uppercase" {...field} />
                       </FormControl>
                       <FormDescription>Khách hàng sẽ nhập mã này lúc thanh toán.</FormDescription>
                       <FormMessage />
@@ -167,7 +169,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Phạm vi áp dụng</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Chọn phạm vi" />
@@ -189,7 +191,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Loại thưởng</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Chọn loại thưởng" />
@@ -223,7 +225,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Loại giảm giá</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Chọn loại" />

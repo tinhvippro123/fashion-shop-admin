@@ -143,9 +143,65 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
             </p>
           </div>
         </div>
-        <Link href={`/orders/${returnReq.orderId}`}>
-          <Button variant="outline">Xem Đơn Hàng Gốc</Button>
-        </Link>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {currentStatus === 'PENDING' && (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => { setRejectReason(""); setRejectDialog(true); }}
+                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Từ chối
+              </Button>
+              <Button 
+                variant="default"
+                onClick={handleApprove} 
+                className="shadow-sm"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
+              </Button>
+            </>
+          )}
+
+          {currentStatus === 'RETURNING' && (
+            <>
+              <Button 
+                variant="outline"
+                onClick={() => { setFraudReason(""); setFraudDialog(true); }}
+                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" /> Báo cáo gian lận
+              </Button>
+              <Button 
+                variant="default"
+                onClick={handleReceive}
+                className="shadow-sm"
+              >
+                <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
+              </Button>
+            </>
+          )}
+
+          {currentStatus === 'COMPLETED' && (
+            <>
+              <Button 
+                variant="outline"
+                className="shadow-sm"
+                onClick={() => {
+                  toast.info(`Đang in biên lai hoàn tiền cho ${returnReq.id}...`);
+                  setTimeout(() => window.print(), 500);
+                }}
+              >
+                <Printer className="mr-2 h-4 w-4" /> In biên lai
+              </Button>
+            </>
+          )}
+
+          <Link href={`/orders/${returnReq.orderId}`}>
+            <Button variant="outline" className="shadow-sm">Xem Đơn Hàng Gốc</Button>
+          </Link>
+        </div>
       </div>
 
       {currentStatus === 'REJECTED' && (
@@ -297,85 +353,6 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Sticky Action Footer - Dual Placement Concept */}
-      <div className="sticky bottom-4 mx-auto w-full border bg-card p-4 rounded-xl shadow-lg flex flex-wrap items-center justify-between gap-4 z-50">
-        <div>
-          <span className="text-sm font-medium text-muted-foreground mr-2">Thao tác xử lý:</span>
-          <Badge variant="outline" className={cn(getStatusColor(currentStatus), "border-none shadow-sm")}>
-            {getStatusText(currentStatus)}
-          </Badge>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {currentStatus === 'PENDING' && (
-            <>
-              <Button 
-                variant="destructive" 
-                onClick={() => { setRejectReason(""); setRejectDialog(true); }}
-                className="shadow-sm"
-              >
-                <XCircle className="mr-2 h-4 w-4" /> Từ chối
-              </Button>
-              <Button 
-                onClick={handleApprove} 
-                className="bg-emerald-600! hover:bg-emerald-700! text-white shadow-sm"
-              >
-                <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
-              </Button>
-            </>
-          )}
-
-          {currentStatus === 'RETURNING' && (
-            <>
-              <Button 
-                variant="outline"
-                onClick={() => { setFraudReason(""); setFraudDialog(true); }}
-                className="text-amber-600 border-amber-200 hover:bg-amber-50 shadow-sm"
-              >
-                <AlertTriangle className="mr-2 h-4 w-4" /> Báo cáo gian lận
-              </Button>
-              <Button 
-                onClick={handleReceive}
-                className="bg-blue-600! hover:bg-blue-700! text-white shadow-sm"
-              >
-                <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
-              </Button>
-            </>
-          )}
-
-          {currentStatus === 'COMPLETED' && (
-            <>
-              <div className="text-sm text-muted-foreground italic flex items-center mr-auto">
-                <CheckCircle className="h-4 w-4 mr-2 text-emerald-500" /> Dữ liệu đã đóng băng vĩnh viễn
-              </div>
-              <Button 
-                variant="outline"
-                className="text-emerald-600 border-emerald-200 hover:bg-emerald-50 shadow-sm"
-                onClick={() => {
-                  toast.info(`Đang in biên lai hoàn tiền cho ${returnReq.id}...`);
-                  setTimeout(() => window.print(), 500);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" /> In biên lai hoàn tiền
-              </Button>
-              <Button variant="outline" onClick={() => router.back()}>
-                ✖️ Đóng
-              </Button>
-            </>
-          )}
-
-          {currentStatus === 'REJECTED' && (
-            <>
-              <div className="text-sm text-muted-foreground italic flex items-center mr-auto">
-                <XCircle className="h-4 w-4 mr-2 text-red-500" /> Dữ liệu đã đóng băng vĩnh viễn
-              </div>
-              <Button variant="outline" onClick={() => router.back()}>
-                ✖️ Đóng
-              </Button>
-            </>
-          )}
         </div>
       </div>
 

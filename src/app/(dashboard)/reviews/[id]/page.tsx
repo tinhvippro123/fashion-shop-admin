@@ -1,30 +1,15 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { BackButton } from "@/shared/ui/back-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Button } from "@/shared/ui/button";
-import { 
-  Paperclip, 
-  Send, 
-  Lock,
-  Star,
-  CheckCircle2,
-  XCircle,
-  Eye,
-  EyeOff
-} from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/shared/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Eye, EyeOff, Send, Star, CheckCircle2, Trash2 } from "lucide-react";
+import { BackButton } from "@/shared/ui/back-button";
 import { RichTextEditor } from "@/shared/ui/rich-text-editor";
 import { toast } from "sonner";
 
@@ -70,6 +55,20 @@ export default function ReviewDetailPage() {
               </SelectItem>
             </SelectContent>
           </Select>
+          
+          <Button 
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+            onClick={() => {
+              if (confirm("Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá này? Hành động này không thể hoàn tác.")) {
+                toast.success("Đã xóa đánh giá thành công!");
+                // router.push("/reviews");
+              }
+            }}
+          >
+            <Trash2 className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Xóa đánh giá</span>
+          </Button>
         </div>
       </div>
 
@@ -119,30 +118,22 @@ export default function ReviewDetailPage() {
           </Card>
 
           {/* Reply Box */}
-          <Card>
-            <CardHeader className="py-3 bg-muted/30 rounded-t-xl">
-              <div className="flex gap-2">
-                <button 
-                  className={`text-sm font-medium px-4 py-1.5 rounded-md transition-colors bg-card shadow-sm border text-foreground`}
-                >
-                  Phản hồi công khai
-                </button>
-              </div>
+          <Card className="shadow-sm border">
+            <CardHeader className="py-4 border-b bg-muted/10">
+              <CardTitle className="text-base font-bold">Phản hồi công khai</CardTitle>
             </CardHeader>
-            <CardContent className={`p-0 flex flex-col`}>
-              <div className="[&_.ql-container]:border-x-0 [&_.ql-container]:border-b-0 [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-toolbar]:border-b">
-                <RichTextEditor 
-                  value={reply}
-                  onChange={setReply}
-                  placeholder="Nhập nội dung phản hồi của shop (sẽ hiển thị công khai trên website)..."
-                  editorClassName="min-h-[150px]"
-                />
-              </div>
-              <div className="flex items-center justify-between p-4 border-t bg-muted/30 rounded-b-xl">
-                <div className="flex gap-2">
+            <CardContent className="p-6 flex flex-col gap-4">
+              <RichTextEditor 
+                value={reply}
+                onChange={setReply}
+                placeholder="Nhập nội dung phản hồi của shop (sẽ hiển thị công khai trên website)..."
+                editorClassName="min-h-[150px]"
+              />
+              <div className="flex items-center justify-between pt-2">
+                <div className="text-sm text-muted-foreground">
+                  Khách hàng sẽ nhận được thông báo.
                 </div>
                 <Button 
-                  className=""
                   onClick={() => {
                     if (!reply.trim()) {
                       toast.error("Vui lòng nhập nội dung phản hồi");
@@ -151,6 +142,7 @@ export default function ReviewDetailPage() {
                     toast.success("Đã gửi phản hồi thành công!");
                     setReply("");
                   }}
+                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-6"
                 >
                   Gửi phản hồi
                   <Send className="w-4 h-4 ml-2" />

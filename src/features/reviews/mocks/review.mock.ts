@@ -1,32 +1,72 @@
-import { Review } from "../types/review.admin";
-export const mockReviews: Review[] = [
-  { 
-    id: "R-001", 
-    user: { name: "Trần B", avatar: "", initial: "TB" }, 
-    product: { id: "P-001", name: "Áo thun T-Shirt" }, 
-    rating: 5, 
-    comment: "Sản phẩm rất tốt", 
-    date: "2024-03-20", 
-    status: "Hiển thị" 
+import { Review } from "../types/review.types";
+
+export const MOCK_REVIEWS: Review[] = [
+  {
+    id: "REV-001",
+    productId: "PROD-001",
+    productName: "Áo Polo Nam Form Regular",
+    customerName: "Nguyễn Văn A",
+    customerPhone: "0901234567",
+    rating: 5,
+    comment: "Áo mặc rất mát, form chuẩn. Giao hàng nhanh, đóng gói cẩn thận. Sẽ ủng hộ shop dài dài!",
+    reply: "Dạ shop cảm ơn anh A đã tin tưởng và ủng hộ ạ. Chúc anh một ngày vui vẻ!",
+    isHidden: false,
+    createdAt: "2024-05-15T09:30:00Z",
   },
-  { 
-    id: "R-002", 
-    user: { name: "Lê Văn C", avatar: "", initial: "LC" }, 
-    product: { id: "P-002", name: "Quần Jeans" }, 
-    rating: 2, 
-    comment: "Giao hàng hơi chậm, vải bình thường", 
-    date: "2024-03-22", 
-    status: "Ẩn",
-    deletedAt: "2026-07-29T10:00:00Z"
+  {
+    id: "REV-002",
+    productId: "PROD-002",
+    productName: "Quần Jeans Ống Rộng",
+    customerName: "Trần Thị B",
+    customerPhone: "0912345678",
+    rating: 4,
+    comment: "Quần đẹp nhưng hơi dài so với mình. Lên lai 1 chút là ok.",
+    isHidden: false,
+    createdAt: "2024-05-14T14:20:00Z",
   },
-  { 
-    id: "R-003", 
-    user: { name: "Spam Bot", avatar: "", initial: "SB" }, 
-    product: { id: "P-003", name: "Áo Khoác" }, 
-    rating: 1, 
-    comment: "Link lừa đảo bla bla", 
-    date: "2024-03-25", 
-    status: "Ẩn",
-    deletedAt: "2026-07-28T09:00:00Z"
+  {
+    id: "REV-003",
+    productId: "PROD-003",
+    productName: "Áo Sơ Mi Nữ Trắng Xếp Ly",
+    customerName: "Lê Văn C",
+    customerPhone: "0987654321",
+    rating: 1,
+    comment: "Giao sai màu rồi shop ơi, đặt trắng mà giao kem. Đề nghị đổi trả!",
+    imageUrl: "/login-bg.jpg", // Fake image for demo
+    isHidden: false,
+    createdAt: "2024-05-14T08:15:00Z",
+  },
+  {
+    id: "REV-004",
+    productId: "PROD-004",
+    productName: "Đầm Dự Tiệc Trễ Vai",
+    customerName: "Phạm Thị D",
+    customerPhone: "0976543210",
+    rating: 2,
+    comment: "Chất vải hơi mỏng, đường may cẩu thả, có chỉ thừa.",
+    isHidden: false,
+    createdAt: "2024-05-13T16:45:00Z",
+  },
+  {
+    id: "REV-005",
+    productId: "PROD-005",
+    productName: "Chân Váy Chữ A",
+    customerName: "Spammer 01",
+    customerPhone: "0123456789",
+    rating: 1,
+    comment: "Hàng quá lởm. Trải nghiệm ngay sòng bài cá cược tại 88bet.com !!!",
+    isHidden: true,
+    createdAt: "2024-05-13T10:00:00Z",
+  },
+  {
+    id: "REV-006",
+    productId: "PROD-006",
+    productName: "Áo Thun Nam Cổ Tròn",
+    customerName: "Spammer 02",
+    customerPhone: "0999999999",
+    rating: 1,
+    comment: "Vào link vn-z.xyz để nhận 100k miễn phí nhé bà con.",
+    isHidden: true,
+    createdAt: "2024-05-12T09:10:00Z",
   },
 ];
