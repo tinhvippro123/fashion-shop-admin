@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/utils/utils";
 import { Input } from "@/shared/ui/input";
 import {
   Table,
@@ -12,7 +13,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Plus, Search, MoreHorizontal, Filter, Megaphone, Calendar } from "lucide-react";
+import { Search, MoreHorizontal, Filter, Megaphone, Calendar } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,8 +23,7 @@ import {
 import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { ArchiveRestore, Trash2, X } from "lucide-react";
@@ -37,11 +37,7 @@ import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
 export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { campaigns, isLoading, setCampaigns } = useCampaigns();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleEndEarly = (camp: Campaign) => {
     const today = new Date();
@@ -141,7 +137,7 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
   
 
   return (
-    <>      <div className="rounded-md border bg-card overflow-hidden">
+    <>      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
@@ -178,13 +174,15 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">
-                  <Checkbox 
+                <TableHead className="w-[50px]">
+                    <div className="flex items-center justify-center">
+                      <Checkbox 
                     checked={filteredCampaigns.length > 0 && selectedIds.length === filteredCampaigns.length} 
                     onCheckedChange={toggleSelectAll} 
                     aria-label="Select all"
                   />
-                </TableHead>
+                    </div>
+                  </TableHead>
                 <TableHead className="min-w-[250px]">Tên chiến dịch</TableHead>
                 <TableHead>Mức giảm</TableHead>
                 <TableHead className="min-w-[200px]">Thời gian</TableHead>
@@ -377,8 +375,8 @@ filteredCampaigns.map((camp) => (
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
@@ -405,8 +403,7 @@ filteredCampaigns.map((camp) => (
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );

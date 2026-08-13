@@ -16,20 +16,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/shared/ui/sheet";
 import { Sidebar } from "@/shared/layouts/Sidebar";
 import Link from "next/link";
-import { useState } from "react";
 import { ShoppingBag, UserPlus, Info } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
+import { useNotifications } from "@/features/marketing/hooks/useNotifications";
 
 export function Header() {
   const { data: session } = useSession();
-  const [unreadCount, setUnreadCount] = useState(3);
-  const notifications = [
-    { id: 1, title: "Đơn hàng mới", message: "Khách hàng Nguyễn Văn A vừa đặt đơn #ORD-123", type: "ORDER", isRead: false, time: "5 phút trước" },
-    { id: 2, title: "Khách hàng mới", message: "Trần Thị B vừa đăng ký tài khoản", type: "USER", isRead: false, time: "1 giờ trước" },
-    { id: 3, title: "Đơn hàng hoàn tất", message: "Đơn hàng #ORD-099 đã giao thành công", type: "ORDER", isRead: false, time: "2 giờ trước" },
-    { id: 4, title: "Cảnh báo hệ thống", message: "Sản phẩm Áo thun trắng sắp hết hàng", type: "SYSTEM", isRead: true, time: "1 ngày trước" },
-  ];
+  const { notifications, isLoading } = useNotifications();
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const getIcon = (type: string) => {
     switch(type) {

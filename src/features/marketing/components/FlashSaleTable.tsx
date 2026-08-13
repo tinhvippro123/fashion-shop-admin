@@ -27,8 +27,7 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { Search, PlusCircle, Filter, MoreHorizontal, Clock } from "lucide-react";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ArchiveRestore, Trash2, X } from "lucide-react";
 import { FlashSale } from "@/features/marketing/types/flash-sale.admin";
@@ -40,11 +39,7 @@ import { TableSkeleton } from "@/shared/ui/table-skeleton";
 export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { flashSales, isLoading, setFlashSales } = useFlashSales();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleEndEarly = (fs: FlashSale) => {
     const today = new Date();
@@ -385,8 +380,8 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
       </Card>
 
       {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
@@ -413,8 +408,7 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );

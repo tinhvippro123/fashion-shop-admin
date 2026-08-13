@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -36,12 +36,9 @@ interface ProductTableProps {
 }
 
 export function ProductTable({ products, isLoading, setProducts }: ProductTableProps) {
+  const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === products.length && products.length > 0) {
@@ -171,8 +168,8 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
 
   const renderActions = (product: Product) => (
     <>
-      <DropdownMenuItem>
-        <Link href={`/products/${product.id}/edit`} className="w-full h-full cursor-pointer">Chỉnh sửa</Link>
+      <DropdownMenuItem render={<Link href={`/products/${product.id}/edit`} className="w-full h-full cursor-pointer" />}>
+        Chỉnh sửa
       </DropdownMenuItem>
       
       {product.isActive ? (
@@ -205,7 +202,7 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
 
   return (
     <>
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex items-center justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
@@ -230,13 +227,15 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">
-                  <Checkbox 
+                <TableHead className="w-[50px]">
+                    <div className="flex items-center justify-center">
+                      <Checkbox 
                     checked={products.length > 0 && selectedIds.length === products.length} 
                     onCheckedChange={toggleSelectAll} 
                     aria-label="Select all"
                   />
-                </TableHead>
+                    </div>
+                  </TableHead>
                 <TableHead>Ảnh</TableHead>
                 <TableHead>Tên sản phẩm</TableHead>
                 <TableHead>Danh mục</TableHead>
@@ -253,13 +252,25 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
               products.map((product) => {
                 const status = getStatusDisplay(product);
                 return (
-                  <TableRow key={product.id} className={selectedIds.includes(product.id) ? "bg-muted/50" : ""}>
-                    <TableCell className="text-center">
-                      <Checkbox 
-                        checked={selectedIds.includes(product.id)}
-                        onCheckedChange={() => toggleSelect(product.id)}
-                        aria-label={`Select ${product.name}`}
-                      />
+                  <TableRow 
+                    key={product.id} 
+                    className={cn(selectedIds.includes(product.id) ? "bg-muted/50" : "", "cursor-pointer hover:bg-muted/50 transition-colors")}
+                    onClick={() => router.push(`/catalog/products/${product.id}`)}
+                  >
+                    <TableCell 
+                      className="text-center" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSelect(product.id);
+                      }}
+                    >
+                      <div className="flex items-center justify-center p-2" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox 
+                          checked={selectedIds.includes(product.id)}
+                          onCheckedChange={() => toggleSelect(product.id)}
+                          aria-label={`Select ${product.name}`}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="w-12 aspect-2/3 rounded-md bg-muted overflow-hidden relative">
@@ -300,9 +311,9 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                     <TableCell>
                       <Badge className={status.color}>{status.text}</Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -383,8 +394,8 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
@@ -410,8 +421,7 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );

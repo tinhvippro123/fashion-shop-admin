@@ -9,17 +9,13 @@ import {
   YAxis,
 } from "recharts"
 
-const data = [
-  { name: "Tháng 1", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 2", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 3", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 4", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 5", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 6", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Tháng 7", total: Math.floor(Math.random() * 5000) + 1000 },
-]
+import { ChartData } from "../types/analytics.admin"
 
-export function OverviewChart() {
+interface OverviewChartProps {
+  data: ChartData[]
+}
+
+export function OverviewChart({ data }: OverviewChartProps) {
   return (
     <div className="text-primary w-full h-full">
     <ResponsiveContainer width="100%" height={350}>

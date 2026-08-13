@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -30,6 +31,7 @@ import { useBlogs } from "@/features/blogs/hooks/useBlogs";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 export function BlogTable() {
+  const router = useRouter();
   const { blogs, isLoading } = useBlogs();
 
   return (
@@ -62,7 +64,11 @@ export function BlogTable() {
                   <TableBody className="bg-card">
                     {isLoading ? <TableSkeleton columns={7} /> : (
                       blogs.map((blog) => (
-                        <TableRow key={blog.id}>
+                        <TableRow 
+                          key={blog.id} 
+                          className="cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => router.push(`/blogs/${blog.id}/edit`)}
+                        >
                           <TableCell>
                             <div className="h-12 w-16 bg-muted rounded-md overflow-hidden relative flex items-center justify-center text-xs text-muted-foreground">
                               {/* Placeholder image since we don't have real images yet */}
@@ -89,7 +95,7 @@ export function BlogTable() {
                           <TableCell>
                             <span className="text-sm text-muted-foreground">{blog.date}</span>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                                   <MoreHorizontal className="h-4 w-4" />
@@ -132,7 +138,11 @@ export function BlogTable() {
                   ))
                 ) : (
                   blogs.map((blog) => (
-                    <div key={blog.id} className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm">
+                    <div 
+                      key={blog.id} 
+                      className="flex flex-col p-4 border rounded-lg bg-card relative shadow-sm cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => router.push(`/blogs/${blog.id}/edit`)}
+                    >
                       <div className="flex items-start gap-4 pr-8 mb-4">
                         <div className="h-16 w-20 shrink-0 bg-muted rounded-md overflow-hidden flex items-center justify-center text-[10px] text-muted-foreground border">
                           Ảnh
@@ -163,7 +173,7 @@ export function BlogTable() {
                         <div className="text-xs text-muted-foreground font-medium">{blog.date}</div>
                       </div>
 
-                      <div className="absolute top-2 right-2">
+                      <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                               <MoreHorizontal className="h-4 w-4" />

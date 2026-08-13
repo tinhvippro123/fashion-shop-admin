@@ -21,6 +21,8 @@ export interface ShippingInfo {
 }
 
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPING' | 'COMPLETED' | 'CANCELLED';
+export type PaymentStatus = 'UNPAID' | 'PAID' | 'REFUNDED';
+export type ReturnStatus = 'PENDING' | 'RETURNING' | 'COMPLETED' | 'REJECTED';
 
 export interface Order {
   id: string;

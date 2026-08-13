@@ -48,11 +48,7 @@ import {
 import { FlashSaleSchema, TFlashSalePayload } from "../schemas/flashsale.schema";
 import { createFlashSaleAction, updateFlashSaleAction } from "../actions/flashsale.action";
 
-const CATALOG_PRODUCTS = [
-  { id: 101, name: "Áo sơ mi lụa tơ tằm", variant: "Trắng / Freesize", originalPrice: 450000, defaultPrice: 299000, defaultStock: 50 },
-  { id: 102, name: "Quần jean ống rộng vintage", variant: "Xanh nhạt / Size L", originalPrice: 550000, defaultPrice: 349000, defaultStock: 30 },
-  { id: 103, name: "Set bộ thể thao năng động", variant: "Xám / Size M", originalPrice: 320000, defaultPrice: 199000, defaultStock: 100 },
-];
+import { mockFlashSaleCatalogProducts } from "../mocks/flash-sale.mock";
 
 interface FlashSaleFormProps {
   initialData?: Partial<TFlashSalePayload> & { id?: string | number };
@@ -86,7 +82,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
 
   const handleConfirmAddProducts = () => {
     const newProducts = selectedProductIds.map(id => {
-      const p = CATALOG_PRODUCTS.find(cp => cp.id === id);
+      const p = mockFlashSaleCatalogProducts.find(cp => cp.id === id);
       return {
         variantId: String(p!.id),
         name: p!.name,
@@ -296,7 +292,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                     <div className="max-h-[350px] overflow-y-auto overflow-x-auto px-2">
                       <Table>
                         <TableBody>
-                          {CATALOG_PRODUCTS.filter(cp => !fields.find(p => p.variantId === String(cp.id))).map(cp => {
+                          {mockFlashSaleCatalogProducts.filter(cp => !fields.find(p => p.variantId === String(cp.id))).map(cp => {
                             const isSelected = selectedProductIds.includes(cp.id);
                             return (
                               <TableRow key={cp.id} className={isSelected ? "bg-muted/50 border-transparent" : "border-transparent hover:bg-muted/50 cursor-pointer"} onClick={() => {

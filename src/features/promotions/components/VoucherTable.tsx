@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Plus, Search, MoreHorizontal, Filter, Gift, Trash2, ArchiveRestore, X } from "lucide-react";
+import { Search, MoreHorizontal, Filter, Gift, Trash2, ArchiveRestore, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,10 +29,10 @@ import {
 import { Label } from "@/shared/ui/label";
 import { Switch } from "@/shared/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "@/shared/ui/checkbox";
+import { cn } from "@/shared/utils/utils";
 
 import { useVouchers } from "@/features/promotions/hooks/useVouchers";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
@@ -40,11 +40,7 @@ import { TableSkeleton } from "@/shared/ui/table-skeleton";
 export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { vouchers, isLoading, setVouchers } = useVouchers();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleEndEarly = (voucher: any) => {
     const today = new Date();
@@ -139,7 +135,7 @@ export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean })
 
   return (
     <div className="flex flex-col gap-6 pb-20 relative">
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex flex-col sm:flex-row items-center gap-4 p-4 border-b sm:justify-between">
           <div className="flex items-center gap-2 w-full max-w-sm">
             <div className="relative flex-1">
@@ -168,13 +164,15 @@ export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean })
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">
-                  <Checkbox 
+                <TableHead className="w-[50px]">
+                    <div className="flex items-center justify-center">
+                      <Checkbox 
                     checked={filteredVouchers.length > 0 && selectedIds.length === filteredVouchers.length} 
                     onCheckedChange={toggleSelectAll} 
                     aria-label="Select all"
                   />
-                </TableHead>
+                    </div>
+                  </TableHead>
                 <TableHead>Mã Code</TableHead>
                 <TableHead>Mức giảm</TableHead>
                 <TableHead>Đơn tối thiểu</TableHead>
@@ -195,13 +193,25 @@ export function VoucherTable({ isTrashView = false }: { isTrashView?: boolean })
                 </TableRow>
               ) : (
 filteredVouchers.map((voucher) => (
-                <TableRow key={voucher.id} className={selectedIds.includes(voucher.id) ? "bg-muted/50" : ""}>
-                  <TableCell className="text-center">
-                    <Checkbox 
-                      checked={selectedIds.includes(voucher.id)}
-                      onCheckedChange={() => toggleSelect(voucher.id)}
-                      aria-label={`Select ${voucher.code}`}
-                    />
+                <TableRow 
+                  key={voucher.id} 
+                  className={cn(selectedIds.includes(voucher.id) ? "bg-muted/50" : "", "cursor-pointer hover:bg-muted/50 transition-colors")}
+                  onClick={() => toggleSelect(voucher.id)}
+                >
+                  <TableCell 
+                    className="text-center" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelect(voucher.id);
+                    }}
+                  >
+                    <div className="flex items-center justify-center p-2" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox 
+                        checked={selectedIds.includes(voucher.id)}
+                        onCheckedChange={() => toggleSelect(voucher.id)}
+                        aria-label={`Select ${voucher.code}`}
+                      />
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center font-bold text-foreground bg-muted w-fit px-3 py-1 rounded-md border border-dashed border-zinc-300">
@@ -217,7 +227,7 @@ filteredVouchers.map((voucher) => (
                       {voucher.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                                         <DropdownMenu>
                       <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
@@ -309,31 +319,35 @@ filteredVouchers.map((voucher) => (
               <p>Không tìm thấy mã giảm giá nào</p>
             </div>
           ) : filteredVouchers.map((voucher) => (
-            <div key={voucher.id} className="flex flex-col gap-2 p-4 border-b last:border-0 relative pl-12">
-              <div className="absolute top-4 left-4 z-10">
+            <div 
+              key={voucher.id} 
+              className="flex flex-col gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors relative"
+              onClick={() => toggleSelect(voucher.id)}
+            >
+              <div className="absolute top-4 left-4 z-10" onClick={(e) => e.stopPropagation()}>
                 <Checkbox 
                   checked={selectedIds.includes(voucher.id)}
                   onCheckedChange={() => toggleSelect(voucher.id)}
                   className="bg-card shadow-sm border-muted-foreground/30 data-[state=checked]:border-primary"
                 />
               </div>
-              <div className="flex items-center justify-between pr-8">
+              <div className="flex items-center justify-between pl-8 pr-8">
                 <span className="font-bold text-foreground text-lg flex items-center bg-muted px-3 py-1 rounded-md border border-dashed border-zinc-300 w-fit">
                   <Gift className="h-4 w-4 mr-2 text-muted-foreground" />
                   {voucher.code}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 text-sm text-muted-foreground mt-2">
+              <div className="flex flex-col gap-1 text-sm text-muted-foreground mt-2 pl-8">
                 <span>Mức giảm: <strong className="text-red-600">-{voucher.discountAmount}</strong></span>
                 <span>Đơn tối thiểu: <strong>{voucher.minOrderValue}</strong></span>
                 <span>Đã dùng: <strong>{voucher.quantity}</strong></span>
               </div>
-              <div className="mt-2">
+              <div className="mt-2 pl-8">
                 <Badge variant={voucher.status === "Đang diễn ra" ? "default" : "secondary"} className={voucher.status === "Đang diễn ra" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "bg-muted text-foreground hover:bg-muted border-none text-[10px] px-2 py-0"}>
                   {voucher.status}
                 </Badge>
               </div>
-              <div className="absolute top-3 right-2">
+              <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenu>
                       <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                         <MoreHorizontal className="h-4 w-4" />
@@ -416,8 +430,8 @@ filteredVouchers.map((voucher) => (
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
@@ -444,8 +458,7 @@ filteredVouchers.map((voucher) => (
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );

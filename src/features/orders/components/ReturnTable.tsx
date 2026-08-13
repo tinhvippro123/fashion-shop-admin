@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Filter, PackageX, Eye, CheckCircle, XCircle, Package, RefreshCcw, AlertTriangle, UploadCloud, Printer } from "lucide-react";
+import { Search, MoreHorizontal, PackageX, Eye, CheckCircle, XCircle, Package, AlertTriangle, UploadCloud, Printer } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,48 +27,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-// Define the exact statuses based on the documentation
-export type ReturnStatus = 'PENDING' | 'RETURNING' | 'COMPLETED' | 'REJECTED';
-export type ViewStatus = ReturnStatus | 'ALL';
+import { ReturnStatus } from "../types/order.admin";
+import { mockReturnRequests } from "../mocks/return.mock";
 
-const mockReturnRequests = [
-  {
-    id: "RET-001",
-    orderId: "ORD-045",
-    customerName: "Nguyễn Văn A",
-    date: "18/07/2026",
-    reason: "Sản phẩm không vừa size",
-    status: "PENDING" as ReturnStatus,
-    refundAmount: "450,000đ"
-  },
-  {
-    id: "RET-002",
-    orderId: "ORD-021",
-    customerName: "Trần Thị B",
-    date: "17/07/2026",
-    reason: "Giao sai màu",
-    status: "RETURNING" as ReturnStatus,
-    refundAmount: "1,200,000đ"
-  },
-  {
-    id: "RET-003",
-    orderId: "ORD-089",
-    customerName: "Lê Văn C",
-    date: "15/07/2026",
-    reason: "Hàng bị lỗi đường chỉ",
-    status: "COMPLETED" as ReturnStatus,
-    refundAmount: "350,000đ"
-  },
-  {
-    id: "RET-004",
-    orderId: "ORD-102",
-    customerName: "Phạm D",
-    date: "12/07/2026",
-    reason: "Cố tình cắt rách áo",
-    status: "REJECTED" as ReturnStatus,
-    refundAmount: "0đ"
-  }
-];
+export type ViewStatus = ReturnStatus | 'ALL';
 
 export function ReturnTable() {
   const router = useRouter();
@@ -217,12 +179,16 @@ export function ReturnTable() {
                 </TableRow>
               ) : (
                 filteredReturns.map((req) => (
-                  <TableRow key={req.id}>
-                    <TableCell className="font-medium text-primary hover:underline">
-                      <Link href={`/orders/returns/${req.id}`}>{req.id}</Link>
+                  <TableRow 
+                    key={req.id} 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/orders/returns/${req.id}`)}
+                  >
+                    <TableCell className="font-medium text-primary">
+                      {req.id}
                     </TableCell>
-                    <TableCell className="font-medium text-foreground hover:underline">
-                      <Link href={`/orders/${req.orderId}`}>{req.orderId}</Link>
+                    <TableCell className="font-medium text-foreground">
+                      {req.orderId}
                     </TableCell>
                     <TableCell>{req.customerName}</TableCell>
                     <TableCell className="text-muted-foreground">{req.date}</TableCell>
@@ -237,7 +203,7 @@ export function ReturnTable() {
                     <TableCell className="text-right font-semibold">
                       {req.refundAmount}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
                           <MoreHorizontal className="h-4 w-4" />

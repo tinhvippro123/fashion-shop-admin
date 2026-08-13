@@ -1,107 +1,147 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/ui/table";
-import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Star, Filter } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { toast } from "sonner";
 import { Checkbox } from "@/shared/ui/checkbox";
-import { ArchiveRestore, Trash2, X } from "lucide-react";
-import { Review } from "@/features/reviews/types/review.admin";
-
-import { useReviews } from "@/features/reviews/hooks/useReviews";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { Badge } from "@/shared/ui/badge";
+import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, MessageSquareReply, FileText } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { cn } from "@/shared/utils/utils";
+import { Review } from "../types/review.types";
 
-export function ReviewTable({ isTrashView = false }: { isTrashView?: boolean }) {
-  const { reviews, isLoading } = useReviews();
+interface ReviewTableProps {
+  reviews: Review[];
+  setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
+  isLoading?: boolean;
+}
+
+export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTableProps) {
+  const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const filteredReviews = reviews.filter(r => isTrashView ? r.deletedAt : !r.deletedAt);
 
   const toggleSelectAll = () => {
-    if (selectedIds.length === filteredReviews.length && filteredReviews.length > 0) {
+    if (selectedIds.length === reviews.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(filteredReviews.map((r) => r.id));
+      setSelectedIds(reviews.map((r) => r.id));
     }
   };
 
   const toggleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter((item) => item !== id));
+      setSelectedIds(selectedIds.filter((selectedId) => selectedId !== id));
     } else {
       setSelectedIds([...selectedIds, id]);
     }
   };
 
-  const handleBulkDelete = () => {
-    if (isTrashView) {
-      toast.success(`Đã xóa vĩnh viễn ${selectedIds.length} đánh giá thành công!`);
-    } else {
-      toast.success(`Đã chuyển ${selectedIds.length} đánh giá vào thùng rác!`);
+  const handleToggleHide = (review: Review) => {
+    const action = review.isHidden ? "Hiển thị" : "Ẩn";
+    setReviews(prev => prev.map(r => r.id === review.id ? { ...r, isHidden: !r.isHidden } : r));
+    toast.success(`Đã ${action.toLowerCase()} đánh giá của ${review.customerName}!`);
+  };
+
+  const handleDelete = (review: Review) => {
+    // We allow deletion but usually encourage hiding
+    if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá của ${review.customerName} không? (Khuyến nghị dùng nút Ẩn để giữ lại log)`)) {
+      setReviews(prev => prev.filter(r => r.id !== review.id));
+      toast.success(`Đã xóa đánh giá thành công!`);
     }
+  };
+
+  const handleBulkHide = () => {
+    if (!confirm(`Bạn có chắc chắn muốn ẩn ${selectedIds.length} đánh giá đã chọn?`)) return;
+    setReviews(prev => prev.map(r => selectedIds.includes(r.id) ? { ...r, isHidden: true } : r));
+    toast.success(`Đã ẩn ${selectedIds.length} đánh giá thành công!`);
+    setSelectedIds([]);
+  };
+  
+  const handleBulkShow = () => {
+    if (!confirm(`Bạn có chắc chắn muốn hiển thị lại ${selectedIds.length} đánh giá đã chọn?`)) return;
+    setReviews(prev => prev.map(r => selectedIds.includes(r.id) ? { ...r, isHidden: false } : r));
+    toast.success(`Đã hiển thị ${selectedIds.length} đánh giá thành công!`);
     setSelectedIds([]);
   };
 
-  const handleBulkRestore = () => {
-    toast.success(`Đã khôi phục ${selectedIds.length} đánh giá thành công!`);
+  const handleBulkDelete = () => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedIds.length} đánh giá đã chọn?`)) return;
+    setReviews(prev => prev.filter(r => !selectedIds.includes(r.id)));
+    toast.success(`Đã xóa vĩnh viễn ${selectedIds.length} đánh giá!`);
     setSelectedIds([]);
   };
 
-  const handlePermanentDelete = (r: Review) => {
-    toast.success(`Đã xóa vĩnh viễn đánh giá từ khách hàng "${r.user.name}"!`);
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <Star 
+        key={index} 
+        className={cn("h-4 w-4", index < rating ? "fill-amber-400 text-amber-400" : "fill-muted text-muted")} 
+      />
+    ));
   };
 
-  const handleEmptyTrash = () => {
-    if (filteredReviews.length === 0) return;
-    toast.success(`Đã dọn sạch ${filteredReviews.length} đánh giá khỏi thùng rác!`);
-    setSelectedIds([]);
-  };
+  const renderActions = (review: Review) => (
+    <>
+      <DropdownMenuItem onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/reviews/${review.id}`);
+      }}>
+        <FileText className="mr-2 h-4 w-4" />
+        {review.isHidden || review.reply ? "Xem chi tiết" : "Xem & Phản hồi"}
+      </DropdownMenuItem>
+      
+      {review.isHidden ? (
+        <DropdownMenuItem onClick={(e) => {
+          e.stopPropagation();
+          handleToggleHide(review);
+        }} className="text-emerald-600">
+          <Eye className="mr-2 h-4 w-4" /> Hiển thị lại
+        </DropdownMenuItem>
+      ) : (
+        <DropdownMenuItem onClick={(e) => {
+          e.stopPropagation();
+          handleToggleHide(review);
+        }}>
+          <EyeOff className="mr-2 h-4 w-4" /> Ẩn đánh giá
+        </DropdownMenuItem>
+      )}
+
+      <DropdownMenuSeparator />
+      
+      <DropdownMenuItem onClick={(e) => {
+        e.stopPropagation();
+        handleDelete(review);
+      }} className="text-red-600">
+        <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
+      </DropdownMenuItem>
+    </>
+  );
+
+  const selectedReviews = reviews.filter(r => selectedIds.includes(r.id));
+  const hasVisible = selectedReviews.some(r => !r.isHidden);
+  const hasHidden = selectedReviews.some(r => r.isHidden);
 
   return (
     <>
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex items-center justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Tìm kiếm theo tên khách, email, nội dung..." className="pl-8" />
+              <Input
+                type="search"
+                placeholder="Tìm kiếm đánh giá, SĐT..."
+                className="pl-8"
+              />
             </div>
             <Button variant="outline" className="hidden sm:flex shrink-0">
               <Filter className="mr-2 h-4 w-4" /> Lọc
             </Button>
-            <Button variant="outline" size="icon" className="sm:hidden shrink-0">
-              <Filter className="h-4 w-4" />
-            </Button>
           </div>
-          {isTrashView && (
-            <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
-              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
-            </Button>
-          )}
         </div>
         
         {/* Desktop Table View */}
@@ -109,187 +149,125 @@ export function ReviewTable({ isTrashView = false }: { isTrashView?: boolean }) 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">
-                  <Checkbox 
-                    checked={filteredReviews.length > 0 && selectedIds.length === filteredReviews.length} 
+                <TableHead className="w-[50px]">
+                    <div className="flex items-center justify-center">
+                      <Checkbox 
+                    checked={reviews.length > 0 && selectedIds.length === reviews.length} 
                     onCheckedChange={toggleSelectAll} 
-                    aria-label="Select all"
                   />
-                </TableHead>
-                <TableHead>Khách hàng</TableHead>
+                    </div>
+                  </TableHead>
                 <TableHead>Sản phẩm</TableHead>
-                <TableHead>Đánh giá</TableHead>
-                <TableHead>Ngày đăng</TableHead>
+                <TableHead>Khách hàng</TableHead>
+                <TableHead className="w-[120px]">Đánh giá</TableHead>
+                <TableHead className="max-w-[300px]">Nội dung</TableHead>
                 <TableHead>Trạng thái</TableHead>
+                <TableHead>Phản hồi</TableHead>
                 <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? <TableSkeleton columns={7} /> : (
-                filteredReviews.map((review) => (
-                  <TableRow key={review.id} className={selectedIds.includes(review.id) ? "bg-muted/50" : ""}>
-                    <TableCell className="text-center">
-                      <Checkbox 
-                        checked={selectedIds.includes(review.id)}
-                        onCheckedChange={() => toggleSelect(review.id)}
-                        aria-label={`Select ${review.user.name}`}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={review.user.avatar} alt={review.user.name} />
-                          <AvatarFallback>{review.user.initial}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{review.user.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/products/${review.product.id}/edit`} className="text-blue-600 hover:underline font-medium">
-                        {review.product.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex text-yellow-400">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'text-zinc-300'}`} />
-                          ))}
+                reviews.map((review) => {
+                  const isRisk = review.rating <= 2;
+                  return (
+                    <TableRow 
+                      key={review.id} 
+                      className={cn(
+                        "cursor-pointer hover:bg-muted/50 transition-colors",
+                        selectedIds.includes(review.id) && "bg-muted/50", 
+                        isRisk && !review.isHidden && "bg-red-50/50 hover:bg-red-50/80"
+                      )}
+                      onClick={() => router.push(`/reviews/${review.id}`)}
+                    >
+                      <TableCell 
+                        className="text-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSelect(review.id);
+                        }}
+                      >
+                        <div className="flex items-center justify-center p-2" onClick={(e) => e.stopPropagation()}>
+                          <Checkbox 
+                            checked={selectedIds.includes(review.id)}
+                            onCheckedChange={() => toggleSelect(review.id)}
+                          />
                         </div>
-                        <span className="text-sm text-muted-foreground line-clamp-2" title={review.comment}>
-                          {review.comment}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{review.date}</TableCell>
-                    <TableCell>
-                      <Badge variant={review.status === "Hiển thị" ? "default" : "secondary"} className={review.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-red-100 text-red-700 hover:bg-red-200 border-none"}>
-                        {review.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem render={<Link href={`/reviews/${review.id}`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                            Xem chi tiết
-                          </DropdownMenuItem>
-                          
-                          {isTrashView ? (
-                            <>
-                              <DropdownMenuItem onClick={() => { toast.success(`Khôi phục đánh giá của ${review.user.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handlePermanentDelete(review)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                            </>
-                          ) : (
-                            <>
-                              <DropdownMenuItem className="whitespace-nowrap">{review.status === "Hiển thị" ? "Ẩn đánh giá" : "Hiện đánh giá"}</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển đánh giá vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium line-clamp-1">{review.productName}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{review.customerName}</div>
+                        <div className="text-xs text-muted-foreground">{review.customerPhone}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-0.5">
+                          {renderStars(review.rating)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-[300px]">
+                        <p className="text-sm line-clamp-2">{review.comment}</p>
+                        {review.reply && (
+                          <div className="mt-1 flex items-start gap-1 text-xs text-emerald-700 bg-emerald-50 p-1.5 rounded-sm">
+                            <MessageSquareReply className="h-3 w-3 shrink-0 mt-0.5" />
+                            <span className="line-clamp-1">Shop: {review.reply}</span>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {review.isHidden ? (
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground">Đã ẩn</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-emerald-700 border-emerald-200 bg-emerald-50">Đang hiển thị</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {review.reply ? (
+                          <Badge variant="outline" className="text-emerald-700 border-emerald-200 bg-emerald-50">Đã trả lời</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">Chưa trả lời</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {renderActions(review)}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
         </div>
-
-        {/* Mobile List View */}
-        <div className="md:hidden flex flex-col">
-          {filteredReviews.map((review) => (
-            <div key={review.id} className="flex flex-col gap-3 p-4 border-b last:border-0 relative">
-              <div className="absolute top-4 left-4 z-10">
-                <Checkbox 
-                  checked={selectedIds.includes(review.id)}
-                  onCheckedChange={() => toggleSelect(review.id)}
-                  className="bg-card shadow-sm border-muted-foreground/30 data-[state=checked]:border-primary"
-                />
-              </div>
-              <div className="flex items-start gap-3 pl-8 pr-8">
-                <Avatar className="h-10 w-10 shrink-0">
-                  <AvatarImage src={review.user.avatar} alt={review.user.name} />
-                  <AvatarFallback>{review.user.initial}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col flex-1">
-                  <span className="font-bold text-foreground">{review.user.name}</span>
-                  <div className="flex text-yellow-400 my-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'fill-current' : 'text-zinc-300'}`} />
-                    ))}
-                  </div>
-                  <span className="text-xs text-muted-foreground mb-2">{review.date}</span>
-                  
-                  <Link href={`/products/${review.product.id}/edit`} className="text-xs text-blue-600 hover:underline font-medium mb-1 truncate">
-                    Sp: {review.product.name}
-                  </Link>
-                  
-                  <p className="text-sm text-foreground bg-muted/50 p-2 rounded-md border text-left mt-1">
-                    &quot;{review.comment}&quot;
-                  </p>
-                  
-                  <div className="mt-3">
-                    <Badge variant={review.status === "Hiển thị" ? "default" : "secondary"} className={review.status === "Hiển thị" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "bg-red-100 text-red-700 hover:bg-red-200 border-none text-[10px] px-2 py-0"}>
-                      {review.status}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute top-3 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem render={<Link href={`/reviews/${review.id}`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                      Xem chi tiết
-                    </DropdownMenuItem>
-                    
-                    {isTrashView ? (
-                      <>
-                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục đánh giá của ${review.user.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handlePermanentDelete(review)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                      </>
-                    ) : (
-                      <>
-                        <DropdownMenuItem className="whitespace-nowrap">{review.status === "Hiển thị" ? "Ẩn đánh giá" : "Hiện đánh giá"}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển đánh giá vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
-      {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
             </span>
             <div className="flex items-center gap-2">
-              {isTrashView ? (
-                <>
-                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
-                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
-                    <Trash2 className="h-4 w-4 mr-2" /> Xóa vĩnh viễn
-                  </Button>
-                </>
-              ) : (
-                <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
-                  <Trash2 className="h-4 w-4 mr-2" /> Chuyển vào thùng rác
+              {hasVisible && (
+                <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-muted-foreground hover:text-foreground hover:bg-background/10">
+                  <EyeOff className="h-4 w-4 mr-2" /> Ẩn hàng loạt
                 </Button>
               )}
+              {hasHidden && (
+                <Button variant="ghost" size="sm" onClick={handleBulkShow} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                  <Eye className="h-4 w-4 mr-2" /> Hiện hàng loạt
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                <Trash2 className="h-4 w-4 mr-2" /> Xóa
+              </Button>
             </div>
             <div className="pl-2 border-l border-background/20">
               <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">
@@ -297,8 +275,7 @@ export function ReviewTable({ isTrashView = false }: { isTrashView?: boolean }) 
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );

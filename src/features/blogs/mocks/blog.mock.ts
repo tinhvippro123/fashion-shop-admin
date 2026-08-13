@@ -32,3 +32,10 @@ export const mockBlogs: Blog[] = [
     thumbnail: "/blog-3.jpg"
   }
 ];
+
+export const mockCategoryOptions = [
+  { key: "trends", label: "Xu hướng thời trang" },
+  { key: "tips", label: "Mẹo phối đồ" },
+  { key: "news", label: "Tin tức cửa hàng" },
+  { key: "care", label: "Hướng dẫn bảo quản" },
+];

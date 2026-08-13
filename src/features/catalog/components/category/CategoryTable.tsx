@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -39,11 +38,7 @@ interface CategoryTableProps {
 
 export function CategoryTable({ categories, isLoading, isTrashView = false }: CategoryTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === categories.length && categories.length > 0) {
@@ -73,7 +68,7 @@ export function CategoryTable({ categories, isLoading, isTrashView = false }: Ca
 
   return (
     <>
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex items-center justify-between gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
@@ -211,8 +206,8 @@ export function CategoryTable({ categories, isLoading, isTrashView = false }: Ca
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {mounted && selectedIds.length > 0 && createPortal(
-        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
           <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
             <span className="text-sm font-medium px-2 border-r border-background/20">
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
@@ -239,8 +234,7 @@ export function CategoryTable({ categories, isLoading, isTrashView = false }: Ca
               </Button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );

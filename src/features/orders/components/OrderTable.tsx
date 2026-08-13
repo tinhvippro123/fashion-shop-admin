@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, Filter, ShoppingBag, CheckCircle, XCircle, Truck, Eye, MoreHorizontal, Printer, AlertTriangle, Banknote, RefreshCcw } from "lucide-react";
+import { Search, Filter, ShoppingBag, CheckCircle, XCircle, Truck, Eye, MoreHorizontal, Printer, AlertTriangle, Banknote, RefreshCcw, X, Lock } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
@@ -18,6 +18,7 @@ import { useOrders } from "@/features/orders/hooks/useOrders";
 import { OrderStatus } from "@/features/orders/types/order.admin";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Checkbox } from "@/shared/ui/checkbox";
 import {
@@ -31,6 +32,8 @@ import {
 } from "@/shared/ui/dropdown-menu";
 
 export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { orders, isLoading } = useOrders();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [cancelDialog, setCancelDialog] = useState(false);
@@ -80,8 +83,8 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
     switch (status) {
       case 'PENDING': return 'Chờ xác nhận';
       case 'PROCESSING': return 'Đang chuẩn bị';
-      case 'SHIPPING': return 'Đang giao hàng';
-      case 'COMPLETED': return 'Đã hoàn thành';
+      case 'SHIPPING': return 'Đang giao';
+      case 'COMPLETED': return 'Đã giao thành công';
       case 'CANCELLED': return 'Đã hủy';
       default: return status;
     }
@@ -96,6 +99,12 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
   const handleHandover = (ids = selectedIds) => {
     if (ids.length === 0) return;
     toast.success(`Đã bàn giao ${ids.length} đơn hàng cho Shipper! Đã chuyển sang Đang giao.`);
+    setSelectedIds([]);
+  };
+
+  const handleUpdateStatus = (ids: string[], status: OrderStatus) => {
+    if (ids.length === 0) return;
+    toast.success(`Đã cập nhật ${ids.length} đơn hàng sang trạng thái ${status}!`);
     setSelectedIds([]);
   };
 
@@ -129,7 +138,7 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
 
   return (
     <>
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className={cn("rounded-md border bg-card overflow-hidden transition-all duration-300", selectedIds.length > 0 ? "mb-24" : "")}>
         <div className="flex items-center gap-4 p-4 border-b">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative flex-1">
@@ -137,24 +146,6 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
               <Input type="search" placeholder="Tìm kiếm mã đơn, khách hàng..." className="pl-8" />
             </div>
             <Button variant="outline"><Filter className="mr-2 h-4 w-4" /> Lọc</Button>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {viewStatus === 'PENDING' && selectedIds.length > 0 && (
-              <>
-                <Button variant="destructive" onClick={() => openCancelDialog(selectedIds)}>
-                  <XCircle className="mr-2 h-4 w-4" /> Hủy {selectedIds.length} đơn
-                </Button>
-                <Button onClick={() => handleApprove()}>
-                  <CheckCircle className="mr-2 h-4 w-4" /> 🚀 Duyệt hàng loạt ({selectedIds.length})
-                </Button>
-              </>
-            )}
-            {viewStatus === 'PROCESSING' && selectedIds.length > 0 && (
-              <Button onClick={() => handleHandover()}>
-                <Truck className="mr-2 h-4 w-4" /> Giao Shipper {selectedIds.length} đơn
-              </Button>
-            )}
           </div>
         </div>
         
@@ -164,12 +155,15 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
           <Table>
             <TableHeader>
               <TableRow>
-                {(viewStatus === 'PENDING' || viewStatus === 'PROCESSING') && (
+                {(viewStatus === 'PENDING' || viewStatus === 'PROCESSING' || viewStatus === 'SHIPPING') && (
                   <TableHead className="w-[50px]">
-                    <Checkbox 
-                      checked={selectedIds.length === selectableOrders.length && selectableOrders.length > 0} 
-                      onCheckedChange={toggleSelectAll} 
-                    />
+                    <div className="flex items-center justify-center">
+                      <Checkbox 
+                        checked={selectedIds.length === selectableOrders.length && selectableOrders.length > 0} 
+                        onCheckedChange={toggleSelectAll} 
+                        disabled={selectableOrders.length === 0}
+                      />
+                    </div>
                   </TableHead>
                 )}
                 <TableHead>Mã đơn</TableHead>
@@ -186,14 +180,33 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
                 const onlinePaymentDisabled = viewStatus === 'PENDING' && isOnlinePayment(order.payment);
                 
                 return (
-                  <TableRow key={order.id}>
-                    {(viewStatus === 'PENDING' || viewStatus === 'PROCESSING') && (
-                      <TableCell>
-                        <Checkbox 
-                          checked={selectedIds.includes(order.id)} 
-                          onCheckedChange={() => toggleSelect(order.id)} 
-                          disabled={onlinePaymentDisabled}
-                        />
+                  <TableRow 
+                    key={order.id}
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/orders/${order.id}`)}
+                  >
+                    {(viewStatus === 'PENDING' || viewStatus === 'PROCESSING' || viewStatus === 'SHIPPING') && (
+                      <TableCell className="w-[50px]">
+                        <div 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!onlinePaymentDisabled) toggleSelect(order.id);
+                          }}
+                          className={cn(
+                            "flex items-center justify-center p-2", 
+                            onlinePaymentDisabled && "cursor-not-allowed"
+                          )}
+                          title={onlinePaymentDisabled ? "Không thể thao tác hàng loạt với đơn hàng đã thanh toán online (Phải chờ Webhook)" : undefined}
+                        >
+                          {onlinePaymentDisabled ? (
+                            <Lock className="h-4 w-4 text-muted-foreground opacity-50" />
+                          ) : (
+                            <Checkbox 
+                              checked={selectedIds.includes(order.id)} 
+                              onCheckedChange={() => toggleSelect(order.id)} 
+                            />
+                          )}
+                        </div>
                       </TableCell>
                     )}
                     <TableCell className="font-medium">#{order.id}</TableCell>
@@ -215,7 +228,7 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">{order.total}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
@@ -278,16 +291,10 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
-                                onClick={() => toast.success(`Đã cập nhật trạng thái Hoàn Thành cho đơn ${order.id}`)}
+                                onClick={() => handleUpdateStatus([order.id], 'COMPLETED')}
                                 className="cursor-pointer flex items-center text-emerald-600"
                               >
-                                <CheckCircle className="h-4 w-4 mr-2" /> Xác nhận Đã giao
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => toast.error(`Đơn ${order.id} giao thất bại. Tiến hành hoàn kho!`)}
-                                className="cursor-pointer flex items-center text-amber-600"
-                              >
-                                <AlertTriangle className="h-4 w-4 mr-2" /> Giao thất bại
+                                <CheckCircle className="h-4 w-4 mr-2" /> Xác nhận hoàn thành
                               </DropdownMenuItem>
                             </>
                           )}
@@ -414,6 +421,54 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {selectedIds.length > 0 && (
+        <div style={{ bottom: "24px" }} className="fixed left-1/2 -translate-x-1/2 lg:ml-32 z-50 transition-all duration-300">
+          <div className="flex items-center gap-4 bg-foreground text-background px-4 py-3 rounded-full shadow-lg border border-border">
+            <span className="text-sm font-medium px-2 border-r border-background/20">
+              Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
+            </span>
+            <div className="flex items-center gap-2">
+              {viewStatus === 'PENDING' && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10"
+                    onClick={() => handleApprove()}
+                  >
+                    <CheckCircle className="mr-2 h-4 w-4" /> Duyệt hàng loạt
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-400 hover:text-red-300 hover:bg-background/10"
+                    onClick={() => openCancelDialog(selectedIds)}
+                  >
+                    <XCircle className="mr-2 h-4 w-4" /> Hủy hàng loạt
+                  </Button>
+                </>
+              )}
+
+              {viewStatus === 'PROCESSING' && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-blue-400 hover:text-blue-300 hover:bg-background/10"
+                  onClick={() => handleHandover()}
+                >
+                  <Truck className="mr-2 h-4 w-4" /> Giao Shipper hàng loạt
+                </Button>
+              )}
+
+              <Button variant="ghost" size="icon" className="h-8 w-8 ml-2 hover:bg-background/10" onClick={() => setSelectedIds([])}>
+                <X className="h-4 w-4" />
+                <span className="sr-only">Bỏ chọn</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

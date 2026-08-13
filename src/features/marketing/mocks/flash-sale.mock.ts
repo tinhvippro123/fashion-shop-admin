@@ -7,3 +7,9 @@ export const mockFlashSales: FlashSale[] = [
   { id: "FS-005", name: "Sale Chớp Nhoáng Tối", startTime: "01-01-2024", endTime: "01-01-2024", productsCount: 2, status: "Đã kết thúc", revenue: "", usageCount: 0, deletedAt: "2024-06-01T10:00:00Z" },
   { id: "FS-006", name: "Sale Sinh Nhật (Bị lỗi)", startTime: "10-10-2024", endTime: "11-10-2024", productsCount: 50, status: "Đã kết thúc", revenue: "12,000,000 đ", usageCount: 15, deletedAt: "2024-07-15T08:30:00Z" }
 ];
+
+export const mockFlashSaleCatalogProducts = [
+  { id: 101, name: "Áo sơ mi lụa tơ tằm", variant: "Trắng / Freesize", originalPrice: 450000, defaultPrice: 299000, defaultStock: 50 },
+  { id: 102, name: "Quần jean ống rộng vintage", variant: "Xanh nhạt / Size L", originalPrice: 550000, defaultPrice: 349000, defaultStock: 30 },
+  { id: 103, name: "Set bộ thể thao năng động", variant: "Xám / Size M", originalPrice: 320000, defaultPrice: 199000, defaultStock: 100 },
+];

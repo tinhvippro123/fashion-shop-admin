@@ -40,18 +40,14 @@ import {
 } from "@/shared/ui/form";
 import { BlogSchema, TBlogPayload } from "../schemas/blog.schema";
 import { createBlogAction, updateBlogAction } from "../actions/blog.action";
+import { mockCategoryOptions } from "../mocks/blog.mock";
 
 const RichTextEditor = dynamic(() => import("@/shared/ui/rich-text-editor").then((mod) => mod.RichTextEditor), { 
   ssr: false, 
-  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">�ang t?i b? so?n th?o...</div> 
+  loading: () => <div className="h-[400px] w-full animate-pulse bg-muted rounded-md flex items-center justify-center text-muted-foreground">ang t?i b? so?n th?o...</div> 
 });
 
-const categoryOptions = [
-  { key: "trends", label: "Xu hu?ng th?i trang" },
-  { key: "tips", label: "M?o ph?i d?" },
-  { key: "news", label: "Tin t?c c?a h�ng" },
-  { key: "care", label: "Hu?ng d?n b?o qu?n" },
-];
+
 
 export function BlogForm({ initialData, mode = "create" }: { initialData?: Partial<TBlogPayload> & { id?: string | number }; mode?: "create" | "edit" }) {
   const [isPending, startTransition] = useTransition();
@@ -255,7 +251,7 @@ export function BlogForm({ initialData, mode = "create" }: { initialData?: Parti
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categoryOptions.map((opt) => (
+                          {mockCategoryOptions.map((opt) => (
                             <SelectItem key={opt.key} value={opt.key}>
                               {opt.label}
                             </SelectItem>

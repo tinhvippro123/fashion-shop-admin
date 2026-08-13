@@ -29,59 +29,13 @@ import {
 } from "@/shared/ui/select";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const timeOptions = [
-  { key: "today", label: "Hôm nay" },
-  { key: "this_week", label: "Tuần này" },
-  { key: "this_month", label: "Tháng này" },
-  { key: "this_year", label: "Năm nay" },
-  { key: "custom", label: "Tùy chỉnh..." },
-];
-
-const bestSellers = [
-  {
-    id: "PROD-001",
-    name: "Áo thun form rộng basic",
-    category: "Áo thun",
-    sold: 1245,
-    revenue: "249,000,000 đ",
-    trend: "+12%",
-  },
-  {
-    id: "PROD-002",
-    name: "Quần jean ống rộng phong cách Hàn Quốc",
-    category: "Quần",
-    sold: 890,
-    revenue: "400,500,000 đ",
-    trend: "+8%",
-  },
-  {
-    id: "PROD-003",
-    name: "Váy hoa cúc mùa hè",
-    category: "Váy đầm",
-    sold: 650,
-    revenue: "195,000,000 đ",
-    trend: "-3%",
-  },
-  {
-    id: "PROD-004",
-    name: "Áo khoác bomber kaki",
-    category: "Áo khoác",
-    sold: 432,
-    revenue: "259,200,000 đ",
-    trend: "+25%",
-  },
-  {
-    id: "PROD-005",
-    name: "Túi xách da mini",
-    category: "Phụ kiện",
-    sold: 320,
-    revenue: "96,000,000 đ",
-    trend: "+5%",
-  },
-];
+import { timeOptions, mockBestSellers, mockConversionFunnel } from "../mocks/report.mock";
+import { mockChartData } from "../mocks/dashboard.mock";
 
 export function ReportCharts() {
+  const router = useRouter();
   const [timeFilter, setTimeFilter] = useState("this_month");
 
   return (
@@ -121,7 +75,7 @@ export function ReportCharts() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewChart />
+            <OverviewChart data={mockChartData} />
           </CardContent>
         </Card>
 
@@ -132,34 +86,19 @@ export function ReportCharts() {
             <CardDescription>Các chỉ số chuyển đổi phễu bán hàng.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Lượt truy cập web</p>
-                <p className="text-sm text-muted-foreground">12,450</p>
+            {mockConversionFunnel.map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">{item.step}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.value.toLocaleString('vi-VN')} {item.percentage ? `(${item.percentage}%)` : ''}
+                  </p>
+                </div>
+                <div className={item.trend > 0 ? "font-medium text-foreground" : "font-medium text-red-500"}>
+                  {item.trend > 0 ? "+" : ""}{item.trend}%
+                </div>
               </div>
-              <div className="font-medium text-foreground">+15%</div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Thêm vào giỏ</p>
-                <p className="text-sm text-muted-foreground">3,240 (26%)</p>
-              </div>
-              <div className="font-medium text-foreground">+8%</div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Đến trang thanh toán</p>
-                <p className="text-sm text-muted-foreground">1,850 (14.8%)</p>
-              </div>
-              <div className="font-medium text-red-500">-2%</div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Thanh toán thành công</p>
-                <p className="text-sm text-muted-foreground">1,245 (10%)</p>
-              </div>
-              <div className="font-medium text-foreground">+5%</div>
-            </div>
+            ))}
           </CardContent>
         </Card>
       </div>
@@ -178,8 +117,12 @@ export function ReportCharts() {
         <CardContent>
           {/* Mobile View: List */}
           <div className="space-y-6 md:hidden">
-            {bestSellers.map((item, index) => (
-              <div key={item.id} className="flex items-center">
+            {mockBestSellers.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="flex items-center cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors -mx-2"
+                onClick={() => router.push(`/catalog/products/${item.id}`)}
+              >
                 <Avatar className="h-10 w-10 rounded-md border">
                   <AvatarFallback className={index < 3 ? "bg-orange-100 text-orange-600 font-bold" : "bg-muted text-muted-foreground font-semibold"}>
                     #{index + 1}
@@ -220,8 +163,12 @@ export function ReportCharts() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bestSellers.map((item, index) => (
-                  <TableRow key={item.id}>
+                {mockBestSellers.map((item, index) => (
+                  <TableRow 
+                    key={item.id} 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/catalog/products/${item.id}`)}
+                  >
                     <TableCell className="font-medium">{item.id}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
