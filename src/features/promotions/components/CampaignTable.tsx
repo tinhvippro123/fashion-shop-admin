@@ -14,6 +14,7 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Search, MoreHorizontal, Filter, Megaphone, Calendar } from "lucide-react";
+import { getCampaignActions } from "../utils/action-resolvers";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +34,49 @@ import { EmptyState } from "@/shared/ui/empty-state";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 
 import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
+
+interface CampaignTableActionsProps {
+  campaign: Campaign;
+  isTrashView: boolean;
+  onPermanentDelete: (campaign: Campaign) => void;
+  onEndEarly: (campaign: Campaign) => void;
+}
+
+function CampaignTableActions({ campaign, isTrashView, onPermanentDelete, onEndEarly }: CampaignTableActionsProps) {
+  const actions = getCampaignActions(campaign, isTrashView);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      } />
+      <DropdownMenuContent align="end" className="w-48">
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${campaign.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
+        )}
+        
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem onClick={() => onPermanentDelete(campaign)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
+        )}
+
+        {actions.includes('EDIT') && (
+          <DropdownMenuItem render={<Link href={`/promotions/${campaign.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+            Sửa chiến dịch
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('END_EARLY') && (
+          <DropdownMenuItem onClick={() => onEndEarly(campaign)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+        )}
+
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${campaign.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { campaigns, isLoading, setCampaigns } = useCampaigns();
@@ -185,7 +229,7 @@ export function CampaignTable({ isTrashView = false }: { isTrashView?: boolean }
                   </TableHead>
                 <TableHead className="min-w-[250px]">Tên chiến dịch</TableHead>
                 <TableHead>Mức giảm</TableHead>
-                <TableHead className="min-w-[200px]">Thời gian</TableHead>
+                <TableHead className="min-w-[200px]">Khung thời gian</TableHead>
                 <TableHead>Sản phẩm / Đối tượng</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead className="text-right">Thao tác</TableHead>
@@ -217,7 +261,12 @@ filteredCampaigns.map((camp) => (
                     <span className="font-bold text-red-600">-{camp.discount}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm font-medium text-foreground">{camp.duration}</span>
+                    <div className="flex flex-col gap-1 text-sm whitespace-nowrap">
+                      <span className="text-foreground font-medium">Từ: {camp.duration.split(" - ")[0]}</span>
+                      {camp.duration.split(" - ")[1] && (
+                        <span className="text-red-600 font-medium">Đến: {camp.duration.split(" - ")[1]}</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1 text-xs">
@@ -238,44 +287,12 @@ filteredCampaigns.map((camp) => (
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      } />
-                      <DropdownMenuContent align="end" className="w-48">
-                        {isTrashView ? (
-                          <>
-                            <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                            {(!camp.usageCount || camp.usageCount === 0) && (
-                              <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {camp.status === "Đang diễn ra" && (
-                              <DropdownMenuItem onClick={() => handleEndEarly(camp)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
-                            )}
-
-                            {camp.status === "Sắp diễn ra" && (
-                              <>
-                                <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                                  Sửa chiến dịch
-                                </DropdownMenuItem>
-                                {(!camp.usageCount || camp.usageCount === 0) && (
-                                  <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                                )}
-                              </>
-                            )}
-
-                            {(camp.status === "Đã kết thúc" || camp.status === "Tạm dừng") && (
-                              <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
-                            )}
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <CampaignTableActions 
+                      campaign={camp} 
+                      isTrashView={isTrashView} 
+                      onPermanentDelete={handlePermanentDelete} 
+                      onEndEarly={handleEndEarly} 
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -306,9 +323,12 @@ filteredCampaigns.map((camp) => (
                   <span className="text-muted-foreground text-xs">Mức giảm:</span>
                   <span className="font-bold text-red-600">-{camp.discount}</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-xs">Thời gian:</span>
-                  <span className="font-medium text-foreground text-xs">{camp.duration}</span>
+                <div className="flex flex-col gap-1 text-xs">
+                  <span className="text-muted-foreground text-xs">Khung thời gian:</span>
+                  <span className="font-medium text-foreground">Từ: {camp.duration.split(" - ")[0]}</span>
+                  {camp.duration.split(" - ")[1] && (
+                    <span className="font-medium text-red-600">Đến: {camp.duration.split(" - ")[1]}</span>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col gap-1 mt-1 text-xs">
@@ -328,44 +348,12 @@ filteredCampaigns.map((camp) => (
                 </Badge>
               </div>
               <div className="absolute top-3 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger render={
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  } />
-                  <DropdownMenuContent align="end" className="w-48">
-                    {isTrashView ? (
-                      <>
-                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${camp.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-                        {(!camp.usageCount || camp.usageCount === 0) && (
-                          <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {camp.status === "Đang diễn ra" && (
-                          <DropdownMenuItem onClick={() => handleEndEarly(camp)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
-                        )}
-
-                        {camp.status === "Sắp diễn ra" && (
-                          <>
-                            <DropdownMenuItem render={<Link href={`/promotions/${camp.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                              Sửa chiến dịch
-                            </DropdownMenuItem>
-                            {(!camp.usageCount || camp.usageCount === 0) && (
-                              <DropdownMenuItem onClick={() => handlePermanentDelete(camp)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-                            )}
-                          </>
-                        )}
-
-                        {(camp.status === "Đã kết thúc" || camp.status === "Tạm dừng") && (
-                          <DropdownMenuItem onClick={() => { toast.success(`Đã chuyển chiến dịch ${camp.name} vào thùng rác!`); }} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
-                        )}
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <CampaignTableActions 
+                  campaign={camp} 
+                  isTrashView={isTrashView} 
+                  onPermanentDelete={handlePermanentDelete} 
+                  onEndEarly={handleEndEarly} 
+                />
               </div>
             </div>
           ))}

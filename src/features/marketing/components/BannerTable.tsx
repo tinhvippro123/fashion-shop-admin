@@ -33,6 +33,67 @@ import Image from "next/image";
 
 import { useBanners } from "@/features/marketing/hooks/useBanners";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getBannerActions } from "../utils/action-resolvers";
+
+import { Banner } from "@/features/marketing/types/banner.admin";
+
+function BannerTableActions({ banner }: { banner: Banner }) {
+  const actions = getBannerActions(banner);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('EDIT') && (
+          <Dialog>
+            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
+            <DialogContent className="sm:max-w-106.25">
+              <DialogHeader>
+                <DialogTitle>Chỉnh sửa Banner</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Hình ảnh Banner</Label>
+                  <div className="border-2 border-dashed rounded-md p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 relative group">
+                    {banner.imageUrl ? (
+                      <div className="relative w-full h-24 overflow-hidden rounded-sm">
+                        <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <UploadCloud className="h-6 w-6 text-white" />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground font-medium">Nhấn để tải ảnh lên</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-title-${banner.id}`}>Tiêu đề</Label>
+                  <Input id={`edit-title-${banner.id}`} defaultValue={banner.title} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-link-${banner.id}`}>Đường dẫn (Link)</Label>
+                  <Input id={`edit-link-${banner.id}`} defaultValue={banner.link} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline">Hủy</Button>
+                <Button className="">Lưu thay đổi</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function BannerTable() {
   const { banners, isLoading } = useBanners();
@@ -59,7 +120,7 @@ export function BannerTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[120px]">Hình ảnh</TableHead>
+                <TableHead className="w-30">Hình ảnh</TableHead>
                 <TableHead>Tiêu đề</TableHead>
                 <TableHead>Đường dẫn liên kết</TableHead>
                 <TableHead>Trạng thái</TableHead>
@@ -87,54 +148,7 @@ banners.map((banner) => (
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                                        <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa Banner</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label>Hình ảnh Banner</Label>
-                                <div className="border-2 border-dashed rounded-md p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 relative group">
-                                  {banner.imageUrl ? (
-                                    <div className="relative w-full h-24 overflow-hidden rounded-sm">
-                                      <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                        <UploadCloud className="h-6 w-6 text-white" />
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                                      <span className="text-sm text-muted-foreground font-medium">Nhấn để tải ảnh lên</span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-title-${banner.id}`}>Tiêu đề</Label>
-                                <Input id={`edit-title-${banner.id}`} defaultValue={banner.title} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-link-${banner.id}`}>Đường dẫn (Link)</Label>
-                                <Input id={`edit-link-${banner.id}`} defaultValue={banner.link} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                                        <BannerTableActions banner={banner} />
                   </TableCell>
                 </TableRow>
               ))
@@ -167,36 +181,7 @@ banners.map((banner) => (
               </div>
 
               <div className="absolute top-3 right-2">
-                                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa Banner</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-title-${banner.id}`}>Tiêu đề</Label>
-                                <Input id={`m-edit-title-${banner.id}`} defaultValue={banner.title} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-link-${banner.id}`}>Đường dẫn (Link)</Label>
-                                <Input id={`m-edit-link-${banner.id}`} defaultValue={banner.link} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <BannerTableActions banner={banner} />
               </div>
             </div>
           ))}

@@ -9,6 +9,8 @@ export const VoucherSchema = z.object({
   quantity: z.coerce.number().min(1, "Số lượng phải lớn hơn 0"),
   isPublic: z.boolean().default(true),
   isActive: z.boolean().default(true),
+  startDate: z.string().min(1, "Vui lòng chọn ngày bắt đầu"),
+  endDate: z.string().min(1, "Vui lòng chọn ngày kết thúc"),
 }).refine((data) => {
   if (data.discountType === "percent" && !data.maxDiscount) {
     return false;
@@ -17,6 +19,11 @@ export const VoucherSchema = z.object({
 }, {
   message: "Vui lòng nhập mức giảm tối đa",
   path: ["maxDiscount"]
+}).refine((data) => {
+  return new Date(data.endDate) >= new Date(data.startDate);
+}, {
+  message: "Ngày kết thúc phải sau ngày bắt đầu",
+  path: ["endDate"]
 });
 
 export type TVoucherPayload = z.infer<typeof VoucherSchema>;

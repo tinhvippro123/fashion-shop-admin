@@ -3,18 +3,19 @@
 import { Button } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/shared/ui/dialog";
-import { VoucherTable, VoucherForm } from "@/features/promotions";
+import { VoucherTable, VoucherModal } from "@/features/promotions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export default function VouchersPage() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "view" | "edit" | "duplicate">("create");
+  const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>(null);
+
+  const handleAction = (mode: "create" | "view" | "edit" | "duplicate", id: string | null = null) => {
+    setModalMode(mode);
+    setSelectedVoucherId(id);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -23,31 +24,40 @@ export default function VouchersPage() {
           <h2 className="text-2xl font-bold tracking-tight">Mã giảm giá (Voucher)</h2>
           <p className="text-muted-foreground hidden sm:block">Quản lý các chương trình khuyến mãi bằng mã code.</p>
         </div>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger render={
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Tạo mã giảm giá
-            </Button>
-          } />
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Tạo Mã giảm giá</DialogTitle>
-            </DialogHeader>
-            <VoucherForm onSuccess={() => setIsOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => handleAction("create")}>
+          <Plus className="mr-2 h-4 w-4" /> Tạo mã giảm giá
+        </Button>
       </div>
 
-      <Tabs defaultValue="active" className="w-full">
+      <VoucherModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        mode={modalMode} 
+        voucherId={selectedVoucherId} 
+      />
+
+      <Tabs defaultValue="ALL" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="active">Đang hoạt động</TabsTrigger>
-          <TabsTrigger value="trash">Thùng rác</TabsTrigger>
+          <TabsTrigger value="ALL">Tất cả</TabsTrigger>
+          <TabsTrigger value="ACTIVE">Đang diễn ra</TabsTrigger>
+          <TabsTrigger value="UPCOMING">Sắp diễn ra</TabsTrigger>
+          <TabsTrigger value="ENDED">Đã kết thúc</TabsTrigger>
+          <TabsTrigger value="TRASH">Thùng rác</TabsTrigger>
         </TabsList>
-        <TabsContent value="active">
-          <VoucherTable />
+        <TabsContent value="ALL" className="m-0">
+          <VoucherTable viewStatus="Tất cả" onAction={handleAction} />
         </TabsContent>
-        <TabsContent value="trash">
-          <VoucherTable isTrashView={true} />
+        <TabsContent value="ACTIVE" className="m-0">
+          <VoucherTable viewStatus="Đang diễn ra" onAction={handleAction} />
+        </TabsContent>
+        <TabsContent value="UPCOMING" className="m-0">
+          <VoucherTable viewStatus="Sắp diễn ra" onAction={handleAction} />
+        </TabsContent>
+        <TabsContent value="ENDED" className="m-0">
+          <VoucherTable viewStatus="Đã kết thúc" onAction={handleAction} />
+        </TabsContent>
+        <TabsContent value="TRASH" className="m-0">
+          <VoucherTable isTrashView onAction={handleAction} />
         </TabsContent>
       </Tabs>
     </div>

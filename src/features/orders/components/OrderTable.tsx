@@ -11,16 +11,6 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Search, Filter, ShoppingBag, CheckCircle, XCircle, Truck, Eye, MoreHorizontal, Printer, AlertTriangle, Banknote, RefreshCcw, X, Lock } from "lucide-react";
-import { cn } from "@/shared/utils/utils";
-import { EmptyState } from "@/shared/ui/empty-state";
-import { TableSkeleton } from "@/shared/ui/table-skeleton";
-import { useOrders } from "@/features/orders/hooks/useOrders";
-import { OrderStatus } from "@/features/orders/types/order.admin";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
-import { Checkbox } from "@/shared/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +20,96 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup
 } from "@/shared/ui/dropdown-menu";
+import { cn } from "@/shared/utils/utils";
+import { Order } from "@/features/orders/types/order.admin";
+import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getOrderActions } from "../utils/action-resolvers";
+import { EmptyState } from "@/shared/ui/empty-state";
+import { useOrders } from "@/features/orders/hooks/useOrders";
+import { OrderStatus } from "@/features/orders/types/order.admin";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
+import { Checkbox } from "@/shared/ui/checkbox";
+
+interface OrderTableActionsProps {
+  order: Order;
+  onReturn: (id: string) => void;
+}
+
+function OrderTableActions({ order, onReturn }: OrderTableActionsProps) {
+  const actions = getOrderActions(order);
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {actions.includes('VIEW') && (
+          <DropdownMenuItem render={<Link href={`/orders/${order.id}`} className="w-full cursor-pointer" />}>
+            <Eye className="h-4 w-4 mr-2" /> Xem chi tiết
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('APPROVE') && (
+          <DropdownMenuItem className="text-blue-600">
+            <CheckCircle className="h-4 w-4 mr-2" /> Duyệt đơn
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('HANDOVER') && (
+          <DropdownMenuItem className="text-purple-600">
+            <Truck className="h-4 w-4 mr-2" /> Giao vận chuyển
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('COMPLETE') && (
+          <DropdownMenuItem className="text-green-600">
+            <CheckCircle className="h-4 w-4 mr-2" /> Đã giao hàng
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('PRINT') && (
+          <DropdownMenuItem 
+            onClick={() => {
+              toast.info(`Đang tạo hóa đơn cho đơn hàng ${order.id}...`);
+              setTimeout(() => window.print(), 500);
+            }}
+            className="cursor-pointer text-blue-600"
+          >
+            <Printer className="h-4 w-4 mr-2" /> In hóa đơn
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('CREATE_RETURN') && (
+          <DropdownMenuItem 
+            onClick={() => onReturn(order.id)}
+            className="cursor-pointer text-purple-600"
+          >
+            <RefreshCcw className="h-4 w-4 mr-2" /> Tạo Yêu cầu Đổi/Trả
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('REFUND') && (
+          <DropdownMenuItem 
+            onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
+            className="cursor-pointer text-blue-600"
+          >
+            <Banknote className="h-4 w-4 mr-2" /> Xác nhận Hoàn tiền
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('CANCEL') && (
+          <DropdownMenuItem className="text-red-600">
+            <XCircle className="h-4 w-4 mr-2" /> Hủy đơn
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
   const router = useRouter();
@@ -42,7 +122,7 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
   const [returnDialog, setReturnDialog] = useState(false);
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
 
-  const filteredOrders = viewStatus && viewStatus !== 'ALL' as any ? orders.filter(o => o.status === viewStatus) : orders;
+  const filteredOrders = viewStatus && (viewStatus as string) !== 'ALL' ? orders.filter(o => o.status === viewStatus) : orders;
 
   // Luồng duyệt đơn: Chỉ có COD mới được duyệt tay. Online payment phải đợi Bot duyệt (Webhook)
   const isOnlinePayment = (payment: string) => !payment.includes("COD") && !payment.includes("Thanh toán khi nhận hàng");
@@ -229,110 +309,7 @@ export function OrderTable({ viewStatus }: { viewStatus?: OrderStatus }) {
                     </TableCell>
                     <TableCell className="font-medium">{order.total}</TableCell>
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem render={<Link href={`/orders/${order.id}`} className="w-full cursor-pointer flex items-center" />}>
-                            <Eye className="h-4 w-4 mr-2" /> Xem chi tiết
-                          </DropdownMenuItem>
-                          
-                          {order.status === 'PENDING' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                disabled={onlinePaymentDisabled}
-                                onClick={() => handleApprove([order.id])}
-                                className="cursor-pointer flex items-center"
-                              >
-                                <CheckCircle className="h-4 w-4 mr-2" /> Duyệt đơn
-                                {onlinePaymentDisabled && <span className="ml-2 text-[10px] text-muted-foreground">(Chờ Webhook)</span>}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openCancelDialog([order.id])}
-                                variant="destructive"
-                                className="cursor-pointer flex items-center"
-                              >
-                                <XCircle className="h-4 w-4 mr-2" /> Hủy đơn
-                              </DropdownMenuItem>
-                            </>
-                          )}
-
-                          {order.status === 'PROCESSING' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={() => {
-                                  toast.info(`Đang tạo phiếu in cho đơn hàng ${order.id}...`);
-                                  setTimeout(() => window.print(), 500);
-                                }}
-                                className="cursor-pointer flex items-center text-blue-600"
-                              >
-                                <Printer className="h-4 w-4 mr-2" /> In phiếu giao hàng
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleHandover([order.id])}
-                                className="cursor-pointer flex items-center"
-                              >
-                                <Truck className="h-4 w-4 mr-2" /> Giao Shipper
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openCancelDialog([order.id])}
-                                variant="destructive"
-                                className="cursor-pointer flex items-center"
-                              >
-                                <XCircle className="h-4 w-4 mr-2" /> Hủy đơn
-                              </DropdownMenuItem>
-                            </>
-                          )}
-
-                          {order.status === 'SHIPPING' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={() => handleUpdateStatus([order.id], 'COMPLETED')}
-                                className="cursor-pointer flex items-center text-emerald-600"
-                              >
-                                <CheckCircle className="h-4 w-4 mr-2" /> Xác nhận hoàn thành
-                              </DropdownMenuItem>
-                            </>
-                          )}
-
-                          {order.status === 'CANCELLED' && order.payment !== 'COD' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={() => toast.success(`Đã xác nhận hoàn tiền cho đơn ${order.id}`)}
-                                className="cursor-pointer flex items-center text-blue-600"
-                              >
-                                <Banknote className="h-4 w-4 mr-2" /> Xác nhận Hoàn tiền
-                              </DropdownMenuItem>
-                            </>
-                          )}
-
-                          {order.status === 'COMPLETED' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={() => {
-                                  toast.info(`Đang tạo hóa đơn cho đơn hàng ${order.id}...`);
-                                  setTimeout(() => window.print(), 500);
-                                }}
-                                className="cursor-pointer flex items-center text-blue-600"
-                              >
-                                <Printer className="h-4 w-4 mr-2" /> In hóa đơn
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openReturnDialog(order.id)}
-                                className="cursor-pointer flex items-center text-purple-600"
-                              >
-                                <RefreshCcw className="h-4 w-4 mr-2" /> Tạo Yêu cầu Đổi/Trả
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <OrderTableActions order={order} onReturn={openReturnDialog} />
                     </TableCell>
                   </TableRow>
                 );

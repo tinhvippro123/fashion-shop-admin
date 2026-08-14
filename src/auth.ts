@@ -33,16 +33,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        // @ts-ignore
+        // @ts-expect-error - NextAuth types mismatch
         session.user.id = token.sub;
-        // @ts-ignore
+        // @ts-expect-error - NextAuth types mismatch
         session.user.role = token.role;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        // @ts-ignore
+        // @ts-expect-error - NextAuth types mismatch
         token.role = user.role;
       }
       return token;

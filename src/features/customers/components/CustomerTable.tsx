@@ -33,6 +33,78 @@ import { cn } from "@/shared/utils/utils";
 
 import { useCustomers } from "@/features/customers/hooks/useCustomers";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getCustomerActions } from "../utils/action-resolvers";
+
+interface CustomerTableActionsProps {
+  cus: Customer;
+  isPendingView: boolean;
+  isUnverifiedView: boolean;
+  isBannedView: boolean;
+  onToggleBan: (cus: Customer) => void;
+  onPermanentDelete: (cus: Customer) => void;
+}
+
+function CustomerTableActions({ cus, isPendingView, isUnverifiedView, isBannedView, onToggleBan, onPermanentDelete }: CustomerTableActionsProps) {
+  const router = useRouter();
+  const actions = getCustomerActions(cus, { isPendingView, isUnverifiedView, isBannedView });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {actions.includes('VIEW') && (
+          <DropdownMenuItem onClick={() => router.push(`/customers/${cus.id}`)}>
+            <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
+          </DropdownMenuItem>
+        )}
+
+        {(actions.includes('RESTORE') || actions.includes('BAN') || actions.includes('PERMANENT_DELETE') || actions.includes('UNBAN') || actions.includes('CANNOT_DELETE_BANNED')) && (
+          <DropdownMenuSeparator />
+        )}
+
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem onClick={() => { toast.success(`Khôi phục khách hàng ${cus.name}`); }} className="text-emerald-600 font-medium cursor-pointer flex items-center">
+            <Unlock className="mr-2 h-4 w-4" /> Khôi phục
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('BAN') && (
+          <DropdownMenuItem onClick={() => onToggleBan(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
+            <Lock className="mr-2 h-4 w-4" /> Khóa tài khoản
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem onClick={() => onPermanentDelete(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
+            <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('UNBAN') && (
+          <DropdownMenuItem onClick={() => onToggleBan(cus)} className="text-emerald-600 font-medium cursor-pointer flex items-center">
+            <Unlock className="mr-2 h-4 w-4" /> Mở khóa
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('CANNOT_DELETE_BANNED') && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<div className="w-full" />}>
+                <DropdownMenuItem disabled className="text-muted-foreground flex items-center">
+                  <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
+                </DropdownMenuItem>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-62.5 text-xs">
+                🚫 Không thể xóa: Tài khoản đang vi phạm. Cần giữ lại Số điện thoại/Email để ngăn chặn đối tượng đăng ký lại.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function CustomerTable({ isPendingView = false, isBannedView = false, isUnverifiedView = false }: { isPendingView?: boolean, isBannedView?: boolean, isUnverifiedView?: boolean }) {
   const router = useRouter();
@@ -248,63 +320,14 @@ export function CustomerTable({ isPendingView = false, isBannedView = false, isU
                         {cus.tier}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onClick={() => router.push(`/customers/${cus.id}`)}>
-                            <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
-                          </DropdownMenuItem>
-
-                          {isPendingView ? (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => { toast.success(`Khôi phục khách hàng ${cus.name}`); }} className="text-emerald-600 font-medium cursor-pointer flex items-center">
-                                <Unlock className="mr-2 h-4 w-4" /> Khôi phục
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
-                                <Lock className="mr-2 h-4 w-4" /> Khóa tài khoản
-                              </DropdownMenuItem>
-                            </>
-                          ) : isUnverifiedView ? (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handlePermanentDelete(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
-                                <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
-                              </DropdownMenuItem>
-                            </>
-                          ) : isBannedView ? (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-emerald-600 font-medium cursor-pointer flex items-center">
-                                <Unlock className="mr-2 h-4 w-4" /> Mở khóa
-                              </DropdownMenuItem>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger render={<div className="w-full" />}>
-                                    <DropdownMenuItem disabled className="text-muted-foreground flex items-center">
-                                      <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
-                                    </DropdownMenuItem>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="left" className="max-w-62.5 text-xs">
-                                    🚫 Không thể xóa: Tài khoản đang vi phạm. Cần giữ lại Số điện thoại/Email để ngăn chặn đối tượng đăng ký lại.
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </>
-                          ) : (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-red-600 cursor-pointer flex items-center">
-                                <Lock className="mr-2 h-4 w-4" /> Khóa tài khoản
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+                      <CustomerTableActions 
+                        cus={cus}
+                        isPendingView={isPendingView}
+                        isUnverifiedView={isUnverifiedView}
+                        isBannedView={isBannedView}
+                        onToggleBan={handleToggleBan}
+                        onPermanentDelete={handlePermanentDelete}
+                      />
                   </TableRow>
                 ))
               )}
@@ -371,61 +394,14 @@ export function CustomerTable({ isPendingView = false, isBannedView = false, isU
               </div>
 
               <div className="absolute top-3 right-2" onClick={(e) => e.stopPropagation()}>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => router.push(`/customers/${cus.id}`)}>
-                      <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
-                    </DropdownMenuItem>
-
-                    {isPendingView ? (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => { toast.success(`Khôi phục khách hàng ${cus.name}`); }} className="text-emerald-600 font-medium cursor-pointer flex items-center">
-                          <Unlock className="mr-2 h-4 w-4" /> Khôi phục
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
-                          <Lock className="mr-2 h-4 w-4" /> Khóa tài khoản
-                        </DropdownMenuItem>
-                      </>
-                    ) : isUnverifiedView ? (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handlePermanentDelete(cus)} className="text-red-600 font-medium cursor-pointer flex items-center">
-                          <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
-                        </DropdownMenuItem>
-                      </>
-                    ) : isBannedView ? (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-emerald-600 font-medium cursor-pointer flex items-center">
-                          <Unlock className="mr-2 h-4 w-4" /> Mở khóa
-                        </DropdownMenuItem>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger render={<div className="w-full" />}>
-                              <DropdownMenuItem disabled className="text-muted-foreground flex items-center">
-                                <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
-                              </DropdownMenuItem>
-                            </TooltipTrigger>
-                            <TooltipContent side="left" className="max-w-62.5 text-xs">
-                              🚫 Không thể xóa: Tài khoản đang vi phạm. Cần giữ lại Số điện thoại/Email để ngăn chặn đối tượng đăng ký lại.
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </>
-                    ) : (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleToggleBan(cus)} className="text-red-600 cursor-pointer flex items-center">
-                          <Lock className="mr-2 h-4 w-4" /> Khóa tài khoản
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  <CustomerTableActions 
+                    cus={cus}
+                    isPendingView={isPendingView}
+                    isUnverifiedView={isUnverifiedView}
+                    isBannedView={isBannedView}
+                    onToggleBan={handleToggleBan}
+                    onPermanentDelete={handlePermanentDelete}
+                  />
               </div>
             </div>
           ))}

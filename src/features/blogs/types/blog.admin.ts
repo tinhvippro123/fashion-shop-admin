@@ -7,4 +7,5 @@ export interface Blog {
   status: string;
   date: string;
   thumbnail: string;
+  deletedAt?: string;
 }

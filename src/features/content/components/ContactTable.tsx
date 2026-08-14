@@ -18,7 +18,34 @@ import {
 } from "@/shared/ui/dropdown-menu";
 
 import { useContacts } from "@/features/content/hooks/useContacts";
+import { Contact } from "@/features/content/types/contact.admin";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getContactActions } from "../utils/action-resolvers";
+
+interface ContactTableActionsProps {
+  contact: Contact;
+}
+
+function ContactTableActions({ contact }: ContactTableActionsProps) {
+  const actions = getContactActions(contact);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('VIEW') && (
+          <DropdownMenuItem render={<Link href={`/contacts/${contact.id}`} className="w-full cursor-pointer" />}>
+            <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
+          </DropdownMenuItem>
+        )}
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Xóa</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function ContactTable() {
   const { contacts, isLoading } = useContacts();
@@ -73,17 +100,7 @@ contacts.map((contact) => (
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem render={<Link href={`/contacts/${contact.id}`} className="w-full cursor-pointer" />}>
-                          <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <ContactTableActions contact={contact} />
                   </TableCell>
                 </TableRow>
               ))
@@ -115,17 +132,7 @@ contacts.map((contact) => (
               </div>
 
               <div className="absolute top-3 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem render={<Link href={`/contacts/${contact.id}`} className="w-full cursor-pointer" />}>
-                      <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Xóa</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <ContactTableActions contact={contact} />
               </div>
             </div>
           ))}

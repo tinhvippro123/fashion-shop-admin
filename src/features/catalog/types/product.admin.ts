@@ -8,6 +8,7 @@ export interface Product {
   sold?: number;
   rating?: number;
   reviewCount?: number;
+  deletedAt?: string;
 }
 
 export interface IOptionSuggestions {

@@ -33,7 +33,7 @@ export default function StaffsPage() {
               <Plus className="mr-2 h-4 w-4" /> Thêm nhân viên
             </Button>
           } />
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-106.25">
             <DialogHeader>
               <DialogTitle>Thêm nhân viên mới</DialogTitle>
             </DialogHeader>

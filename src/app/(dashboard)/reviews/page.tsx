@@ -8,12 +8,15 @@ export default function ReviewsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const { reviews, setReviews, isLoading } = useReviews();
 
-  const visibleReviews = reviews.filter((r) => !r.isHidden);
-  const hiddenReviews = reviews.filter((r) => r.isHidden);
+  const allReviews = reviews.filter(r => !r.deletedAt);
+  const visibleReviews = reviews.filter((r) => !r.isHidden && !r.deletedAt);
+  const hiddenReviews = reviews.filter((r) => r.isHidden && !r.deletedAt);
+  const trashReviews = reviews.filter(r => r.deletedAt);
 
-  let displayedReviews = reviews;
+  let displayedReviews = allReviews;
   if (activeTab === "visible") displayedReviews = visibleReviews;
   if (activeTab === "hidden") displayedReviews = hiddenReviews;
+  if (activeTab === "trash") displayedReviews = trashReviews;
 
   return (
     <div className="flex flex-col gap-6 w-full pb-10">
@@ -28,13 +31,16 @@ export default function ReviewsPage() {
         <div className="flex items-center justify-between mb-4">
           <TabsList className="bg-muted/50 border">
             <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              Tất cả ({reviews.length})
+              Tất cả ({allReviews.length})
             </TabsTrigger>
             <TabsTrigger value="visible" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-emerald-700">
               Đang hiển thị ({visibleReviews.length})
             </TabsTrigger>
-            <TabsTrigger value="hidden" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-red-600">
+            <TabsTrigger value="hidden" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-muted-foreground">
               Đã ẩn ({hiddenReviews.length})
+            </TabsTrigger>
+            <TabsTrigger value="trash" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-red-700">
+              Thùng rác ({trashReviews.length})
             </TabsTrigger>
           </TabsList>
         </div>
@@ -44,6 +50,7 @@ export default function ReviewsPage() {
           reviews={displayedReviews} 
           setReviews={setReviews} 
           isLoading={isLoading} 
+          isTrashView={activeTab === 'trash'}
         />
       </Tabs>
     </div>

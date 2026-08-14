@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, PackagePlus, AlertTriangle, Megaphone } from "lucide-react";
+import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, PackagePlus, AlertTriangle, Megaphone, ArchiveRestore } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,23 +28,81 @@ import {
 import { cn } from "@/shared/utils/utils";
 import { Product } from "@/features/catalog/types/product.admin";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getProductActions } from "../../utils/action-resolvers";
+
+interface ProductTableActionsProps {
+  product: Product;
+  isTrashView: boolean;
+  onRestore: (product: Product) => void;
+  onToggleActive: (product: Product) => void;
+  onRestock: (product: Product) => void;
+  onDelete: (product: Product) => void;
+}
+
+function ProductTableActions({ product, isTrashView, onRestore, onToggleActive, onRestock, onDelete }: ProductTableActionsProps) {
+  const actions = getProductActions(product, isTrashView);
+  return (
+    <>
+      {actions.includes('EDIT') && (
+        <DropdownMenuItem render={<Link href={`/products/${product.id}/edit`} className="w-full h-full cursor-pointer" />}>
+          Chỉnh sửa
+        </DropdownMenuItem>
+      )}
+      
+      {actions.includes('RESTORE') && (
+        <DropdownMenuItem onClick={() => onRestore(product)} className="text-emerald-600">
+          <ArchiveRestore className="mr-2 h-4 w-4" /> Khôi phục
+        </DropdownMenuItem>
+      )}
+
+      {actions.includes('TOGGLE_ACTIVE') && (
+        product.isActive ? (
+          <DropdownMenuItem onClick={() => onToggleActive(product)}>
+            <EyeOff className="mr-2 h-4 w-4" /> Ẩn sản phẩm
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => onToggleActive(product)} className="text-emerald-600">
+            <Eye className="mr-2 h-4 w-4" /> Bán lại
+          </DropdownMenuItem>
+        )
+      )}
+
+      {actions.includes('RESTOCK') && (
+        <DropdownMenuItem onClick={() => onRestock(product)} className="text-blue-600">
+          <PackagePlus className="mr-2 h-4 w-4" /> Nhập thêm kho
+        </DropdownMenuItem>
+      )}
+
+      <DropdownMenuSeparator />
+      
+      {(actions.includes('DELETE') || actions.includes('PERMANENT_DELETE')) && (
+        <DropdownMenuItem onClick={() => onDelete(product)} className="text-red-600">
+          <Trash2 className="mr-2 h-4 w-4" /> {isTrashView ? "Xóa vĩnh viễn" : "Xóa sản phẩm"}
+        </DropdownMenuItem>
+      )}
+    </>
+  );
+}
 
 interface ProductTableProps {
   products: Product[];
   isLoading?: boolean;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  isTrashView?: boolean;
 }
 
-export function ProductTable({ products, isLoading, setProducts }: ProductTableProps) {
+export function ProductTable({ products, isLoading, setProducts, isTrashView = false }: ProductTableProps) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  
+  const filteredProducts = products.filter(p => isTrashView ? p.deletedAt : !p.deletedAt);
 
 
   const toggleSelectAll = () => {
-    if (selectedIds.length === products.length && products.length > 0) {
+    if (selectedIds.length === filteredProducts.length && filteredProducts.length > 0) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(products.map((p) => p.id));
+      setSelectedIds(filteredProducts.map((p) => p.id));
     }
   };
 
@@ -67,52 +125,59 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
   };
 
   const handleDelete = (product: Product) => {
-    if (product.sold && product.sold > 0) {
-      // Soft Delete
-      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, isActive: false } : p));
-      toast.error(`Sản phẩm "${product.name}" đã phát sinh giao dịch nên không thể xóa vĩnh viễn. Hệ thống đã tự động chuyển sản phẩm sang trạng thái Ẩn!`, {
-        duration: 5000,
-      });
-    } else {
-      // Hard Delete
+    if (isTrashView) {
+      // Hard Delete from Trash
+      if (product.sold && product.sold > 0) {
+        toast.error(`Sản phẩm "${product.name}" đã có lượt bán nên không thể xóa vĩnh viễn!`);
+        return;
+      }
       if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm "${product.name}" không? Hành động này không thể hoàn tác.`)) {
         setProducts(prev => prev.filter(p => p.id !== product.id));
         toast.success(`Đã xóa vĩnh viễn sản phẩm "${product.name}" thành công!`);
       }
+    } else {
+      // Soft Delete to Trash
+      if (confirm(`Bạn muốn đưa sản phẩm "${product.name}" vào thùng rác?`)) {
+        setProducts(prev => prev.map(p => p.id === product.id ? { ...p, deletedAt: new Date().toISOString() } : p));
+        toast.success(`Đã chuyển sản phẩm "${product.name}" vào thùng rác!`);
+      }
     }
+  };
+  
+  const handleRestore = (product: Product) => {
+    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, deletedAt: undefined } : p));
+    toast.success(`Đã khôi phục sản phẩm "${product.name}"!`);
   };
 
   const handleBulkDelete = () => {
-    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedIds.length} sản phẩm đã chọn?`)) return;
-
-    const selectedProducts = products.filter(p => selectedIds.includes(p.id));
-    const toSoftDelete = selectedProducts.filter(p => p.sold && p.sold > 0);
-    const toHardDelete = selectedProducts.filter(p => !p.sold || p.sold === 0);
-
-    setProducts(prev => {
-      let next = [...prev];
-      // Hard delete
-      if (toHardDelete.length > 0) {
-        const hardDeleteIds = toHardDelete.map(p => p.id);
-        next = next.filter(p => !hardDeleteIds.includes(p.id));
+    if (isTrashView) {
+      const selectedProducts = products.filter(p => selectedIds.includes(p.id));
+      const undeletableCount = selectedProducts.filter(p => p.sold && p.sold > 0).length;
+      const deletableProducts = selectedProducts.filter(p => !p.sold || p.sold === 0);
+      
+      if (undeletableCount > 0 && undeletableCount === selectedIds.length) {
+         toast.error(`Không thể xóa vĩnh viễn ${undeletableCount} sản phẩm vì đã có lượt bán!`);
+         return;
       }
-      // Soft delete
-      if (toSoftDelete.length > 0) {
-        const softDeleteIds = toSoftDelete.map(p => p.id);
-        next = next.map(p => softDeleteIds.includes(p.id) ? { ...p, isActive: false } : p);
-      }
-      return next;
-    });
-
-    setSelectedIds([]);
-
-    if (toSoftDelete.length > 0) {
-      toast.error(`${toSoftDelete.length} sản phẩm đã phát sinh giao dịch nên được chuyển sang trạng thái Ẩn. Đã xóa vĩnh viễn ${toHardDelete.length} sản phẩm.`, {
-        duration: 5000,
-      });
+      
+      if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${deletableProducts.length} sản phẩm?${undeletableCount > 0 ? `\n\n(Bỏ qua ${undeletableCount} sản phẩm không thể xóa)` : ''}`)) return;
+      
+      const hardDeleteIds = deletableProducts.map(p => p.id);
+      setProducts(prev => prev.filter(p => !hardDeleteIds.includes(p.id)));
+      setSelectedIds([]);
+      toast.success(`Đã xóa vĩnh viễn ${deletableProducts.length} sản phẩm thành công!`);
     } else {
-      toast.success(`Đã xóa vĩnh viễn ${toHardDelete.length} sản phẩm thành công!`);
+      if (!confirm(`Bạn có chắc chắn muốn đưa ${selectedIds.length} sản phẩm vào thùng rác?`)) return;
+      setProducts(prev => prev.map(p => selectedIds.includes(p.id) ? { ...p, deletedAt: new Date().toISOString() } : p));
+      setSelectedIds([]);
+      toast.success(`Đã chuyển ${selectedIds.length} sản phẩm vào thùng rác thành công!`);
     }
+  };
+
+  const handleBulkRestore = () => {
+    setProducts(prev => prev.map(p => selectedIds.includes(p.id) ? { ...p, deletedAt: undefined } : p));
+    setSelectedIds([]);
+    toast.success(`Đã khôi phục ${selectedIds.length} sản phẩm thành công!`);
   };
 
   const handleBulkHide = () => {
@@ -166,35 +231,6 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
     }
   };
 
-  const renderActions = (product: Product) => (
-    <>
-      <DropdownMenuItem render={<Link href={`/products/${product.id}/edit`} className="w-full h-full cursor-pointer" />}>
-        Chỉnh sửa
-      </DropdownMenuItem>
-      
-      {product.isActive ? (
-        <DropdownMenuItem onClick={() => handleToggleActive(product)}>
-          <EyeOff className="mr-2 h-4 w-4" /> Ẩn sản phẩm
-        </DropdownMenuItem>
-      ) : (
-        <DropdownMenuItem onClick={() => handleToggleActive(product)} className="text-emerald-600">
-          <Eye className="mr-2 h-4 w-4" /> Bán lại
-        </DropdownMenuItem>
-      )}
-
-      {product.isActive && product.stock === 0 && (
-        <DropdownMenuItem onClick={() => handleRestock(product)} className="text-blue-600">
-          <PackagePlus className="mr-2 h-4 w-4" /> Nhập thêm kho
-        </DropdownMenuItem>
-      )}
-
-      <DropdownMenuSeparator />
-      
-      <DropdownMenuItem onClick={() => handleDelete(product)} className="text-red-600">
-        <Trash2 className="mr-2 h-4 w-4" /> Xóa sản phẩm
-      </DropdownMenuItem>
-    </>
-  );
 
   const selectedProducts = products.filter(p => selectedIds.includes(p.id));
   const hasActive = selectedProducts.some(p => p.isActive);
@@ -230,7 +266,7 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                 <TableHead className="w-[50px]">
                     <div className="flex items-center justify-center">
                       <Checkbox 
-                    checked={products.length > 0 && selectedIds.length === products.length} 
+                    checked={filteredProducts.length > 0 && selectedIds.length === filteredProducts.length} 
                     onCheckedChange={toggleSelectAll} 
                     aria-label="Select all"
                   />
@@ -241,21 +277,28 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                 <TableHead>Danh mục</TableHead>
                 <TableHead>Giá bán</TableHead>
                 <TableHead>Kho</TableHead>
-                <TableHead>Đã bán</TableHead>
-                <TableHead>Đánh giá</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? <TableSkeleton columns={10} /> : (
-              products.map((product) => {
-                const status = getStatusDisplay(product);
-                return (
+              {isLoading ? (
+                <TableSkeleton columns={9} />
+              ) : filteredProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center">
+                      <AlertTriangle className="h-10 w-10 mb-2 text-muted-foreground/50" />
+                      {isTrashView ? "Thùng rác trống" : "Không tìm thấy sản phẩm nào"}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredProducts.map((product) => {
+                  const status = getStatusDisplay(product);
+                  return (
                   <TableRow 
-                    key={product.id} 
+                    key={product.id}
                     className={cn(selectedIds.includes(product.id) ? "bg-muted/50" : "", "cursor-pointer hover:bg-muted/50 transition-colors")}
-                    onClick={() => router.push(`/catalog/products/${product.id}`)}
+                    onClick={() => toggleSelect(product.id)}
                   >
                     <TableCell 
                       className="text-center" 
@@ -317,13 +360,20 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {renderActions(product)}
+                          <ProductTableActions 
+                            product={product} 
+                            isTrashView={isTrashView} 
+                            onRestore={handleRestore} 
+                            onToggleActive={handleToggleActive} 
+                            onRestock={handleRestock} 
+                            onDelete={handleDelete} 
+                          />
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                );
-              })
+                  );
+                })
               )}
             </TableBody>
           </Table>
@@ -382,7 +432,14 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
                       <MoreHorizontal className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {renderActions(product)}
+                        <ProductTableActions 
+                          product={product} 
+                          isTrashView={isTrashView} 
+                          onRestore={handleRestore} 
+                          onToggleActive={handleToggleActive} 
+                          onRestock={handleRestock} 
+                          onDelete={handleDelete} 
+                        />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -401,19 +458,32 @@ export function ProductTable({ products, isLoading, setProducts }: ProductTableP
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
             </span>
             <div className="flex items-center gap-2">
-              {hasInactive && (
-                <Button variant="ghost" size="sm" onClick={handleBulkActivate} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
-                  <Megaphone className="h-4 w-4 mr-2" /> Mở bán hàng loạt
-                </Button>
+              {isTrashView ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Xóa vĩnh viễn
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {hasInactive && (
+                    <Button variant="ghost" size="sm" onClick={handleBulkActivate} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                      <Eye className="h-4 w-4 mr-2" /> Bán lại
+                    </Button>
+                  )}
+                  {hasActive && (
+                    <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-amber-400 hover:text-amber-300 hover:bg-background/10">
+                      <EyeOff className="h-4 w-4 mr-2" /> Ẩn SP
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Đưa vào thùng rác
+                  </Button>
+                </>
               )}
-              {hasActive && (
-                <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-muted-foreground hover:text-foreground hover:bg-background/10">
-                  <EyeOff className="h-4 w-4 mr-2" /> Ẩn hàng loạt
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
-                <Trash2 className="h-4 w-4 mr-2" /> Xóa
-              </Button>
             </div>
             <div className="pl-2 border-l border-background/20">
               <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">

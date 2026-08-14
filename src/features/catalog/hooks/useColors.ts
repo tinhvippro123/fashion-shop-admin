@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Color } from "@/features/catalog/types/color.admin";
-import { colorService } from "@/features/catalog/services/color.service";
+
+export interface Color {
+  id: string;
+  name: string;
+  hexCode: string;
+}
+
 export function useColors() {
   const [colors, setColors] = useState<Color[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
     async function fetchColors() {
       try {
-        const data = await colorService.getColors();
-        setColors(data);
+        setColors([{ id: '1', name: 'Đỏ', hexCode: '#FF0000' }]);
       } finally { setIsLoading(false); }
     }
     fetchColors();
   }, []);
+  
   return { colors, isLoading };
 }

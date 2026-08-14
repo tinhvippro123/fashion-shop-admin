@@ -503,7 +503,7 @@ export function FlashSaleForm({ initialData, mode = "create" }: FlashSaleFormPro
                   <h4 className="font-semibold text-orange-800 text-sm">Lưu ý khi cấu hình Flash Sale:</h4>
                   <ul className="text-xs text-orange-700 list-disc list-inside space-y-1">
                     <li>Sản phẩm trong Flash Sale sẽ bị khóa chỉnh sửa giá trị khi thời gian bắt đầu đếm ngược.</li>
-                    <li>Nếu số lượng (SL Mở bán) bán hết trước hạn, sản phẩm sẽ hiển thị trạng thái "Cháy hàng" thay vì biến mất.</li>
+                    <li>Nếu số lượng (SL Mở bán) bán hết trước hạn, sản phẩm sẽ hiển thị trạng thái &quot;Cháy hàng&quot; thay vì biến mất.</li>
                   </ul>
                 </div>
               </CardContent>

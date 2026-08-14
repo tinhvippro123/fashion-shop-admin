@@ -30,7 +30,7 @@ export default function BannersPage() {
               <Plus className="mr-2 h-4 w-4" /> Thêm banner
             </Button>
           } />
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-106.25">
             <DialogHeader>
               <DialogTitle>Thêm banner mới</DialogTitle>
             </DialogHeader>

@@ -33,7 +33,67 @@ import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
 
 import { useFaqs } from "@/features/content/hooks/useFaqs";
+import { Faq as FAQ } from "@/features/content/types/faq.admin";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getFAQActions } from "../utils/action-resolvers";
+
+interface FAQTableActionsProps {
+  faq: FAQ;
+}
+
+function FAQTableActions({ faq }: FAQTableActionsProps) {
+  const actions = getFAQActions(faq);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('EDIT') && (
+          <Dialog>
+            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
+            <DialogContent className="sm:max-w-106.25">
+              <DialogHeader>
+                <DialogTitle>Chỉnh sửa câu hỏi thường gặp</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-question-${faq.id}`}>Câu hỏi</Label>
+                  <Input id={`edit-question-${faq.id}`} defaultValue={faq.question} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-answer-${faq.id}`}>Câu trả lời</Label>
+                  <RichTextEditor value={faq.answer} onChange={() => {}} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline">Hủy</Button>
+                <Button className="">Lưu thay đổi</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+        {actions.includes('DELETE') && (
+          <Dialog>
+            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
+            <DialogContent className="sm:max-w-106.25">
+              <DialogHeader>
+                <DialogTitle>Xác nhận xóa</DialogTitle>
+              </DialogHeader>
+              <div className="py-4">
+                <p className="text-sm text-muted-foreground">Bạn có chắc chắn muốn xóa câu hỏi này không? Hành động này không thể hoàn tác.</p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline">Hủy</Button>
+                <Button variant="destructive" onClick={() => toast.success("Đã xóa câu hỏi thành công!")}>Xóa</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function FAQTable() {
   const { faqs, isLoading } = useFaqs();
@@ -79,51 +139,8 @@ faqs.map((faq) => (
                   <TableCell className="text-muted-foreground">
                     <p className="line-clamp-2">{faq.answer}</p>
                   </TableCell>
-                  <TableCell className="text-right align-top">
-                                        <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa câu hỏi thường gặp</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-question-${faq.id}`}>Câu hỏi</Label>
-                                <Input id={`edit-question-${faq.id}`} defaultValue={faq.question} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-answer-${faq.id}`}>Câu trả lời</Label>
-                                <RichTextEditor value={faq.answer} onChange={() => {}} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Xác nhận xóa</DialogTitle>
-                            </DialogHeader>
-                            <div className="py-4">
-                              <p className="text-sm text-muted-foreground">Bạn có chắc chắn muốn xóa câu hỏi này không? Hành động này không thể hoàn tác.</p>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button variant="destructive" onClick={() => toast.success("Đã xóa câu hỏi thành công!")}>Xóa</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="text-right">
+                    <FAQTableActions faq={faq} />
                   </TableCell>
                 </TableRow>
               ))
@@ -142,50 +159,7 @@ faqs.map((faq) => (
               </div>
 
               <div className="absolute top-3 right-2">
-                                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa câu hỏi thường gặp</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-question-${faq.id}`}>Câu hỏi</Label>
-                                <Input id={`m-edit-question-${faq.id}`} defaultValue={faq.question} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-answer-${faq.id}`}>Câu trả lời</Label>
-                                <RichTextEditor value={faq.answer} onChange={() => {}} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">Xóa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Xác nhận xóa</DialogTitle>
-                            </DialogHeader>
-                            <div className="py-4">
-                              <p className="text-sm text-muted-foreground">Bạn có chắc chắn muốn xóa câu hỏi này không? Hành động này không thể hoàn tác.</p>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button variant="destructive" onClick={() => toast.success("Đã xóa câu hỏi thành công!")}>Xóa</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <FAQTableActions faq={faq} />
               </div>
             </div>
           ))}

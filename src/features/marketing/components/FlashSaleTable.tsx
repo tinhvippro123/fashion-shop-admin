@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
+import { getFlashSaleActions } from "../utils/action-resolvers";
 import { Search, PlusCircle, Filter, MoreHorizontal, Clock } from "lucide-react";
 
 import { useState } from "react";
@@ -35,6 +36,47 @@ import { Checkbox } from "@/shared/ui/checkbox";
 
 import { useFlashSales } from "@/features/marketing/hooks/useFlashSales";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+
+interface FlashSaleTableActionsProps {
+  flashSale: FlashSale;
+  isTrashView: boolean;
+  onPermanentDelete: (fs: FlashSale) => void;
+  onEndEarly: (fs: FlashSale) => void;
+}
+
+function FlashSaleTableActions({ flashSale, isTrashView, onPermanentDelete, onEndEarly }: FlashSaleTableActionsProps) {
+  const actions = getFlashSaleActions(flashSale, isTrashView);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+          <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${flashSale.name}`); }}>Khôi phục</DropdownMenuItem>
+        )}
+        
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => onPermanentDelete(flashSale)}>Xóa vĩnh viễn</DropdownMenuItem>
+        )}
+
+        {actions.includes('EDIT') && (
+          <DropdownMenuItem render={<Link href={`/flash-sales/${flashSale.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
+            Sửa chương trình
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('END_EARLY') && (
+          <DropdownMenuItem onClick={() => onEndEarly(flashSale)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
+        )}
+
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600 whitespace-nowrap" onClick={() => { toast.success(`Đã chuyển ${flashSale.name} vào thùng rác`); }}>Chuyển vào thùng rác</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const { flashSales, isLoading, setFlashSales } = useFlashSales();
@@ -210,7 +252,7 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                       aria-label="Select all"
                     />
                   </TableHead>
-                  <TableHead className="w-[100px]">Mã FS</TableHead>
+                  <TableHead className="w-25">Mã FS</TableHead>
                   <TableHead>Tên khung giờ</TableHead>
                   <TableHead>Khung thời gian</TableHead>
                   <TableHead>Sản phẩm</TableHead>
@@ -252,42 +294,12 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
                     </TableCell>
                     <TableCell className="text-right font-medium">{fs.revenue || "-"}</TableCell>
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                            <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          {isTrashView ? (
-                            <>
-                              <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
-                              {(!fs.usageCount || fs.usageCount === 0) && (
-                                <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {fs.status === "Đang diễn ra" && (
-                                <DropdownMenuItem onClick={() => handleEndEarly(fs)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
-                              )}
-
-                              {fs.status === "Sắp diễn ra" && (
-                                <>
-                                  <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                                    Sửa chương trình
-                                  </DropdownMenuItem>
-                                  {(!fs.usageCount || fs.usageCount === 0) && (
-                                    <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
-                                  )}
-                                </>
-                              )}
-
-                              {fs.status === "Đã kết thúc" && (
-                                <DropdownMenuItem className="text-red-600 whitespace-nowrap" onClick={() => { toast.success(`Đã chuyển ${fs.name} vào thùng rác`); }}>Chuyển vào thùng rác</DropdownMenuItem>
-                              )}
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <FlashSaleTableActions 
+                        flashSale={fs} 
+                        isTrashView={isTrashView} 
+                        onPermanentDelete={handlePermanentDelete} 
+                        onEndEarly={handleEndEarly} 
+                      />
                     </TableCell>
                   </TableRow>
                 ))
@@ -336,42 +348,12 @@ export function FlashSaleTable({ isTrashView = false }: { isTrashView?: boolean 
               </div>
 
               <div className="absolute top-4 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                      <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    {isTrashView ? (
-                      <>
-                        <DropdownMenuItem className="text-emerald-600 font-medium whitespace-nowrap" onClick={() => { toast.success(`Khôi phục ${fs.name}`); }}>Khôi phục</DropdownMenuItem>
-                        {(!fs.usageCount || fs.usageCount === 0) && (
-                          <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {fs.status === "Đang diễn ra" && (
-                          <DropdownMenuItem onClick={() => handleEndEarly(fs)} className="text-amber-600 font-medium whitespace-nowrap">Kết thúc ngay</DropdownMenuItem>
-                        )}
-
-                        {fs.status === "Sắp diễn ra" && (
-                          <>
-                            <DropdownMenuItem render={<Link href={`/flash-sales/${fs.id}/edit`} className="w-full cursor-pointer whitespace-nowrap" />}>
-                              Sửa chương trình
-                            </DropdownMenuItem>
-                            {(!fs.usageCount || fs.usageCount === 0) && (
-                              <DropdownMenuItem className="text-red-600 font-medium whitespace-nowrap" onClick={() => handlePermanentDelete(fs)}>Xóa vĩnh viễn</DropdownMenuItem>
-                            )}
-                          </>
-                        )}
-
-                        {fs.status === "Đã kết thúc" && (
-                          <DropdownMenuItem className="text-red-600 whitespace-nowrap" onClick={() => { toast.success(`Đã chuyển ${fs.name} vào thùng rác`); }}>Chuyển vào thùng rác</DropdownMenuItem>
-                        )}
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <FlashSaleTableActions 
+                  flashSale={fs} 
+                  isTrashView={isTrashView} 
+                  onPermanentDelete={handlePermanentDelete} 
+                  onEndEarly={handleEndEarly} 
+                />
               </div>
             </div>
           ))}

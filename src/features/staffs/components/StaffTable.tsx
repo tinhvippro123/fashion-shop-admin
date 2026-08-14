@@ -29,9 +29,77 @@ import {
 } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Staff } from "@/features/staffs/types/staff.admin";
 
 import { useStaffs } from "@/features/staffs/hooks/useStaffs";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getStaffActions } from "../utils/action-resolvers";
+
+interface StaffTableActionsProps {
+  staff: Staff;
+}
+
+function StaffTableActions({ staff }: StaffTableActionsProps) {
+  const actions = getStaffActions(staff);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('EDIT') && (
+          <Dialog>
+            <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
+            <DialogContent className="sm:max-w-106.25">
+              <DialogHeader>
+                <DialogTitle>Chỉnh sửa thông tin nhân viên</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-name-${staff.id}`}>Họ và tên</Label>
+                  <Input id={`edit-name-${staff.id}`} defaultValue={staff.name} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-email-${staff.id}`}>Email đăng nhập</Label>
+                  <Input id={`edit-email-${staff.id}`} defaultValue={staff.email} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor={`edit-phone-${staff.id}`}>Số điện thoại</Label>
+                  <Input id={`edit-phone-${staff.id}`} defaultValue={staff.phone} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Phân quyền</Label>
+                  <Select defaultValue={staff.role}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Chọn phân quyền" />
+                    </SelectTrigger>
+                    <SelectContent align="start" alignItemWithTrigger={false}>
+                      <SelectItem value="Quản trị viên" label="Quản trị viên (Full quyền)">Quản trị viên (Full quyền)</SelectItem>
+                      <SelectItem value="Nhân viên Sale" label="Nhân viên Sale (Xử lý đơn hàng)">Nhân viên Sale (Xử lý đơn hàng)</SelectItem>
+                      <SelectItem value="Nhân viên Content" label="Nhân viên Content (Quản lý bài viết)">Nhân viên Content (Quản lý bài viết)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline">Hủy</Button>
+                <Button className="">Lưu thay đổi</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {actions.includes('TOGGLE_STATUS') && (
+          <DropdownMenuItem>{staff.status === "Hoạt động" ? "Khóa tài khoản" : "Mở khóa"}</DropdownMenuItem>
+        )}
+
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600">Xóa tài khoản</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function StaffTable() {
   const { staffs, isLoading } = useStaffs();
@@ -104,54 +172,7 @@ staffs.map((staff) => (
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                                        <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa thông tin nhân viên</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-name-${staff.id}`}>Họ và tên</Label>
-                                <Input id={`edit-name-${staff.id}`} defaultValue={staff.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-email-${staff.id}`}>Email đăng nhập</Label>
-                                <Input id={`edit-email-${staff.id}`} defaultValue={staff.email} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`edit-phone-${staff.id}`}>Số điện thoại</Label>
-                                <Input id={`edit-phone-${staff.id}`} defaultValue={staff.phone} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label>Phân quyền</Label>
-                                <Select defaultValue={staff.role}>
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Chọn phân quyền" />
-                                  </SelectTrigger>
-                                  <SelectContent align="start" alignItemWithTrigger={false}>
-                                    <SelectItem value="Quản trị viên" label="Quản trị viên (Full quyền)">Quản trị viên (Full quyền)</SelectItem>
-                                    <SelectItem value="Nhân viên Sale" label="Nhân viên Sale (Xử lý đơn hàng)">Nhân viên Sale (Xử lý đơn hàng)</SelectItem>
-                                    <SelectItem value="Nhân viên Content" label="Nhân viên Content (Quản lý bài viết)">Nhân viên Content (Quản lý bài viết)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenuItem>{staff.status === "Hoạt động" ? "Khóa tài khoản" : "Mở khóa"}</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Xóa tài khoản</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <StaffTableActions staff={staff} />
                   </TableCell>
                 </TableRow>
               ))
@@ -194,54 +215,7 @@ staffs.map((staff) => (
               </div>
 
               <div className="absolute top-3 right-2">
-                                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger nativeButton={false} render={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>} />
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Chỉnh sửa thông tin nhân viên</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-name-${staff.id}`}>Họ và tên</Label>
-                                <Input id={`m-edit-name-${staff.id}`} defaultValue={staff.name} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-email-${staff.id}`}>Email đăng nhập</Label>
-                                <Input id={`m-edit-email-${staff.id}`} defaultValue={staff.email} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor={`m-edit-phone-${staff.id}`}>Số điện thoại</Label>
-                                <Input id={`m-edit-phone-${staff.id}`} defaultValue={staff.phone} />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label>Phân quyền</Label>
-                                <Select defaultValue={staff.role}>
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Chọn phân quyền" />
-                                  </SelectTrigger>
-                                  <SelectContent align="start" alignItemWithTrigger={false}>
-                                    <SelectItem value="Quản trị viên" label="Quản trị viên (Full quyền)">Quản trị viên (Full quyền)</SelectItem>
-                                    <SelectItem value="Nhân viên Sale" label="Nhân viên Sale (Xử lý đơn hàng)">Nhân viên Sale (Xử lý đơn hàng)</SelectItem>
-                                    <SelectItem value="Nhân viên Content" label="Nhân viên Content (Quản lý bài viết)">Nhân viên Content (Quản lý bài viết)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline">Hủy</Button>
-                              <Button className="">Lưu thay đổi</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenuItem>{staff.status === "Hoạt động" ? "Khóa tài khoản" : "Mở khóa"}</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Xóa tài khoản</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <StaffTableActions staff={staff} />
               </div>
             </div>
           ))}

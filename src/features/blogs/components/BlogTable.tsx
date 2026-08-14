@@ -24,15 +24,82 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { PlusCircle, Search, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { PlusCircle, Search, Edit, Trash2, MoreHorizontal, RefreshCcw } from "lucide-react";
 import Image from "next/image";
 
 import { useBlogs } from "@/features/blogs/hooks/useBlogs";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getBlogActions } from "../utils/action-resolvers";
 
-export function BlogTable() {
+import { Blog } from "@/features/blogs/types/blog.admin";
+
+interface BlogTableActionsProps {
+  blog: Blog;
+  isTrashView: boolean;
+  onDelete: (blog: Blog) => void;
+  onRestore: (blog: Blog) => void;
+}
+
+function BlogTableActions({ blog, isTrashView, onDelete, onRestore }: BlogTableActionsProps) {
+  const actions = getBlogActions(blog, { isTrashView });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+          <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('EDIT') && (
+          <DropdownMenuItem>
+            <Link href={`/blogs/${blog.id}/edit`} className="w-full cursor-pointer flex items-center">
+              <Edit className="w-4 h-4 mr-2" />
+              Chỉnh sửa
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {actions.includes('SOFT_DELETE') && (
+          <DropdownMenuItem className="text-red-600" onClick={() => onDelete(blog)}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Xóa
+          </DropdownMenuItem>
+        )}
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem className="text-emerald-600 cursor-pointer flex items-center" onClick={() => onRestore(blog)}>
+            <RefreshCcw className="w-4 h-4 mr-2" />
+            Khôi phục
+          </DropdownMenuItem>
+        )}
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem className="text-red-600 cursor-pointer flex items-center" onClick={() => onDelete(blog)}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Xóa vĩnh viễn
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function BlogTable({ isTrashView = false }: { isTrashView?: boolean }) {
   const router = useRouter();
-  const { blogs, isLoading } = useBlogs();
+  const { blogs, isLoading, setBlogs } = useBlogs();
+  
+  const filteredBlogs = blogs.filter(b => isTrashView ? b.deletedAt : !b.deletedAt);
+  
+  const handleDelete = (blog: Blog) => {
+    if (isTrashView) {
+      if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn bài viết "${blog.title}"? Hành động này không thể hoàn tác.`)) {
+        setBlogs(prev => prev.filter(b => b.id !== blog.id));
+      }
+    } else {
+      if (confirm(`Bạn có muốn chuyển bài viết "${blog.title}" vào thùng rác?`)) {
+        setBlogs(prev => prev.map(b => b.id === blog.id ? { ...b, deletedAt: new Date().toISOString() } : b));
+      }
+    }
+  };
+  
+  const handleRestore = (blog: Blog) => {
+    setBlogs(prev => prev.map(b => b.id === blog.id ? { ...b, deletedAt: undefined } : b));
+  };
 
   return (
     <>
@@ -96,23 +163,12 @@ export function BlogTable() {
                             <span className="text-sm text-muted-foreground">{blog.date}</span>
                           </TableCell>
                           <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                                  <MoreHorizontal className="h-4 w-4" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                  <Link href={`/blogs/${blog.id}/edit`} className="w-full cursor-pointer flex items-center">
-                                    <Edit className="w-4 h-4 mr-2" />
-                                    Chỉnh sửa
-                                  </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash2 className="w-4 h-4 mr-2" />
-                                  Xóa
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <BlogTableActions 
+                              blog={blog} 
+                              isTrashView={isTrashView} 
+                              onDelete={handleDelete} 
+                              onRestore={handleRestore} 
+                            />
                           </TableCell>
                         </TableRow>
                       ))
@@ -174,23 +230,12 @@ export function BlogTable() {
                       </div>
 
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                              <MoreHorizontal className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Link href={`/blogs/${blog.id}/edit`} className="w-full cursor-pointer flex items-center">
-                                <Edit className="w-4 h-4 mr-2" />
-                                Chỉnh sửa
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Xóa
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <BlogTableActions 
+                          blog={blog} 
+                          isTrashView={isTrashView} 
+                          onDelete={handleDelete} 
+                          onRestore={handleRestore} 
+                        />
                       </div>
                     </div>
                   ))

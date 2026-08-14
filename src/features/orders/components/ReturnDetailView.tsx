@@ -4,11 +4,12 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
-import { Package, User, Clock, AlertTriangle, CheckCircle, PackageCheck, Banknote, XCircle } from "lucide-react";
+import { Package, User, Clock, AlertTriangle, CheckCircle, PackageCheck, XCircle } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 import Image from "next/image";
-import { ReturnStatus } from "./ReturnTable";
-import { useState } from "react";
+import { approveReturnAction, rejectReturnAction, receiveReturnAction, reportFraudAction } from "../actions/return.action";
+import { ReturnStatus } from "../types/order.admin";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
@@ -58,7 +59,6 @@ function useReturnDetail(returnId: string) {
 }
 
 export function ReturnDetailView({ returnId }: { returnId: string }) {
-  const router = useRouter();
   const { returnReq, isLoading } = useReturnDetail(returnId);
   const [rejectDialog, setRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -67,6 +67,8 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
   const [fraudReason, setFraudReason] = useState("");
 
   const [currentStatus, setCurrentStatus] = useState<ReturnStatus>(returnReq?.status || "PENDING");
+  
+  const [isPending, startTransition] = useTransition();
 
   if (isLoading) {
     return <div className="flex justify-center p-8 text-muted-foreground">Đang tải chi tiết yêu cầu...</div>;
@@ -76,7 +78,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
     return <div className="flex justify-center p-8 text-muted-foreground">Không tìm thấy yêu cầu đổi/trả</div>;
   }
 
-  const getStatusColor = (status: ReturnStatus) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-amber-100 text-amber-700 hover:bg-amber-200';
       case 'RETURNING': return 'bg-blue-100 text-blue-700 hover:bg-blue-200';
@@ -86,7 +88,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
     }
   };
 
-  const getStatusText = (status: ReturnStatus) => {
+  const getStatusText = (status: string) => {
     switch (status) {
       case 'PENDING': return 'Chờ duyệt';
       case 'RETURNING': return 'Hoàn về kho';
@@ -97,33 +99,53 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
   };
 
   const handleApprove = () => {
-    toast.success(`Đã duyệt yêu cầu hoàn trả ${returnReq.id}! Đang điều phối Shipper đến thu hồi hàng.`);
-    setCurrentStatus("RETURNING");
+    startTransition(async () => {
+      const res = await approveReturnAction(returnId);
+      if (res.success) {
+        toast.success(`Đã duyệt yêu cầu hoàn trả ${returnReq?.id}! Đang điều phối Shipper đến thu hồi hàng.`);
+        setCurrentStatus("RETURNING");
+      } else {
+        toast.error(res.error || "Có lỗi xảy ra");
+      }
+    });
   };
 
   const handleReceive = () => {
-    toast.success(`Kho đã xác nhận nhận lại hàng nguyên vẹn. Đã báo kế toán hoàn tiền.`);
-    setCurrentStatus("COMPLETED");
+    startTransition(async () => {
+      const res = await receiveReturnAction(returnId);
+      if (res.success) {
+        toast.success(`Kho đã xác nhận nhận lại hàng nguyên vẹn. Đã báo kế toán hoàn tiền.`);
+        setCurrentStatus("COMPLETED");
+      } else {
+        toast.error(res.error || "Có lỗi xảy ra");
+      }
+    });
   };
 
   const handleReject = () => {
-    if (!rejectReason.trim()) {
-      toast.error("Vui lòng nhập lý do từ chối để lưu hồ sơ!");
-      return;
-    }
-    toast.error(`Đã từ chối yêu cầu ${returnReq.id}. Lý do: ${rejectReason}`);
-    setRejectDialog(false);
-    setCurrentStatus("REJECTED");
+    startTransition(async () => {
+      const res = await rejectReturnAction(returnId, { reason: rejectReason });
+      if (res.success) {
+        toast.error(`Đã từ chối yêu cầu ${returnReq?.id}. Lý do: ${rejectReason}`);
+        setRejectDialog(false);
+        setCurrentStatus("REJECTED");
+      } else {
+        toast.error(res.error || "Dữ liệu không hợp lệ");
+      }
+    });
   };
 
   const handleFraud = () => {
-    if (!fraudReason.trim()) {
-      toast.error("Vui lòng nhập chi tiết tình trạng gian lận!");
-      return;
-    }
-    toast.error(`Đã báo cáo gian lận cho yêu cầu ${returnReq.id}. Hồ sơ chuyển sang Đã từ chối.`);
-    setFraudDialog(false);
-    setCurrentStatus("REJECTED");
+    startTransition(async () => {
+      const res = await reportFraudAction(returnId, { reason: fraudReason });
+      if (res.success) {
+        toast.error(`Đã báo cáo gian lận cho yêu cầu ${returnReq?.id}. Hồ sơ chuyển sang Đã từ chối.`);
+        setFraudDialog(false);
+        setCurrentStatus("REJECTED");
+      } else {
+        toast.error(res.error || "Dữ liệu không hợp lệ");
+      }
+    });
   };
 
   return (
@@ -158,6 +180,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
                 variant="default"
                 onClick={handleApprove} 
                 className="shadow-sm"
+                disabled={isPending}
               >
                 <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
               </Button>
@@ -177,6 +200,7 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
                 variant="default"
                 onClick={handleReceive}
                 className="shadow-sm"
+                disabled={isPending}
               >
                 <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
               </Button>
@@ -389,8 +413,8 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialog(false)}>Đóng</Button>
-            <Button variant="destructive" onClick={handleReject}>Xác nhận từ chối</Button>
+            <Button variant="outline" onClick={() => setRejectDialog(false)} disabled={isPending}>Hủy</Button>
+            <Button variant="destructive" onClick={handleReject} disabled={isPending}>Xác nhận từ chối</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

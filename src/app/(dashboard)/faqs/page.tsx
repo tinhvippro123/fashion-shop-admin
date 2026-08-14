@@ -29,7 +29,7 @@ export default function FaqsPage() {
           <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ">
             <Plus className="mr-2 h-4 w-4" /> Thêm câu hỏi
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-125">
             <DialogHeader>
               <DialogTitle>Thêm câu hỏi FAQ</DialogTitle>
             </DialogHeader>

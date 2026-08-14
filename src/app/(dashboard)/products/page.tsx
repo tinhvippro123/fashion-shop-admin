@@ -11,10 +11,11 @@ export default function ProductsPage() {
   const { products, isLoading, setProducts } = useProducts();
   
   // Status Filters
-  const allProducts = products;
-  const activeProducts = products.filter(p => p.isActive && p.stock > 0);
-  const outOfStockProducts = products.filter(p => p.isActive && p.stock === 0);
-  const hiddenProducts = products.filter(p => !p.isActive);
+  const allProducts = products.filter(p => !p.deletedAt);
+  const activeProducts = products.filter(p => !p.deletedAt && p.isActive && p.stock > 0);
+  const outOfStockProducts = products.filter(p => !p.deletedAt && p.isActive && p.stock === 0);
+  const hiddenProducts = products.filter(p => !p.deletedAt && !p.isActive);
+  const trashProducts = products.filter(p => p.deletedAt);
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -46,6 +47,9 @@ export default function ProductsPage() {
             <TabsTrigger value="hidden" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-muted-foreground">
               Đã ẩn ({hiddenProducts.length})
             </TabsTrigger>
+            <TabsTrigger value="trash" className="data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-red-700">
+              Thùng rác ({trashProducts.length})
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -63,6 +67,10 @@ export default function ProductsPage() {
 
         <TabsContent value="hidden" className="mt-0">
           <ProductTable products={hiddenProducts} setProducts={setProducts} isLoading={isLoading} />
+        </TabsContent>
+
+        <TabsContent value="trash" className="mt-0">
+          <ProductTable products={trashProducts} setProducts={setProducts} isLoading={isLoading} isTrashView />
         </TabsContent>
       </Tabs>
     </div>

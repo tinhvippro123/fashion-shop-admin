@@ -519,7 +519,7 @@ export function ProductForm({ initialData, mode = "create" }: ProductFormProps) 
                   <CardContent>
                     {variantFields.length === 0 ? (
                       <div className="text-center py-10 text-muted-foreground bg-muted/50 rounded-lg border border-dashed">
-                        Hãy thêm thuộc tính và nhấn nút "Tự động sinh Biến thể".
+                        Hãy thêm thuộc tính và nhấn nút &quot;Tự động sinh Biến thể&quot;.
                       </div>
                     ) : (
                       <div className="border rounded-md divide-y overflow-hidden">

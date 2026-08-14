@@ -29,6 +29,42 @@ import { Label } from "@/shared/ui/label";
 import { Category } from "@/features/catalog/types/category";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 import { CategoryFormModal } from "./CategoryFormModal";
+import { cn } from "@/shared/utils/utils";
+import { getCategoryActions } from "../../utils/action-resolvers";
+
+interface CategoryTableActionsProps {
+  category: Category;
+  isTrashView: boolean;
+}
+
+function CategoryTableActions({ category, isTrashView }: CategoryTableActionsProps) {
+  const actions = getCategoryActions(category, isTrashView);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
+        )}
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
+        )}
+        {actions.includes('EDIT') && (
+          <CategoryFormModal 
+            mode="edit" 
+            initialData={{ ...category, active: category.status === "Hoạt động" }} 
+            trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
+          />
+        )}
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 interface CategoryTableProps {
   categories: Category[];
@@ -134,28 +170,7 @@ export function CategoryTable({ categories, isLoading, isTrashView = false }: Ca
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {isTrashView ? (
-                          <>
-                            <DropdownMenuItem className="text-emerald-600 font-medium">Khôi phục</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 font-medium">Xóa vĩnh viễn</DropdownMenuItem>
-                          </>
-                        ) : (
-                          <>
-                            <CategoryFormModal 
-                              mode="edit" 
-                              initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
-                              trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
-                            />
-                            <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <CategoryTableActions category={cat} isTrashView={isTrashView} />
                   </TableCell>
                 </TableRow>
               ))
@@ -182,19 +197,7 @@ export function CategoryTable({ categories, isLoading, isTrashView = false }: Ca
                 </Badge>
               </div>
               <div className="absolute top-3 right-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <CategoryFormModal 
-                          mode="edit" 
-                          initialData={{ ...cat, active: cat.status === "Hoạt động" }} 
-                          trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>Chỉnh sửa</DropdownMenuItem>}
-                        />
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <CategoryTableActions category={cat} isTrashView={isTrashView} />
               </div>
             </div>
           ))

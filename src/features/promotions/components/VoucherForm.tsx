@@ -4,7 +4,7 @@ import { Input } from "@/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Switch } from "@/shared/ui/switch";
 import { Button } from "@/shared/ui/button";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form";
 import { VoucherSchema, TVoucherPayload } from "@/features/promotions/schemas/voucher.schema";
@@ -13,19 +13,23 @@ import { toast } from "sonner";
 interface VoucherFormProps {
   onSuccess?: () => void;
   defaultValues?: Partial<TVoucherPayload>;
+  readOnly?: boolean;
+  status?: "Sắp diễn ra" | "Đang diễn ra" | "Đã kết thúc";
 }
 
-export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
+export function VoucherForm({ onSuccess, defaultValues, readOnly = false, status }: VoucherFormProps) {
   const form = useForm<TVoucherPayload>({
-    resolver: zodResolver(VoucherSchema) as any,
+    resolver: zodResolver(VoucherSchema) as unknown as Resolver<TVoucherPayload>,
     defaultValues: {
       code: "",
       discountType: "vnd",
-      discount: undefined as any,
+      discount: 0,
       minOrder: 0,
-      quantity: undefined as any,
+      quantity: 0,
       isPublic: true,
       isActive: true,
+      startDate: "",
+      endDate: "",
       ...defaultValues,
     }
   });
@@ -51,7 +55,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
             <FormItem>
               <FormLabel>Mã Code (Từ viết hoa) <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input placeholder="VD: SUMMER2026" className="uppercase" {...field} onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                <Input placeholder="VD: SUMMER2026" className="uppercase" disabled={readOnly || status === "Đang diễn ra"} {...field} onChange={e => field.onChange(e.target.value.toUpperCase())} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,7 +68,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Loại giảm giá</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={readOnly || status === "Đang diễn ra"}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Chọn loại giảm giá" />
@@ -86,7 +90,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
             <FormItem>
               <FormLabel>{discountType === "vnd" ? "Mức giảm (VND)" : "Mức giảm (%)"} <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input type="number" placeholder={discountType === "vnd" ? "VD: 50000" : "VD: 10"} {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                <Input type="number" placeholder={discountType === "vnd" ? "VD: 50000" : "VD: 10"} disabled={readOnly || status === "Đang diễn ra"} {...field} value={field.value as string | number} onChange={e => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,7 +105,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
               <FormItem>
                 <FormLabel>Giảm tối đa (VND) <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="VD: 100000" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                  <Input type="number" placeholder="VD: 100000" disabled={readOnly || status === "Đang diễn ra"} {...field} value={field.value as string | number} onChange={e => field.onChange(Number(e.target.value))} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,7 +120,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
             <FormItem>
               <FormLabel>Giá trị đơn tối thiểu (VND)</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="VD: 500000" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                <Input type="number" placeholder="VD: 500000" disabled={readOnly} {...field} value={field.value as string | number} onChange={e => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -130,12 +134,42 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
             <FormItem>
               <FormLabel>Số lượng giới hạn <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input type="number" placeholder="VD: 100" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                <Input type="number" placeholder="VD: 100" disabled={readOnly} {...field} value={field.value as string | number} onChange={e => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ngày bắt đầu <span className="text-red-500">*</span></FormLabel>
+                <FormControl>
+                  <Input type="datetime-local" disabled={readOnly || status === "Đang diễn ra"} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ngày kết thúc <span className="text-red-500">*</span></FormLabel>
+                <FormControl>
+                  <Input type="datetime-local" disabled={readOnly} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -147,7 +181,7 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
                 <span className="text-xs text-muted-foreground">Khách có thể thấy trên web. Nếu tắt, khách phải tự nhập mã ẩn.</span>
               </div>
               <FormControl>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                <Switch checked={field.value} onCheckedChange={field.onChange} disabled={readOnly} />
               </FormControl>
             </FormItem>
           )}
@@ -160,13 +194,15 @@ export function VoucherForm({ onSuccess, defaultValues }: VoucherFormProps) {
             <FormItem className="flex items-center justify-between mt-2 space-y-0">
               <FormLabel className="cursor-pointer text-foreground">Trạng thái hoạt động</FormLabel>
               <FormControl>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                <Switch checked={field.value} onCheckedChange={field.onChange} disabled={readOnly} />
               </FormControl>
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full sm:w-auto mt-4">Lưu thay đổi</Button>
+        {!readOnly && (
+          <Button type="submit" className="w-full sm:w-auto mt-4">Lưu thay đổi</Button>
+        )}
       </form>
     </Form>
   );

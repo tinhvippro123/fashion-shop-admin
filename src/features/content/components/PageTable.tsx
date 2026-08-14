@@ -20,7 +20,34 @@ import { Badge } from "@/shared/ui/badge";
 import Link from "next/link";
 
 import { usePages } from "@/features/content/hooks/usePages";
+import { Page } from "@/features/content/types/page.admin";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
+import { getPageActions } from "../utils/action-resolvers";
+
+interface PageTableActionsProps {
+  page: Page;
+}
+
+function PageTableActions({ page }: PageTableActionsProps) {
+  const actions = getPageActions(page);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('EDIT') && (
+          <DropdownMenuItem render={<Link href={`/pages/${page.id}/edit`} className="w-full cursor-pointer" />}>
+            Chỉnh sửa
+          </DropdownMenuItem>
+        )}
+        {actions.includes('DELETE') && (
+          <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function PageTable() {
   const { pages, isLoading } = usePages();
@@ -68,17 +95,7 @@ pages.map((page) => (
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem render={<Link href={`/pages/${page.id}/edit`} className="w-full cursor-pointer" />}>
-                          Chỉnh sửa
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <PageTableActions page={page} />
                   </TableCell>
                 </TableRow>
               ))
@@ -108,17 +125,7 @@ pages.map((page) => (
               </div>
 
               <div className="absolute top-3 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem render={<Link href={`/pages/${page.id}/edit`} className="w-full cursor-pointer" />}>
-                      Chỉnh sửa
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <PageTableActions page={page} />
               </div>
             </div>
           ))}

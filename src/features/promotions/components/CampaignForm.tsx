@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/sha
 import { ArrowLeft, Calendar, Save } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -26,7 +26,7 @@ import { CampaignSchema, TCampaignPayload } from "../schemas/campaign.schema";
 import { createCampaignAction, updateCampaignAction } from "../actions/campaign.action";
 
 interface CampaignFormProps {
-  initialData?: any;
+  initialData?: TCampaignPayload & { id?: string | number };
   mode?: "create" | "edit";
 }
 
@@ -34,7 +34,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TCampaignPayload>({
-    resolver: zodResolver(CampaignSchema) as any,
+    resolver: zodResolver(CampaignSchema) as unknown as Resolver<TCampaignPayload>,
     defaultValues: initialData || {
       name: "",
       code: "",
@@ -67,7 +67,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             toast.error(res.error as string);
             if (res.details) {
               Object.keys(res.details!).forEach((key) => {
-                form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                form.setError(key as keyof TCampaignPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
               });
             }
           }
@@ -79,7 +79,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
             toast.error(res.error as string);
             if (res.details) {
               Object.keys(res.details!).forEach((key) => {
-                form.setError(key as any, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
+                form.setError(key as keyof TCampaignPayload, { type: "server", message: res.details![key as keyof typeof res.details]?.[0] });
               });
             }
           }
@@ -382,7 +382,7 @@ export function CampaignForm({ initialData, mode = "create" }: CampaignFormProps
                       <div className="flex flex-col gap-1">
                         <FormLabel className="cursor-pointer text-foreground font-semibold">Cho phép lưu Ví</FormLabel>
                         <FormDescription className="text-xs">
-                          Khách hàng có thể "Lưu" mã này vào Ví Voucher của họ.
+                          Khách hàng có thể &quot;Lưu&quot; mã này vào Ví Voucher của họ.
                         </FormDescription>
                       </div>
                       <FormControl>

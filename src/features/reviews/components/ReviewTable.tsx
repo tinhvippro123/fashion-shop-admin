@@ -8,27 +8,110 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { TableSkeleton } from "@/shared/ui/table-skeleton";
 import { Badge } from "@/shared/ui/badge";
-import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, MessageSquareReply, FileText } from "lucide-react";
+import { MoreHorizontal, Search, Filter, Trash2, X, Star, EyeOff, Eye, MessageSquareReply, FileText, ArchiveRestore } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { cn } from "@/shared/utils/utils";
 import { Review } from "../types/review.types";
+import { getReviewActions } from "../utils/action-resolvers";
+
+interface ReviewTableActionsProps {
+  review: Review;
+  isTrashView: boolean;
+  onViewDetails: (id: string) => void;
+  onRestore: (review: Review) => void;
+  onToggleHide: (review: Review) => void;
+  onDelete: (review: Review) => void;
+}
+
+function ReviewTableActions({ review, isTrashView, onViewDetails, onRestore, onToggleHide, onDelete }: ReviewTableActionsProps) {
+  const actions = getReviewActions(review, { isTrashView });
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('VIEW_DETAILS') && (
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(review.id);
+          }}>
+            <FileText className="mr-2 h-4 w-4" />
+            {review.isHidden || review.reply ? "Xem chi tiết" : "Xem & Phản hồi"}
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('RESTORE') && (
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            onRestore(review);
+          }} className="text-emerald-600">
+            <ArchiveRestore className="mr-2 h-4 w-4" /> Khôi phục
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('TOGGLE_HIDE') && (
+          review.isHidden ? (
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onToggleHide(review);
+            }} className="text-emerald-600">
+              <Eye className="mr-2 h-4 w-4" /> Hiển thị lại
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onToggleHide(review);
+            }}>
+              <EyeOff className="mr-2 h-4 w-4" /> Ẩn đánh giá
+            </DropdownMenuItem>
+          )
+        )}
+  
+        <DropdownMenuSeparator />
+        
+        {actions.includes('SOFT_DELETE') && (
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            onDelete(review);
+          }} className="text-red-600">
+            <Trash2 className="mr-2 h-4 w-4" /> Đưa vào thùng rác
+          </DropdownMenuItem>
+        )}
+        
+        {actions.includes('PERMANENT_DELETE') && (
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            onDelete(review);
+          }} className="text-red-600">
+            <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 interface ReviewTableProps {
   reviews: Review[];
   setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
   isLoading?: boolean;
+  isTrashView?: boolean;
 }
 
-export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTableProps) {
+export function ReviewTable({ reviews, setReviews, isLoading = false, isTrashView = false }: ReviewTableProps) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  
+  const filteredReviews = reviews.filter(r => isTrashView ? r.deletedAt : !r.deletedAt);
 
   const toggleSelectAll = () => {
-    if (selectedIds.length === reviews.length) {
+    if (selectedIds.length === filteredReviews.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(reviews.map((r) => r.id));
+      setSelectedIds(filteredReviews.map((r) => r.id));
     }
   };
 
@@ -47,11 +130,22 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
   };
 
   const handleDelete = (review: Review) => {
-    // We allow deletion but usually encourage hiding
-    if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá của ${review.customerName} không? (Khuyến nghị dùng nút Ẩn để giữ lại log)`)) {
-      setReviews(prev => prev.filter(r => r.id !== review.id));
-      toast.success(`Đã xóa đánh giá thành công!`);
+    if (isTrashView) {
+      if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá của ${review.customerName} không? Hành động này không thể hoàn tác.`)) {
+        setReviews(prev => prev.filter(r => r.id !== review.id));
+        toast.success(`Đã xóa đánh giá thành công!`);
+      }
+    } else {
+      if (confirm(`Bạn có muốn đưa đánh giá của ${review.customerName} vào thùng rác?`)) {
+        setReviews(prev => prev.map(r => r.id === review.id ? { ...r, deletedAt: new Date().toISOString() } : r));
+        toast.success(`Đã chuyển đánh giá vào thùng rác!`);
+      }
     }
+  };
+  
+  const handleRestore = (review: Review) => {
+    setReviews(prev => prev.map(r => r.id === review.id ? { ...r, deletedAt: undefined } : r));
+    toast.success(`Đã khôi phục đánh giá!`);
   };
 
   const handleBulkHide = () => {
@@ -69,9 +163,22 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
   };
 
   const handleBulkDelete = () => {
-    if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedIds.length} đánh giá đã chọn?`)) return;
-    setReviews(prev => prev.filter(r => !selectedIds.includes(r.id)));
-    toast.success(`Đã xóa vĩnh viễn ${selectedIds.length} đánh giá!`);
+    if (isTrashView) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedIds.length} đánh giá đã chọn?`)) return;
+      setReviews(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      toast.success(`Đã xóa vĩnh viễn ${selectedIds.length} đánh giá!`);
+      setSelectedIds([]);
+    } else {
+      if (!confirm(`Bạn có chắc chắn muốn đưa ${selectedIds.length} đánh giá vào thùng rác?`)) return;
+      setReviews(prev => prev.map(r => selectedIds.includes(r.id) ? { ...r, deletedAt: new Date().toISOString() } : r));
+      toast.success(`Đã chuyển ${selectedIds.length} đánh giá vào thùng rác!`);
+      setSelectedIds([]);
+    }
+  };
+
+  const handleBulkRestore = () => {
+    setReviews(prev => prev.map(r => selectedIds.includes(r.id) ? { ...r, deletedAt: undefined } : r));
+    toast.success(`Đã khôi phục ${selectedIds.length} đánh giá!`);
     setSelectedIds([]);
   };
 
@@ -84,46 +191,11 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
     ));
   };
 
-  const renderActions = (review: Review) => (
-    <>
-      <DropdownMenuItem onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/reviews/${review.id}`);
-      }}>
-        <FileText className="mr-2 h-4 w-4" />
-        {review.isHidden || review.reply ? "Xem chi tiết" : "Xem & Phản hồi"}
-      </DropdownMenuItem>
-      
-      {review.isHidden ? (
-        <DropdownMenuItem onClick={(e) => {
-          e.stopPropagation();
-          handleToggleHide(review);
-        }} className="text-emerald-600">
-          <Eye className="mr-2 h-4 w-4" /> Hiển thị lại
-        </DropdownMenuItem>
-      ) : (
-        <DropdownMenuItem onClick={(e) => {
-          e.stopPropagation();
-          handleToggleHide(review);
-        }}>
-          <EyeOff className="mr-2 h-4 w-4" /> Ẩn đánh giá
-        </DropdownMenuItem>
-      )}
-
-      <DropdownMenuSeparator />
-      
-      <DropdownMenuItem onClick={(e) => {
-        e.stopPropagation();
-        handleDelete(review);
-      }} className="text-red-600">
-        <Trash2 className="mr-2 h-4 w-4" /> Xóa vĩnh viễn
-      </DropdownMenuItem>
-    </>
-  );
 
   const selectedReviews = reviews.filter(r => selectedIds.includes(r.id));
   const hasVisible = selectedReviews.some(r => !r.isHidden);
   const hasHidden = selectedReviews.some(r => r.isHidden);
+  const isAllTrash = selectedReviews.length > 0 && selectedReviews.every(r => r.deletedAt);
 
   return (
     <>
@@ -150,13 +222,14 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[50px]">
-                    <div className="flex items-center justify-center">
-                      <Checkbox 
-                    checked={reviews.length > 0 && selectedIds.length === reviews.length} 
-                    onCheckedChange={toggleSelectAll} 
-                  />
-                    </div>
-                  </TableHead>
+                  <div className="flex items-center justify-center">
+                    <Checkbox 
+                      checked={filteredReviews.length > 0 && selectedIds.length === filteredReviews.length} 
+                      onCheckedChange={toggleSelectAll} 
+                      aria-label="Select all"
+                    />
+                  </div>
+                </TableHead>
                 <TableHead>Sản phẩm</TableHead>
                 <TableHead>Khách hàng</TableHead>
                 <TableHead className="w-[120px]">Đánh giá</TableHead>
@@ -167,8 +240,16 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? <TableSkeleton columns={7} /> : (
-                reviews.map((review) => {
+              {isLoading ? (
+                <TableSkeleton columns={8} />
+              ) : filteredReviews.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
+                    {isTrashView ? "Thùng rác trống" : "Không tìm thấy đánh giá nào"}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredReviews.map((review) => {
                   const isRisk = review.rating <= 2;
                   return (
                     <TableRow 
@@ -230,14 +311,14 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
                         )}
                       </TableCell>
                       <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {renderActions(review)}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ReviewTableActions 
+                          review={review} 
+                          isTrashView={isTrashView} 
+                          onViewDetails={(id) => router.push(`/reviews/${id}`)}
+                          onRestore={handleRestore}
+                          onToggleHide={handleToggleHide}
+                          onDelete={handleDelete}
+                        />
                       </TableCell>
                     </TableRow>
                   );
@@ -255,19 +336,32 @@ export function ReviewTable({ reviews, setReviews, isLoading = false }: ReviewTa
               Đã chọn <strong className="text-blue-400">{selectedIds.length}</strong>
             </span>
             <div className="flex items-center gap-2">
-              {hasVisible && (
-                <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-muted-foreground hover:text-foreground hover:bg-background/10">
-                  <EyeOff className="h-4 w-4 mr-2" /> Ẩn hàng loạt
-                </Button>
+              {isTrashView ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={handleBulkRestore} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                    <ArchiveRestore className="h-4 w-4 mr-2" /> Khôi phục
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Xóa vĩnh viễn
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {hasHidden && (
+                    <Button variant="ghost" size="sm" onClick={handleBulkShow} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
+                      <Eye className="h-4 w-4 mr-2" /> Hiển thị
+                    </Button>
+                  )}
+                  {hasVisible && (
+                    <Button variant="ghost" size="sm" onClick={handleBulkHide} className="text-amber-400 hover:text-amber-300 hover:bg-background/10">
+                      <EyeOff className="h-4 w-4 mr-2" /> Ẩn
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
+                    <Trash2 className="h-4 w-4 mr-2" /> Đưa vào thùng rác
+                  </Button>
+                </>
               )}
-              {hasHidden && (
-                <Button variant="ghost" size="sm" onClick={handleBulkShow} className="text-emerald-400 hover:text-emerald-300 hover:bg-background/10">
-                  <Eye className="h-4 w-4 mr-2" /> Hiện hàng loạt
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={handleBulkDelete} className="text-red-400 hover:text-red-300 hover:bg-background/10">
-                <Trash2 className="h-4 w-4 mr-2" /> Xóa
-              </Button>
             </div>
             <div className="pl-2 border-l border-background/20">
               <Button variant="ghost" size="icon" onClick={() => setSelectedIds([])} className="h-8 w-8 rounded-full hover:bg-background/10 text-background">

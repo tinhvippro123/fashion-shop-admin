@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/shared/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { cn } from "@/shared/utils/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
@@ -28,7 +28,76 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import { ReturnStatus } from "../types/order.admin";
-import { mockReturnRequests } from "../mocks/return.mock";
+import { mockReturnRequests, ReturnRequest } from "../mocks/return.mock";
+import { getReturnActions } from "../utils/action-resolvers";
+import { approveReturnAction, rejectReturnAction, receiveReturnAction, reportFraudAction } from "../actions/return.action";
+
+interface ReturnTableActionsProps {
+  req: ReturnRequest;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
+  onReceive: (id: string) => void;
+  onFraud: (id: string) => void;
+  isPending: boolean;
+}
+
+function ReturnTableActions({ req, onApprove, onReject, onReceive, onFraud, isPending }: ReturnTableActionsProps) {
+  const actions = getReturnActions(req);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
+        <MoreHorizontal className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {actions.includes('VIEW') && (
+          <DropdownMenuItem render={<Link href={`/orders/returns/${req.id}`} className="w-full cursor-pointer flex items-center" />}>
+            <Eye className="h-4 w-4 mr-2" /> Xem chi tiết
+          </DropdownMenuItem>
+        )}
+
+        {(actions.includes('APPROVE') || actions.includes('REJECT') || actions.includes('RECEIVE') || actions.includes('FRAUD') || actions.includes('PRINT')) && (
+          <DropdownMenuSeparator />
+        )}
+
+        {actions.includes('APPROVE') && (
+          <DropdownMenuItem disabled={isPending} className="text-emerald-600 cursor-pointer flex items-center" onClick={() => onApprove(req.id)}>
+            <CheckCircle className="h-4 w-4 mr-2" /> Đồng ý hoàn trả
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('REJECT') && (
+          <DropdownMenuItem disabled={isPending} className="text-destructive cursor-pointer flex items-center" onClick={() => onReject(req.id)}>
+            <XCircle className="h-4 w-4 mr-2" /> Từ chối
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('RECEIVE') && (
+          <DropdownMenuItem disabled={isPending} className="text-blue-600 cursor-pointer flex items-center" onClick={() => onReceive(req.id)}>
+            <Package className="h-4 w-4 mr-2" /> Đã nhận lại hàng
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('FRAUD') && (
+          <DropdownMenuItem disabled={isPending} className="text-amber-600 cursor-pointer flex items-center" onClick={() => onFraud(req.id)}>
+            <AlertTriangle className="h-4 w-4 mr-2" /> Báo cáo gian lận
+          </DropdownMenuItem>
+        )}
+
+        {actions.includes('PRINT') && (
+          <DropdownMenuItem 
+            className="text-emerald-600 cursor-pointer flex items-center" 
+            onClick={() => {
+              toast.info(`Đang tạo biên lai hoàn tiền cho ${req.id}...`);
+              setTimeout(() => window.print(), 500);
+            }}
+          >
+            <Printer className="h-4 w-4 mr-2" /> In biên lai hoàn tiền
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export type ViewStatus = ReturnStatus | 'ALL';
 
@@ -47,6 +116,8 @@ export function ReturnTable() {
   const [fraudDialog, setFraudDialog] = useState(false);
   const [fraudReason, setFraudReason] = useState("");
   const [fraudId, setFraudId] = useState<string | null>(null);
+
+  const [isPending, startTransition] = useTransition();
 
   const filteredReturns = currentTab === 'ALL' ? returns : returns.filter(r => r.status === currentTab);
 
@@ -77,25 +148,43 @@ export function ReturnTable() {
   };
 
   const handleApprove = (id: string) => {
-    toast.success(`Đã đồng ý hoàn trả cho yêu cầu ${id}. Trạng thái chuyển sang Đang hoàn về kho.`);
-    setReturns(returns.map(r => r.id === id ? { ...r, status: 'RETURNING' } : r));
+    startTransition(async () => {
+      const res = await approveReturnAction(id);
+      if (res.success) {
+        toast.success(`Đã đồng ý hoàn trả cho yêu cầu ${id}. Trạng thái chuyển sang Đang hoàn về kho.`);
+        setReturns(returns.map(r => r.id === id ? { ...r, status: 'RETURNING' } : r));
+      } else {
+        toast.error(res.error || "Có lỗi xảy ra");
+      }
+    });
   };
 
   const handleReceive = (id: string) => {
-    toast.success(`Đã xác nhận nhận lại hàng cho ${id}. Chờ kế toán hoàn tiền.`);
-    setReturns(returns.map(r => r.id === id ? { ...r, status: 'COMPLETED' } : r));
+    startTransition(async () => {
+      const res = await receiveReturnAction(id);
+      if (res.success) {
+        toast.success(`Đã xác nhận nhận lại hàng cho ${id}. Chờ kế toán hoàn tiền.`);
+        setReturns(returns.map(r => r.id === id ? { ...r, status: 'COMPLETED' } : r));
+      } else {
+        toast.error(res.error || "Có lỗi xảy ra");
+      }
+    });
   };
 
   const handleReject = () => {
-    if (!rejectReason.trim()) {
-      toast.error("Vui lòng nhập lý do từ chối!");
-      return;
-    }
-    toast.error(`Đã từ chối yêu cầu ${rejectId}. Lý do: ${rejectReason}`);
-    setReturns(returns.map(r => r.id === rejectId ? { ...r, status: 'REJECTED' } : r));
-    setRejectDialog(false);
-    setRejectReason("");
-    setRejectId(null);
+    if (!rejectId) return;
+    startTransition(async () => {
+      const res = await rejectReturnAction(rejectId, { reason: rejectReason });
+      if (res.success) {
+        toast.error(`Đã từ chối yêu cầu ${rejectId}. Lý do: ${rejectReason}`);
+        setReturns(returns.map(r => r.id === rejectId ? { ...r, status: 'REJECTED' } : r));
+        setRejectDialog(false);
+        setRejectReason("");
+        setRejectId(null);
+      } else {
+        toast.error(res.error || "Dữ liệu không hợp lệ");
+      }
+    });
   };
 
   const openRejectDialog = (id: string) => {
@@ -105,15 +194,19 @@ export function ReturnTable() {
   };
 
   const handleFraud = () => {
-    if (!fraudReason.trim()) {
-      toast.error("Vui lòng nhập chi tiết tình trạng gian lận!");
-      return;
-    }
-    toast.error(`Đã báo cáo gian lận cho yêu cầu ${fraudId}. Hồ sơ chuyển sang Đã từ chối.`);
-    setReturns(returns.map(r => r.id === fraudId ? { ...r, status: 'REJECTED' } : r));
-    setFraudDialog(false);
-    setFraudReason("");
-    setFraudId(null);
+    if (!fraudId) return;
+    startTransition(async () => {
+      const res = await reportFraudAction(fraudId, { reason: fraudReason });
+      if (res.success) {
+        toast.error(`Đã báo cáo gian lận cho yêu cầu ${fraudId}. Hồ sơ chuyển sang Đã từ chối.`);
+        setReturns(returns.map(r => r.id === fraudId ? { ...r, status: 'REJECTED' } : r));
+        setFraudDialog(false);
+        setFraudReason("");
+        setFraudId(null);
+      } else {
+        toast.error(res.error || "Dữ liệu không hợp lệ");
+      }
+    });
   };
 
   const openFraudDialog = (id: string) => {
@@ -204,55 +297,14 @@ export function ReturnTable() {
                       {req.refundAmount}
                     </TableCell>
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted outline-none">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem render={<Link href={`/orders/returns/${req.id}`} className="w-full cursor-pointer flex items-center" />}>
-                            <Eye className="h-4 w-4 mr-2" /> Xem chi tiết
-                          </DropdownMenuItem>
-                          
-                          {req.status === 'PENDING' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-emerald-600 cursor-pointer flex items-center" onClick={() => handleApprove(req.id)}>
-                                <CheckCircle className="h-4 w-4 mr-2" /> Đồng ý hoàn trả
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive cursor-pointer flex items-center" onClick={() => openRejectDialog(req.id)}>
-                                <XCircle className="h-4 w-4 mr-2" /> Từ chối
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          
-                          {req.status === 'RETURNING' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-blue-600 cursor-pointer flex items-center" onClick={() => handleReceive(req.id)}>
-                                <Package className="h-4 w-4 mr-2" /> Đã nhận lại hàng
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-amber-600 cursor-pointer flex items-center" onClick={() => openFraudDialog(req.id)}>
-                                <AlertTriangle className="h-4 w-4 mr-2" /> Báo cáo gian lận
-                              </DropdownMenuItem>
-                            </>
-                          )}
-
-                          {req.status === 'COMPLETED' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                className="text-emerald-600 cursor-pointer flex items-center" 
-                                onClick={() => {
-                                  toast.info(`Đang tạo biên lai hoàn tiền cho ${req.id}...`);
-                                  setTimeout(() => window.print(), 500);
-                                }}
-                              >
-                                <Printer className="h-4 w-4 mr-2" /> In biên lai hoàn tiền
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <ReturnTableActions 
+                        req={req} 
+                        onApprove={handleApprove} 
+                        onReject={openRejectDialog} 
+                        onReceive={handleReceive} 
+                        onFraud={openFraudDialog} 
+                        isPending={isPending}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

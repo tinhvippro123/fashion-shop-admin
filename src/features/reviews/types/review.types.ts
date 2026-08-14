@@ -10,4 +10,5 @@ export interface Review {
   imageUrl?: string; // Optional image attached by customer
   isHidden: boolean;
   createdAt: string;
+  deletedAt?: string;
 }

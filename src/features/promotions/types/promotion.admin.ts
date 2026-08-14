@@ -15,8 +15,8 @@ export interface Voucher {
   code: string;
   discountAmount: string;
   minOrderValue: string;
-  quantity: string;
-  status: string;
-  expiry: string;
+  quantity: string; // e.g., "100 / 1000"
+  status: "Đang diễn ra" | "Sắp diễn ra" | "Đã kết thúc";
+  duration: string; // e.g., "17/07/2026 - 30/08/2026"
   deletedAt?: string;
 }

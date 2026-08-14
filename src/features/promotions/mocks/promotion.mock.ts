@@ -63,7 +63,7 @@ export const mockVouchers: Voucher[] = [
     minOrderValue: "500,000đ",
     quantity: "100 / 1000",
     status: "Đang diễn ra",
-    expiry: "30/08/2026",
+    duration: "15/05/2026 - 30/08/2026",
   },
   {
     id: "VOU-002",
@@ -72,7 +72,7 @@ export const mockVouchers: Voucher[] = [
     minOrderValue: "1,000,000đ",
     quantity: "450 / 500",
     status: "Đang diễn ra",
-    expiry: "15/09/2026",
+    duration: "01/09/2026 - 15/09/2026",
   },
   {
     id: "VOU-003",
@@ -81,7 +81,7 @@ export const mockVouchers: Voucher[] = [
     minOrderValue: "2,000,000đ",
     quantity: "50 / 50",
     status: "Đã kết thúc",
-    expiry: "31/12/2026",
+    duration: "01/01/2026 - 31/12/2026",
   },
   {
     id: "VOU-004",
@@ -90,7 +90,7 @@ export const mockVouchers: Voucher[] = [
     minOrderValue: "0đ",
     quantity: "0 / 100",
     status: "Đã kết thúc",
-    expiry: "01/01/2026",
+    duration: "01/01/2025 - 01/01/2026",
     deletedAt: "2026-07-28T10:00:00Z",
   },
   {
@@ -100,7 +100,7 @@ export const mockVouchers: Voucher[] = [
     minOrderValue: "200,000đ",
     quantity: "15 / 100",
     status: "Đã kết thúc",
-    expiry: "01/01/2025",
+    duration: "01/01/2024 - 01/01/2025",
     deletedAt: "2026-07-25T14:30:00Z",
   },
 ];
