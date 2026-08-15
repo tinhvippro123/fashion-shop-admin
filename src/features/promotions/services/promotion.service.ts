@@ -21,15 +21,31 @@ export const promotionService = {
     return mockVouchers;
   },
 
-  async createCampaign(data: TCampaignPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async createCampaign(data: TCampaignPayload): Promise<Campaign> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id: Date.now(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: Date.now().toString(),
+      name: data.name,
+      discount: data.discountType === 'PERCENTAGE' ? `${data.discountValue}%` : `${data.discountValue}đ`,
+      duration: "Chưa diễn ra",
+      target: "Chưa thiết lập",
+      audience: "Tất cả khách hàng",
+      status: data.status === "active" ? "Đang diễn ra" : "Tạm dừng"
+    };
   },
-  async updateCampaign(id: number, data: TCampaignPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async updateCampaign(id: string, data: TCampaignPayload): Promise<Campaign> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id,
+      name: data.name,
+      discount: data.discountType === 'PERCENTAGE' ? `${data.discountValue}%` : `${data.discountValue}đ`,
+      duration: "Chưa diễn ra",
+      target: "Chưa thiết lập",
+      audience: "Tất cả khách hàng",
+      status: data.status === "active" ? "Đang diễn ra" : "Tạm dừng"
+    };
   },
 };
 

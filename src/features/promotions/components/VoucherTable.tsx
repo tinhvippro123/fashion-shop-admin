@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Filter, Gift, Trash2, ArchiveRestore, X, Eye, Copy, Edit, Ban } from "lucide-react";
+import { Search, MoreHorizontal, Filter, Gift, Trash2, ArchiveRestore, X, Eye, Copy, Edit, Ban, Rocket } from "lucide-react";
 import { getVoucherActions } from "../utils/action-resolvers";
 import {
   DropdownMenu,
@@ -46,9 +46,10 @@ interface VoucherTableActionsProps {
   onPermanentDelete: (voucher: Voucher) => void;
   onDelete: (voucher: Voucher) => void;
   onEndEarly: (voucher: Voucher) => void;
+  onStartNow: (voucher: Voucher) => void;
 }
 
-function VoucherTableActions({ voucher, isTrashView, onAction, onPermanentDelete, onDelete, onEndEarly }: VoucherTableActionsProps) {
+function VoucherTableActions({ voucher, isTrashView, onAction, onPermanentDelete, onDelete, onEndEarly, onStartNow }: VoucherTableActionsProps) {
   const actions = getVoucherActions(voucher, isTrashView);
   return (
     <DropdownMenu>
@@ -91,6 +92,11 @@ function VoucherTableActions({ voucher, isTrashView, onAction, onPermanentDelete
             <Ban className="mr-2 h-4 w-4" /> Kết thúc sớm
           </DropdownMenuItem>
         )}
+        {actions.includes('START_NOW') && (
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStartNow(voucher); }} className="text-blue-600">
+            <Rocket className="mr-2 h-4 w-4" /> Bắt đầu ngay
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -111,10 +117,17 @@ export function VoucherTable({ isTrashView = false, viewStatus = "Tất cả", o
     const formattedToday = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
     
     setVouchers(prev => prev.map(v => 
-      v.id === voucher.id ? { ...v, status: "Đã kết thúc", expiry: formattedToday } : v
+      v.id === voucher.id ? { ...v, status: "Đã kết thúc", duration: v.duration.split(" - ")[0] + " - " + formattedToday, endedReason: "early" } : v
     ));
     
     toast.success(`Đã kết thúc sớm mã ${voucher.code}`);
+  };
+
+  const handleStartNow = (voucher: Voucher) => {
+    setVouchers(prev => prev.map(v => 
+      v.id === voucher.id ? { ...v, status: "Đang diễn ra" } : v
+    ));
+    toast.success(`Đã kích hoạt ngay mã ${voucher.code}`);
   };
 
   const filteredVouchers = vouchers.filter(v => {
@@ -139,6 +152,30 @@ export function VoucherTable({ isTrashView = false, viewStatus = "Tất cả", o
     }
     setVouchers(prev => prev.filter(v => v.id !== voucher.id));
     toast.success(`Đã xóa vĩnh viễn mã giảm giá "${voucher.code}"!`);
+  };
+
+  const renderStatusBadge = (voucher: Voucher) => {
+    if (voucher.status === "Đang diễn ra") {
+      return <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border-none">Đang diễn ra</Badge>;
+    }
+    if (voucher.status === "Sắp diễn ra") {
+      return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">Sắp diễn ra</Badge>;
+    }
+    
+    // Status is "Đã kết thúc"
+    if (voucher.endedReason === "early") {
+      return <Badge className="bg-red-100 text-red-700 hover:bg-red-200 border-none">Kết thúc sớm</Badge>;
+    }
+    
+    const [usedStr, totalStr] = voucher.quantity.split(" / ");
+    const used = parseInt(usedStr || "0");
+    const total = parseInt(totalStr || "0");
+    
+    if (total > 0 && used >= total) {
+      return <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200 border-none">Hết lượt sử dụng</Badge>;
+    }
+    
+    return <Badge className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border-none">Đã quá hạn</Badge>;
   };
 
   return (
@@ -213,9 +250,7 @@ filteredVouchers.map((voucher) => (
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={voucher.status === "Đang diễn ra" ? "default" : "secondary"} className={voucher.status === "Đang diễn ra" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-muted text-foreground hover:bg-muted border-none"}>
-                      {voucher.status}
-                    </Badge>
+                    {renderStatusBadge(voucher)}
                   </TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <VoucherTableActions 
@@ -225,6 +260,7 @@ filteredVouchers.map((voucher) => (
                       onPermanentDelete={handlePermanentDelete} 
                       onDelete={handleDelete} 
                       onEndEarly={handleEndEarly} 
+                      onStartNow={handleStartNow}
                     />
                   </TableCell>
                 </TableRow>
@@ -259,9 +295,7 @@ filteredVouchers.map((voucher) => (
                 <span>Đã dùng: <strong>{voucher.quantity}</strong></span>
               </div>
               <div className="mt-2">
-                <Badge variant={voucher.status === "Đang diễn ra" ? "default" : "secondary"} className={voucher.status === "Đang diễn ra" ? "bg-green-100 text-green-700 hover:bg-green-200 border-none text-[10px] px-2 py-0" : "bg-muted text-foreground hover:bg-muted border-none text-[10px] px-2 py-0"}>
-                  {voucher.status}
-                </Badge>
+                {renderStatusBadge(voucher)}
               </div>
               <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
                   <VoucherTableActions 
@@ -271,6 +305,7 @@ filteredVouchers.map((voucher) => (
                     onPermanentDelete={handlePermanentDelete} 
                     onDelete={handleDelete} 
                     onEndEarly={handleEndEarly} 
+                    onStartNow={handleStartNow}
                   />
               </div>
             </div>

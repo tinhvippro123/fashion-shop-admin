@@ -8,6 +8,7 @@ export interface Campaign {
   status: string;
   usageCount?: number;
   deletedAt?: string;
+  endedReason?: "expired" | "out_of_stock" | "early";
 }
 
 export interface Voucher {
@@ -19,4 +20,5 @@ export interface Voucher {
   status: "Đang diễn ra" | "Sắp diễn ra" | "Đã kết thúc";
   duration: string; // e.g., "17/07/2026 - 30/08/2026"
   deletedAt?: string;
+  endedReason?: "expired" | "out_of_stock" | "early";
 }

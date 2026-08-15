@@ -3,7 +3,7 @@ export type OrderAction = 'VIEW' | 'APPROVE' | 'CANCEL' | 'PRINT' | 'HANDOVER' |
 import { Order } from "../types/order.admin";
 import { ReturnRequest } from "../mocks/return.mock";
 
-export function getOrderActions(order: Order): OrderAction[] {
+export function getOrderActions(order: Pick<Order, 'status' | 'payment'>): OrderAction[] {
   const actions: OrderAction[] = ['VIEW'];
 
   switch (order.status) {
@@ -31,7 +31,7 @@ export function getOrderActions(order: Order): OrderAction[] {
 
 export type ReturnAction = 'VIEW' | 'APPROVE' | 'REJECT' | 'RECEIVE' | 'FRAUD' | 'PRINT';
 
-export function getReturnActions(returnRequest: ReturnRequest): ReturnAction[] {
+export function getReturnActions(returnRequest: Pick<ReturnRequest, 'status'>): ReturnAction[] {
   const actions: ReturnAction[] = ['VIEW'];
 
   switch (returnRequest.status) {

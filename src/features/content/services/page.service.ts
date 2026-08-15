@@ -5,15 +5,27 @@ export const pageService = {
   async getPages(): Promise<Page[]> {
     return new Promise(resolve => setTimeout(() => resolve(mockPages), 200));
   },
-  async createPage(data: TPagePayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async createPage(data: TPagePayload): Promise<Page> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id: Date.now(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: Date.now().toString(),
+      title: data.title,
+      slug: data.slug || "new-page",
+      status: data.status === "published" ? 'Đã xuất bản' : 'Bản nháp',
+      updatedAt: new Date().toISOString().split("T")[0]
+    };
   },
-  async updatePage(id: number, data: TPagePayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async updatePage(id: number, data: TPagePayload): Promise<Page> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: id.toString(),
+      title: data.title,
+      slug: data.slug || "updated-page",
+      status: data.status === "published" ? 'Đã xuất bản' : 'Bản nháp',
+      updatedAt: new Date().toISOString().split("T")[0]
+    };
   },
 };
 

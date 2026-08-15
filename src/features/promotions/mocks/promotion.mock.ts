@@ -33,14 +33,14 @@ export const mockCampaigns: Campaign[] = [
   },
   {
     id: "PROMO-004",
-    name: "Sale Cuối Tuần 1",
-    discount: "10%",
-    duration: "01/01/2026 - 02/01/2026",
-    target: "Danh mục: Áo thun",
+    name: "Sale Khủng 4/4",
+    discount: "40%",
+    duration: "04/04/2026 - 04/04/2026",
+    target: "Danh mục: Giày dép",
     audience: "Tất cả khách hàng",
     status: "Đã kết thúc",
-    usageCount: 0,
-    deletedAt: "2026-05-15T10:00:00Z"
+    usageCount: 300,
+    endedReason: "early"
   },
   {
     id: "PROMO-005",
@@ -70,8 +70,8 @@ export const mockVouchers: Voucher[] = [
     code: "FREESHIP100",
     discountAmount: "30,000đ",
     minOrderValue: "1,000,000đ",
-    quantity: "450 / 500",
-    status: "Đang diễn ra",
+    quantity: "0 / 500",
+    status: "Sắp diễn ra",
     duration: "01/09/2026 - 15/09/2026",
   },
   {
@@ -85,13 +85,13 @@ export const mockVouchers: Voucher[] = [
   },
   {
     id: "VOU-004",
-    code: "TESTCODE",
-    discountAmount: "10,000đ",
+    code: "FLASH50K",
+    discountAmount: "50,000đ",
     minOrderValue: "0đ",
-    quantity: "0 / 100",
+    quantity: "20 / 100",
     status: "Đã kết thúc",
-    duration: "01/01/2025 - 01/01/2026",
-    deletedAt: "2026-07-28T10:00:00Z",
+    duration: "01/01/2026 - 01/02/2026",
+    endedReason: "early"
   },
   {
     id: "VOU-005",
@@ -101,6 +101,15 @@ export const mockVouchers: Voucher[] = [
     quantity: "15 / 100",
     status: "Đã kết thúc",
     duration: "01/01/2024 - 01/01/2025",
-    deletedAt: "2026-07-25T14:30:00Z",
+  },
+  {
+    id: "VOU-006",
+    code: "DELETEDCODE",
+    discountAmount: "10,000đ",
+    minOrderValue: "0đ",
+    quantity: "0 / 100",
+    status: "Đã kết thúc",
+    duration: "01/01/2025 - 01/01/2026",
+    deletedAt: "2026-07-28T10:00:00Z",
   },
 ];

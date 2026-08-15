@@ -2,7 +2,7 @@ export type CustomerAction = 'VIEW' | 'RESTORE' | 'BAN' | 'PERMANENT_DELETE' | '
 
 import { Customer } from "../types/customer.admin";
 
-export function getCustomerActions(customer: Customer, viewState: { isPendingView: boolean, isUnverifiedView: boolean, isBannedView: boolean }): CustomerAction[] {
+export function getCustomerActions(customer: Partial<Customer>, viewState: { isPendingView: boolean, isUnverifiedView: boolean, isBannedView: boolean }): CustomerAction[] {
   const actions: CustomerAction[] = ['VIEW'];
 
   if (viewState.isPendingView) {

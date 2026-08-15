@@ -9,7 +9,7 @@ export type FlashSaleAction =
   | 'RESTORE' 
   | 'PERMANENT_DELETE';
 
-export function getFlashSaleActions(flashSale: FlashSale, isTrashView: boolean): FlashSaleAction[] {
+export function getFlashSaleActions(flashSale: Pick<FlashSale, 'status' | 'usageCount'>, isTrashView: boolean): FlashSaleAction[] {
   if (isTrashView) {
     const actions: FlashSaleAction[] = ['RESTORE'];
     if (!flashSale.usageCount || flashSale.usageCount === 0) {
@@ -40,12 +40,12 @@ export type BannerAction = 'EDIT' | 'DELETE';
 import { Banner } from "../types/banner.admin";
 import { Notification } from "../types/notification.admin";
 
-export function getBannerActions(banner: Banner, isTrashView: boolean = false): BannerAction[] {
+export function getBannerActions(banner: Partial<Banner>, isTrashView: boolean = false): BannerAction[] {
   return ['EDIT', 'DELETE'];
 }
 
 export type NotificationAction = 'EDIT' | 'DELETE' | 'MARK_READ';
 
-export function getNotificationActions(notification: Notification, isTrashView: boolean = false): NotificationAction[] {
+export function getNotificationActions(notification: Partial<Notification>, isTrashView: boolean = false): NotificationAction[] {
   return ['EDIT', 'DELETE'];
 }

@@ -21,15 +21,27 @@ export default function PromotionsPage() {
         </Link>
       </div>
 
-      <Tabs defaultValue="active" className="w-full">
+      <Tabs defaultValue="ALL" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="active">Đang hoạt động (3)</TabsTrigger>
-          <TabsTrigger value="trash">Thùng rác (2)</TabsTrigger>
+          <TabsTrigger value="ALL">Tất cả</TabsTrigger>
+          <TabsTrigger value="ACTIVE">Đang diễn ra</TabsTrigger>
+          <TabsTrigger value="UPCOMING">Sắp diễn ra</TabsTrigger>
+          <TabsTrigger value="ENDED">Đã kết thúc</TabsTrigger>
+          <TabsTrigger value="TRASH">Thùng rác</TabsTrigger>
         </TabsList>
-        <TabsContent value="active" className="m-0">
-          <CampaignTable />
+        <TabsContent value="ALL" className="m-0">
+          <CampaignTable viewStatus="Tất cả" />
         </TabsContent>
-        <TabsContent value="trash" className="m-0">
+        <TabsContent value="ACTIVE" className="m-0">
+          <CampaignTable viewStatus="Đang diễn ra" />
+        </TabsContent>
+        <TabsContent value="UPCOMING" className="m-0">
+          <CampaignTable viewStatus="Sắp diễn ra" />
+        </TabsContent>
+        <TabsContent value="ENDED" className="m-0">
+          <CampaignTable viewStatus="Đã kết thúc" />
+        </TabsContent>
+        <TabsContent value="TRASH" className="m-0">
           <CampaignTable isTrashView />
         </TabsContent>
       </Tabs>

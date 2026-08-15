@@ -8,6 +8,7 @@ import { Package, User, Clock, AlertTriangle, CheckCircle, PackageCheck, XCircle
 import { cn } from "@/shared/utils/utils";
 import Image from "next/image";
 import { approveReturnAction, rejectReturnAction, receiveReturnAction, reportFraudAction } from "../actions/return.action";
+import { getReturnActions } from "../utils/action-resolvers";
 import { ReturnStatus } from "../types/order.admin";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -69,6 +70,8 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
   const [currentStatus, setCurrentStatus] = useState<ReturnStatus>(returnReq?.status || "PENDING");
   
   const [isPending, startTransition] = useTransition();
+
+  const actions = returnReq ? getReturnActions({ status: currentStatus }) : [];
 
   if (isLoading) {
     return <div className="flex justify-center p-8 text-muted-foreground">Đang tải chi tiết yêu cầu...</div>;
@@ -167,59 +170,62 @@ export function ReturnDetailView({ returnId }: { returnId: string }) {
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          {currentStatus === 'PENDING' && (
-            <>
-              <Button 
-                variant="outline" 
-                onClick={() => { setRejectReason(""); setRejectDialog(true); }}
-                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
-              >
-                <XCircle className="mr-2 h-4 w-4" /> Từ chối
-              </Button>
-              <Button 
-                variant="default"
-                onClick={handleApprove} 
-                className="shadow-sm"
-                disabled={isPending}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
-              </Button>
-            </>
+          {actions.includes('REJECT') && (
+            <Button 
+              variant="outline" 
+              onClick={() => { setRejectReason(""); setRejectDialog(true); }}
+              className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              disabled={isPending}
+            >
+              <XCircle className="mr-2 h-4 w-4" /> Từ chối
+            </Button>
           )}
 
-          {currentStatus === 'RETURNING' && (
-            <>
-              <Button 
-                variant="outline"
-                onClick={() => { setFraudReason(""); setFraudDialog(true); }}
-                className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
-              >
-                <AlertTriangle className="mr-2 h-4 w-4" /> Báo cáo gian lận
-              </Button>
-              <Button 
-                variant="default"
-                onClick={handleReceive}
-                className="shadow-sm"
-                disabled={isPending}
-              >
-                <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
-              </Button>
-            </>
+          {actions.includes('APPROVE') && (
+            <Button 
+              variant="default"
+              onClick={handleApprove} 
+              className="shadow-sm"
+              disabled={isPending}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" /> Đồng ý hoàn trả
+            </Button>
           )}
 
-          {currentStatus === 'COMPLETED' && (
-            <>
-              <Button 
-                variant="outline"
-                className="shadow-sm"
-                onClick={() => {
-                  toast.info(`Đang in biên lai hoàn tiền cho ${returnReq.id}...`);
-                  setTimeout(() => window.print(), 500);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" /> In biên lai
-              </Button>
-            </>
+          {actions.includes('FRAUD') && (
+            <Button 
+              variant="outline"
+              onClick={() => { setFraudReason(""); setFraudDialog(true); }}
+              className="text-red-600 border-red-200 hover:bg-red-50 shadow-sm"
+              disabled={isPending}
+            >
+              <AlertTriangle className="mr-2 h-4 w-4" /> Báo cáo gian lận
+            </Button>
+          )}
+
+          {actions.includes('RECEIVE') && (
+            <Button 
+              variant="default"
+              onClick={handleReceive}
+              className="shadow-sm"
+              disabled={isPending}
+            >
+              <PackageCheck className="mr-2 h-4 w-4" /> Đã nhận lại hàng
+            </Button>
+          )}
+
+          {actions.includes('PRINT') && (
+            <Button 
+              variant="outline"
+              className="shadow-sm"
+              onClick={() => {
+                toast.info(`Đang in biên lai hoàn tiền cho ${returnReq.id}...`);
+                setTimeout(() => window.print(), 500);
+              }}
+              disabled={isPending}
+            >
+              <Printer className="mr-2 h-4 w-4" /> In biên lai
+            </Button>
           )}
 
           <Link href={`/orders/${returnReq.orderId}`}>

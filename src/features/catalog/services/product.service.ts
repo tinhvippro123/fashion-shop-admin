@@ -37,13 +37,33 @@ export const productService = {
 
   // Các hàm tương lai: createProduct, updateProduct, deleteProduct...
 
-  async createProduct(data: TProductPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async createProduct(data: TProductPayload): Promise<Product> {
     await delay(800);
-    return { id: Date.now().toString(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: Date.now().toString(),
+      name: data.name,
+      category: data.category,
+      price: data.price.toString(),
+      stock: data.stock,
+      isActive: data.status === "published",
+      sold: 0,
+      rating: 0,
+      reviewCount: 0,
+    };
   },
   
-  async updateProduct(id: string, data: TProductPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async updateProduct(id: string, data: TProductPayload): Promise<Product> {
     await delay(800);
-    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id,
+      name: data.name,
+      category: data.category,
+      price: data.price.toString(),
+      stock: data.stock,
+      isActive: data.status === "published",
+      sold: 0,
+      rating: 0,
+      reviewCount: 0,
+    };
   },
 };

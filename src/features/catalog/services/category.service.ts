@@ -24,15 +24,27 @@ export const categoryService = {
 
   // Các hàm tương lai: createCategory, updateCategory, deleteCategory...
 
-  async createCategory(data: TCategoryPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async createCategory(data: TCategoryPayload): Promise<Category> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id: Date.now().toString(), ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: Date.now().toString(),
+      name: data.name,
+      slug: data.slug,
+      productCount: 0,
+      status: data.active ? 'Hoạt động' : 'Đã ẩn',
+    };
   },
-  async updateCategory(id: string, data: TCategoryPayload): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  async updateCategory(id: string, data: TCategoryPayload): Promise<Category> {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     await delay(800);
-    return { id, ...data } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id,
+      name: data.name,
+      slug: data.slug,
+      productCount: 0,
+      status: data.active ? 'Hoạt động' : 'Đã ẩn',
+    };
   },
 };
 

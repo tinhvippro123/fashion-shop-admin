@@ -3,7 +3,7 @@ export type CategoryAction = 'EDIT' | 'DELETE' | 'RESTORE' | 'PERMANENT_DELETE';
 import { Category } from "../types/category";
 import { Product } from "../types/product.admin";
 
-export function getCategoryActions(category: Category, isTrashView: boolean = false): CategoryAction[] {
+export function getCategoryActions(category: Partial<Category>, isTrashView: boolean = false): CategoryAction[] {
   if (isTrashView) {
     return ['RESTORE', 'PERMANENT_DELETE'];
   }
@@ -12,7 +12,7 @@ export function getCategoryActions(category: Category, isTrashView: boolean = fa
 
 export type ProductAction = 'EDIT' | 'DELETE' | 'RESTORE' | 'PERMANENT_DELETE' | 'TOGGLE_ACTIVE' | 'RESTOCK';
 
-export function getProductActions(product: Product, isTrashView: boolean = false): ProductAction[] {
+export function getProductActions(product: Pick<Product, 'isActive' | 'stock'>, isTrashView: boolean = false): ProductAction[] {
   if (isTrashView) {
     return ['RESTORE', 'PERMANENT_DELETE'];
   }
