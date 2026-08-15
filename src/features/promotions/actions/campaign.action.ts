@@ -27,7 +27,7 @@ export async function updateCampaignAction(id: string | number, data: TCampaignP
   }
 
   try {
-    const res = await promotionService.updateCampaign(Number(id), validated.data);
+    const res = await promotionService.updateCampaign(String(id), validated.data);
     revalidatePath('/promotions');
     return { success: true, data: res };
   } catch (error) {

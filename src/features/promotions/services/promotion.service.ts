@@ -27,7 +27,7 @@ export const promotionService = {
     return {
       id: Date.now().toString(),
       name: data.name,
-      discount: data.discountType === 'PERCENTAGE' ? `${data.discountValue}%` : `${data.discountValue}đ`,
+      discount: data.scope === 'SPECIFIC_PRODUCTS' ? 'Tùy chọn' : (data.globalDiscountType === 'PERCENTAGE' ? `${data.globalDiscountValue}%` : `${data.globalDiscountValue}đ`),
       duration: "Chưa diễn ra",
       target: "Chưa thiết lập",
       audience: "Tất cả khách hàng",
@@ -40,7 +40,7 @@ export const promotionService = {
     return {
       id,
       name: data.name,
-      discount: data.discountType === 'PERCENTAGE' ? `${data.discountValue}%` : `${data.discountValue}đ`,
+      discount: data.scope === 'SPECIFIC_PRODUCTS' ? 'Tùy chọn' : (data.globalDiscountType === 'PERCENTAGE' ? `${data.globalDiscountValue}%` : `${data.globalDiscountValue}đ`),
       duration: "Chưa diễn ra",
       target: "Chưa thiết lập",
       audience: "Tất cả khách hàng",

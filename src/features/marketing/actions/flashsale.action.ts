@@ -27,7 +27,7 @@ export async function updateFlashSaleAction(id: string | number, data: TFlashSal
   }
 
   try {
-    const res = await flashSaleService.updateFlashSale(Number(id), validated.data);
+    const res = await flashSaleService.updateFlashSale(String(id), validated.data);
     revalidatePath('/flash-sales');
     return { success: true, data: res };
   } catch (error) {
