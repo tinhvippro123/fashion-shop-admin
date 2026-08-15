@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Search, MoreHorizontal, Filter, Megaphone, Trash2, ArchiveRestore, X, Ban, Rocket, Eye, Copy, Edit } from "lucide-react";
+import { Search, MoreHorizontal, Filter, Megaphone, Ban, Rocket, Eye, Copy, Edit, XCircle } from "lucide-react";
 import { getCampaignActions } from "../utils/action-resolvers";
 import {
   DropdownMenu,
@@ -21,9 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { Label } from "@/shared/ui/label";
-import { Switch } from "@/shared/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { toast } from "sonner";
 import { Campaign } from "@/features/promotions/types/promotion.admin";
 import Link from "next/link";
@@ -34,15 +31,13 @@ import { useCampaigns } from "@/features/promotions/hooks/useCampaigns";
 
 interface CampaignTableActionsProps {
   campaign: Campaign;
-  isTrashView: boolean;
-  onPermanentDelete: (campaign: Campaign) => void;
-  onDelete: (campaign: Campaign) => void;
   onEndEarly: (campaign: Campaign) => void;
   onStartNow: (campaign: Campaign) => void;
+  onCancel: (campaign: Campaign) => void;
 }
 
-function CampaignTableActions({ campaign, isTrashView, onPermanentDelete, onDelete, onEndEarly, onStartNow }: CampaignTableActionsProps) {
-  const actions = getCampaignActions(campaign, isTrashView);
+function CampaignTableActions({ campaign, onEndEarly, onStartNow, onCancel }: CampaignTableActionsProps) {
+  const actions = getCampaignActions(campaign, false); // isTrashView is false since we removed Trash
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={
@@ -51,14 +46,6 @@ function CampaignTableActions({ campaign, isTrashView, onPermanentDelete, onDele
         </Button>
       } />
       <DropdownMenuContent align="end" className="w-48">
-        {actions.includes('RESTORE') && (
-          <DropdownMenuItem onClick={() => { toast.success(`Khôi phục ${campaign.name}`); }} className="text-emerald-600 font-medium whitespace-nowrap">Khôi phục</DropdownMenuItem>
-        )}
-        
-        {actions.includes('PERMANENT_DELETE') && (
-          <DropdownMenuItem onClick={() => onPermanentDelete(campaign)} className="text-red-600 font-medium whitespace-nowrap">Xóa vĩnh viễn</DropdownMenuItem>
-        )}
-
         {actions.includes('VIEW') && (
           <DropdownMenuItem render={<Link href={`/promotions/${campaign.id}`} className="w-full cursor-pointer whitespace-nowrap" />}>
             <Eye className="mr-2 h-4 w-4" /> Xem chi tiết
@@ -89,8 +76,10 @@ function CampaignTableActions({ campaign, isTrashView, onPermanentDelete, onDele
           </DropdownMenuItem>
         )}
 
-        {actions.includes('DELETE') && (
-          <DropdownMenuItem onClick={() => onDelete(campaign)} className="text-red-600 whitespace-nowrap">Chuyển vào thùng rác</DropdownMenuItem>
+        {actions.includes('CANCEL') && (
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCancel(campaign); }} className="text-red-600 font-medium whitespace-nowrap">
+            <XCircle className="mr-2 h-4 w-4" /> Hủy bỏ chương trình
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
@@ -98,11 +87,10 @@ function CampaignTableActions({ campaign, isTrashView, onPermanentDelete, onDele
 }
 
 interface CampaignTableProps {
-  isTrashView?: boolean;
-  viewStatus?: "Tất cả" | "Đang diễn ra" | "Sắp diễn ra" | "Đã kết thúc";
+  viewStatus?: "Tất cả" | "Đang diễn ra" | "Sắp diễn ra" | "Đã kết thúc" | "Đã hủy";
 }
 
-export function CampaignTable({ isTrashView = false, viewStatus = "Tất cả" }: CampaignTableProps) {
+export function CampaignTable({ viewStatus = "Tất cả" }: CampaignTableProps) {
   const { campaigns, isLoading, setCampaigns } = useCampaigns();
 
   const handleEndEarly = (campaign: Campaign) => {
@@ -121,44 +109,22 @@ export function CampaignTable({ isTrashView = false, viewStatus = "Tất cả" }
     toast.success(`Đã kích hoạt ngay chiến dịch ${campaign.name}`);
   };
 
-  const handleDelete = (campaign: Campaign) => {
-    toast.success(`Đã chuyển chiến dịch ${campaign.name} vào thùng rác!`);
+  const handleCancel = (campaign: Campaign) => {
+    if (window.confirm(`Hủy bỏ bản nháp "${campaign.name}"? Bản ghi này sẽ bị ẩn khỏi màn hình chính.`)) {
+      setCampaigns(prev => prev.map(c => 
+        c.id === campaign.id ? { ...c, status: "Đã hủy" } : c
+      ));
+      toast.success(`Đã hủy chiến dịch ${campaign.name}!`);
+    }
   };
 
   const filteredCampaigns = campaigns.filter(c => {
-    if (isTrashView) return c.deletedAt;
-    if (c.deletedAt) return false;
+    // Ẩn các chiến dịch bị hủy khỏi tab "Tất cả", chỉ hiển thị nếu chọn đích danh tab "Đã hủy"
+    if (viewStatus === "Tất cả" && c.status === "Đã hủy") return false;
+    
     if (viewStatus === "Tất cả") return true;
     return c.status === viewStatus;
   });
-
-  const handlePermanentDelete = (c: Campaign) => {
-    if ((c.usageCount && c.usageCount > 0) || c.status === "Đang diễn ra" || c.status === "Đã kết thúc") {
-      toast.error(`Không thể xóa vĩnh viễn "${c.name}" vì đã có dữ liệu sử dụng hoặc đã diễn ra!`);
-      return;
-    }
-    toast.success(`Đã xóa vĩnh viễn chiến dịch "${c.name}"!`);
-  };
-
-  const handleEmptyTrash = () => {
-    const unremovable = filteredCampaigns.filter(
-      c => c.usageCount && c.usageCount > 0
-    );
-    
-    if (unremovable.length === filteredCampaigns.length && filteredCampaigns.length > 0) {
-      toast.error("Không có chiến dịch nào có thể xóa vĩnh viễn!");
-      return;
-    }
-    
-    const removableCount = filteredCampaigns.length - unremovable.length;
-    if (removableCount > 0) {
-      toast.success(`Đã dọn sạch ${removableCount} chiến dịch khỏi thùng rác!`);
-    }
-    
-    if (unremovable.length > 0) {
-      toast.warning(`Giữ lại ${unremovable.length} chiến dịch có dữ liệu quan trọng.`);
-    }
-  };
 
   const renderStatusBadge = (camp: Campaign) => {
     if (camp.status === "Đang diễn ra") {
@@ -167,15 +133,15 @@ export function CampaignTable({ isTrashView = false, viewStatus = "Tất cả" }
     if (camp.status === "Sắp diễn ra") {
       return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">Sắp diễn ra</Badge>;
     }
+    if (camp.status === "Đã hủy") {
+      return <Badge className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200">Đã hủy</Badge>;
+    }
     
     // Status is "Đã kết thúc"
     if (camp.endedReason === "early") {
       return <Badge className="bg-red-100 text-red-700 hover:bg-red-200 border-none">Kết thúc sớm</Badge>;
     }
     
-    // For campaigns, we only check usageCount
-    // A mock usage limit could be considered if we want to show 'Hết lượt sử dụng'
-    // but without total limit, we just show 'Đã quá hạn' by default.
     return <Badge className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border-none">Đã quá hạn</Badge>;
   };
 
@@ -195,19 +161,14 @@ export function CampaignTable({ isTrashView = false, viewStatus = "Tất cả" }
               <Filter className="mr-2 h-4 w-4" /> Lọc
             </Button>
           </div>
-          {isTrashView && (
-            <Button variant="outline" onClick={handleEmptyTrash} className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0">
-              <Trash2 className="mr-2 h-4 w-4" /> <span>Dọn sạch thùng rác</span>
-            </Button>
-          )}
         </div>
         
         {(!isLoading && filteredCampaigns.length === 0) ? (
           <EmptyState
             icon={Megaphone}
-            title={isTrashView ? "Thùng rác trống" : "Chưa có chiến dịch nào"}
-            description={isTrashView ? "Không có chiến dịch nào trong thùng rác." : "Hãy tạo chiến dịch khuyến mãi đầu tiên để thu hút khách hàng."}
-            actionLabel={isTrashView ? "" : "Tạo chiến dịch mới"}
+            title={viewStatus === "Đã hủy" ? "Không có chiến dịch bị hủy" : "Chưa có chiến dịch nào"}
+            description={viewStatus === "Đã hủy" ? "Lịch sử hủy bỏ trống." : "Hãy tạo chiến dịch khuyến mãi đầu tiên để thu hút khách hàng."}
+            actionLabel={viewStatus === "Đã hủy" ? "" : "Tạo chiến dịch mới"}
             onAction={() => {}}
           />
         ) : (
@@ -226,9 +187,9 @@ export function CampaignTable({ isTrashView = false, viewStatus = "Tất cả" }
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? <TableSkeleton columns={7} /> : (
+              {isLoading ? <TableSkeleton columns={6} /> : (
 filteredCampaigns.map((camp) => (
-                <TableRow key={camp.id}>
+                <TableRow key={camp.id} className={camp.status === "Đã hủy" ? "opacity-50" : ""}>
                   <TableCell className="pl-4">
                     <div className="flex items-center gap-3">
                       <div className="bg-pink-100 p-2 rounded-lg text-pink-600">
@@ -263,11 +224,9 @@ filteredCampaigns.map((camp) => (
                   <TableCell className="text-right">
                     <CampaignTableActions 
                       campaign={camp} 
-                      isTrashView={isTrashView} 
-                      onPermanentDelete={handlePermanentDelete} 
-                      onDelete={handleDelete}
                       onEndEarly={handleEndEarly} 
                       onStartNow={handleStartNow}
+                      onCancel={handleCancel}
                     />
                   </TableCell>
                 </TableRow>
@@ -280,7 +239,7 @@ filteredCampaigns.map((camp) => (
         {/* Mobile View */}
         <div className="lg:hidden flex flex-col">
           {filteredCampaigns.map((camp) => (
-            <div key={camp.id} className="flex flex-col gap-3 p-4 border-b last:border-0 relative">
+            <div key={camp.id} className={cn("flex flex-col gap-3 p-4 border-b last:border-0 relative", camp.status === "Đã hủy" && "opacity-50")}>
               <div className="flex items-start justify-between pr-8">
                 <div>
                   <h4 className="font-bold text-foreground leading-tight">{camp.name}</h4>
@@ -310,11 +269,9 @@ filteredCampaigns.map((camp) => (
               <div className="absolute top-3 right-2">
                   <CampaignTableActions 
                     campaign={camp} 
-                    isTrashView={isTrashView} 
-                    onPermanentDelete={handlePermanentDelete} 
-                    onDelete={handleDelete}
                     onEndEarly={handleEndEarly} 
                     onStartNow={handleStartNow}
+                    onCancel={handleCancel}
                   />
               </div>
             </div>

@@ -7,6 +7,7 @@ export type ActionType =
   | 'DELETE' 
   | 'END_EARLY' 
   | 'START_NOW'
+  | 'CANCEL'
   | 'RESTORE' 
   | 'PERMANENT_DELETE';
 
@@ -51,14 +52,15 @@ export function getCampaignActions(campaign: Pick<Campaign, 'status' | 'usageCou
 
   switch (campaign.status) {
     case "Sắp diễn ra":
-      actions.push('EDIT', 'START_NOW', 'DELETE');
+      actions.push('EDIT', 'START_NOW', 'CANCEL');
       break;
     case "Đang diễn ra":
       actions.push('EDIT', 'END_EARLY');
       break;
     case "Đã kết thúc":
     case "Tạm dừng":
-      // No extra actions needed for ended/paused campaigns
+    case "Đã hủy":
+      // No extra actions needed for ended/paused/canceled campaigns
       break;
   }
 

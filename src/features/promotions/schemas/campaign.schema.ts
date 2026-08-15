@@ -18,7 +18,7 @@ export const CampaignSchema = z.object({
   products: z.array(CampaignProductSchema).optional(),
   startDate: z.string().min(1, "Vui lòng chọn ngày bắt đầu"),
   endDate: z.string().min(1, "Vui lòng chọn ngày kết thúc"),
-  status: z.enum(["draft", "active", "scheduled", "ended"]),
+  status: z.enum(["draft", "active", "scheduled", "ended", "canceled"]),
 }).refine((data) => {
   if (data.scope === 'STORE_WIDE' || data.scope === 'CATEGORY') {
     if (data.globalDiscountValue === undefined || data.globalDiscountValue <= 0) {

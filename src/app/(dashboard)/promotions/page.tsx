@@ -27,7 +27,7 @@ export default function PromotionsPage() {
           <TabsTrigger value="ACTIVE">Đang diễn ra</TabsTrigger>
           <TabsTrigger value="UPCOMING">Sắp diễn ra</TabsTrigger>
           <TabsTrigger value="ENDED">Đã kết thúc</TabsTrigger>
-          <TabsTrigger value="TRASH">Thùng rác</TabsTrigger>
+          <TabsTrigger value="CANCELED">Đã hủy</TabsTrigger>
         </TabsList>
         <TabsContent value="ALL" className="m-0">
           <CampaignTable viewStatus="Tất cả" />
@@ -41,8 +41,8 @@ export default function PromotionsPage() {
         <TabsContent value="ENDED" className="m-0">
           <CampaignTable viewStatus="Đã kết thúc" />
         </TabsContent>
-        <TabsContent value="TRASH" className="m-0">
-          <CampaignTable isTrashView />
+        <TabsContent value="CANCELED" className="m-0">
+          <CampaignTable viewStatus="Đã hủy" />
         </TabsContent>
       </Tabs>
     </div>

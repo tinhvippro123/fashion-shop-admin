@@ -16,7 +16,7 @@ export async function createFlashSaleAction(data: TFlashSalePayload) {
     revalidatePath('/flash-sales');
     return { success: true, data: res };
   } catch (error) {
-    return { success: false, error: "L?i h? th?ng khi t?o flashsale" };
+    return { success: false, error: "Lỗi hệ thống khi tạo flashsale" };
   }
 }
 
@@ -31,7 +31,7 @@ export async function updateFlashSaleAction(id: string | number, data: TFlashSal
     revalidatePath('/flash-sales');
     return { success: true, data: res };
   } catch (error) {
-    return { success: false, error: "L?i h? th?ng khi c?p nh?t flashsale" };
+    return { success: false, error: "Lỗi hệ thống khi cập nhật flashsale" };
   }
 }
 
